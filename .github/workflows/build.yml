@@ -1,0 +1,27 @@
+name: ci
+on: push
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: install-nodejs
+        uses: actions/setup-node@v1
+        with:
+          node-version: 15.x
+      - name: install-deps
+        run: make install
+      - name: test-with-xvfb
+        run: xvfb-run -a npm test
+        if: runner.os == 'Linux'
+      - name: test
+        run: npm test
+        if: runner.os != 'Linux'
