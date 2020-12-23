@@ -13,7 +13,7 @@ Currently only supports linting but expect new features to be added soon!
 - Lints your protobuf files using `buf check lint`. It checks your currently opened file
   whenever you save it.
 
-  ![Lint errors](https://github.com/bufbuild/vscode-buf/blob/master/lint_errors.png)
+  ![Lint errors](./lint_errors.png)
 
 ## Requirements
 
