@@ -1,15 +1,19 @@
 # Buf for Visual Studio Code
 
+## Installation
+
+Install via the Visual Studio Code extension browser or see
+[the extension page](https://marketplace.visualstudio.com/items?itemName=bufbuild.vscode-buf)
+for detailed installation instructions.
+
 ## Features
 
 Currently only supports linting but expect new features to be added soon!
 
-### Linting
+- Lints your protobuf files using `buf check lint`. It checks your currently opened file
+  whenever you save it.
 
-Supports linting your protobuf files using `buf check lint`. It checks your currently opened file
-whenever you save it.
-
-![Lint errors](https://github.com/bufbuild/vscode-buf/blob/master/lint_errors.png)
+  ![Lint errors](https://github.com/bufbuild/vscode-buf/blob/master/lint_errors.png)
 
 ## Requirements
 
