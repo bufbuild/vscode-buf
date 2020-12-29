@@ -3,7 +3,7 @@ import { lint } from "./buf";
 import { isError } from "./errors";
 import { parseLines, Warning } from "./parser";
 
-export function activate(_: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
   const diagnosticCollection = vscode.languages.createDiagnosticCollection(
     "vscode-buf.lint"
   );
@@ -70,8 +70,17 @@ export function activate(_: vscode.ExtensionContext) {
     );
     diagnosticCollection.set(document.uri, diagnostics);
   };
-  vscode.workspace.onDidSaveTextDocument(doLint);
-  vscode.workspace.onDidOpenTextDocument(doLint);
+
+  context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(doLint));
+  context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(doLint));
+  context.subscriptions.push(
+    vscode.commands.registerTextEditorCommand(
+      "vscode-buf.lint",
+      (textEditor: vscode.TextEditor) => {
+        doLint(textEditor.document);
+      }
+    )
+  );
 }
 
 // Nothing to do for now
