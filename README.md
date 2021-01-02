@@ -24,3 +24,10 @@ Currently only supports linting but expect new features to be added soon!
 This extension contributes the following settings:
 
 - `buf.binaryPath`: configure the path to your buf binary. By default it uses `buf` in your `$PATH`.
+
+## Changelog
+
+- v0.1.0
+  - Add version check and download link
+- v0.0.3
+  - Fix missing generation command
