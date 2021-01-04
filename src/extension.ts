@@ -1,11 +1,5 @@
 import * as vscode from "vscode";
-import {
-  downloadPage,
-  latestVersion,
-  lint,
-  minimumVersion,
-  version,
-} from "./buf";
+import { downloadPage, lint, minimumVersion, version } from "./buf";
 import { isError } from "./errors";
 import { parseLines, Warning } from "./parser";
 import { format, less } from "./version";
@@ -41,6 +35,9 @@ export function activate(context: vscode.ExtensionContext) {
         });
       return;
     }
+    // Don't check for latest version right now,
+    // adds a lot of overhead to keep updated
+    /*
     if (less(binaryVersion, latestVersion)) {
       vscode.window
         .showInformationMessage(
@@ -54,6 +51,7 @@ export function activate(context: vscode.ExtensionContext) {
           vscode.env.openExternal(vscode.Uri.parse(downloadPage));
         });
     }
+    */
   }
 
   const diagnosticCollection = vscode.languages.createDiagnosticCollection(

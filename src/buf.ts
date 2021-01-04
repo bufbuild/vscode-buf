@@ -2,11 +2,15 @@ import * as child_process from "child_process";
 import { Error } from "./errors";
 import { parse, Version } from "./version";
 
+// Don't defined latest version right now, adds a lot
+// of overhead to maintain.
+/*
 export const latestVersion = {
   major: 0,
   minor: 33,
   patch: 0,
 };
+*/
 
 export const minimumVersion = {
   major: 0,
