@@ -1,9 +1,59 @@
 import * as vscode from "vscode";
-import { lint } from "./buf";
+import { downloadPage, lint, minimumVersion, version } from "./buf";
 import { isError } from "./errors";
 import { parseLines, Warning } from "./parser";
+import { format, less } from "./version";
 
 export function activate(context: vscode.ExtensionContext) {
+  const binaryPath = vscode.workspace
+    .getConfiguration("buf")!
+    .get<string>("binaryPath");
+  if (binaryPath === undefined) {
+    console.log("buf binary path was not set");
+    return;
+  }
+
+  const binaryVersion = version(binaryPath);
+  if (isError(binaryVersion)) {
+    vscode.window.showInformationMessage(
+      `Failed to get buf version: ${binaryVersion.errorMessage}`
+    );
+  } else {
+    if (less(binaryVersion, minimumVersion)) {
+      vscode.window
+        .showErrorMessage(
+          `This version of vscode-buf requires at least version ${format(
+            minimumVersion
+          )} of buf.`,
+          "Go to download page"
+        )
+        .then((selection: string | undefined) => {
+          if (selection === undefined || selection !== "Go to download page") {
+            return;
+          }
+          vscode.env.openExternal(vscode.Uri.parse(downloadPage));
+        });
+      return;
+    }
+    // Don't check for latest version right now,
+    // adds a lot of overhead to keep updated
+    /*
+    if (less(binaryVersion, latestVersion)) {
+      vscode.window
+        .showInformationMessage(
+          `A new version of buf is available (${format(latestVersion)}).`,
+          "Go to download page"
+        )
+        .then((selection: string | undefined) => {
+          if (selection === undefined || selection !== "Go to download page") {
+            return;
+          }
+          vscode.env.openExternal(vscode.Uri.parse(downloadPage));
+        });
+    }
+    */
+  }
+
   const diagnosticCollection = vscode.languages.createDiagnosticCollection(
     "vscode-buf.lint"
   );
