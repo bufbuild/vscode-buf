@@ -2,7 +2,7 @@
 	"name": "vscode-buf",
 	"displayName": "Buf",
 	"description": "Visual Studio Code support for Buf",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"icon": "logo.png",
 	"publisher": "bufbuild",
 	"repository": {
@@ -34,7 +34,8 @@
 		"lint"
 	],
 	"activationEvents": [
-		"workspaceContains:**/*.proto"
+		"workspaceContains:**/*.proto",
+		"workspaceContains:**/buf.yaml"
 	],
 	"contributes": {
 		"commands": [
@@ -53,7 +54,16 @@
 					"description": "Path to the buf binary"
 				}
 			}
-		}
+		},
+		"languages": [
+			{
+				"id": "yaml",
+				"filenames": [
+					"buf.lock",
+					"buf.work"
+				]
+			}
+		]
 	},
 	"main": "./out/extension.js",
 	"scripts": {
