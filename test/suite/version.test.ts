@@ -2,7 +2,7 @@
 
 import * as assert from "assert";
 import * as vscode from "vscode";
-import * as version from "../../version";
+import * as version from "../../src/version";
 
 suite("Version Test Suite", () => {
   vscode.window.showInformationMessage("Start all version tests.");
