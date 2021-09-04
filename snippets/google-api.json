@@ -98,5 +98,56 @@
             ""
         ],
         "description": "Create a standard service according to https://cloud.google.com/apis/design/standard_methods"
+    },
+    "option google.api.http.get": {
+        "scope": "proto3",
+        "prefix": [
+            "optget"
+        ],
+        "body": [
+            "option (google.api.http) = {",
+            "   get: \"${1:/v0alpha1/resources}\"",
+            "}"
+        ],
+        "description": "annotating google.api.http GET method"
+    },
+    "option google.api.http.post": {
+        "scope": "proto3",
+        "prefix": [
+            "optpost"
+        ],
+        "body": [
+            "option (google.api.http) = {",
+            "   post: \"${1:/v0alpha1/resources}\"",
+            "   body: \"*\"",
+            "}"
+        ],
+        "description": "annotating google.api.http POST method"
+    },
+    "option google.api.http.patch": {
+        "scope": "proto3",
+        "prefix": [
+            "optpatch",
+            "optpth"
+        ],
+        "body": [
+            "option (google.api.http) = {",
+            "   patch: \"${1:/v0alpha1/resources}\"",
+            "   body: \"*\"",
+            "}"
+        ],
+        "description": "annotating google.api.http PATCH method"
+    },
+    "option google.api.http.delete": {
+        "scope": "proto3",
+        "prefix": [
+            "optdel"
+        ],
+        "body": [
+            "option (google.api.http) = {",
+            "   delete: \"${1:/v0alpha1/resources}\"",
+            "}"
+        ],
+        "description": "annotating google.api.http DELETE method"
     }
 }
