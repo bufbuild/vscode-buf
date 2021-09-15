@@ -7,7 +7,7 @@ import { parse, Version } from "./version";
 /*
 export const latestVersion = {
   major: 0,
-  minor: 55,
+  minor: 56,
   patch: 0,
 };
 */
