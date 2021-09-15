@@ -51,5 +51,5 @@ export const version = (binaryPath: string): Version | Error => {
   if (output.error !== undefined) {
     return { errorMessage: output.error.message };
   }
-  return parse(output.stderr.trim());
+  return parse(output.stdout.trim());
 };
