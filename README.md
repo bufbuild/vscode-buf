@@ -27,6 +27,8 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.3.0
+  - Change `--version` to read from both `stdout` and `stderr`
 - v0.2.0
   - Update minimum required version to v0.34.0
 - v0.1.3
