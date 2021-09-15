@@ -10,7 +10,7 @@ for detailed installation instructions.
 
 Currently only supports linting but expect new features to be added soon!
 
-- Lints your protobuf files using `buf check lint`. It checks your currently opened file
+- Lints your protobuf files using `buf lint`. It checks your currently opened file
   whenever you save it.
 
   ![Lint errors](./lint_errors.png)
@@ -27,6 +27,10 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.2.0
+  - Update minimum required version to v0.34.0
+- v0.1.3
+  - Update logo
 - v0.1.0
   - Add version check and download link
 - v0.0.3

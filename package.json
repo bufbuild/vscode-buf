@@ -2,7 +2,7 @@
 	"name": "vscode-buf",
 	"displayName": "Buf",
 	"description": "Visual Studio Code support for Buf",
-	"version": "0.1.3",
+	"version": "0.2.0",
 	"icon": "logo.png",
 	"publisher": "bufbuild",
 	"repository": {
@@ -39,7 +39,9 @@
 		"workspaceContains:**/buf.lock",
 		"workspaceContains:**/buf.mod",
 		"workspaceContains:**/buf.work",
-		"workspaceContains:**/buf.gen"
+		"workspaceContains:**/buf.gen",
+		"workspaceContains:**/buf.gen.yaml",
+		"workspaceContains:**/buf.work.yaml"
 	],
 	"contributes": {
 		"commands": [

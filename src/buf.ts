@@ -7,16 +7,16 @@ import { parse, Version } from "./version";
 /*
 export const latestVersion = {
   major: 0,
-  minor: 33,
+  minor: 56,
   patch: 0,
 };
 */
 
 export const minimumVersion = {
   major: 0,
-  // 0.31.0 was when we released --path
-  // https://groups.google.com/g/bufbuild-announce/c/5FRMd4Pm3Eo/m/p9579qKZAwAJ
-  minor: 31,
+  // 0.34.0 was when we moved "buf check lint" to "buf lint"
+  // https://github.com/bufbuild/buf/releases/tag/v0.34.0
+  minor: 34,
   patch: 0,
 };
 
@@ -29,7 +29,7 @@ export const lint = (
 ): string[] | Error => {
   const output = child_process.spawnSync(
     binaryPath,
-    ["check", "lint", "--path", filePath, "--error-format=json"],
+    ["lint", "--path", filePath, "--error-format=json"],
     {
       encoding: "utf-8",
       cwd: cwd,
