@@ -39,7 +39,9 @@
 		"workspaceContains:**/buf.lock",
 		"workspaceContains:**/buf.mod",
 		"workspaceContains:**/buf.work",
-		"workspaceContains:**/buf.gen"
+		"workspaceContains:**/buf.gen",
+		"workspaceContains:**/buf.gen.yaml",
+		"workspaceContains:**/buf.work.yaml"
 	],
 	"contributes": {
 		"commands": [
