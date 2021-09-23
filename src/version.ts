@@ -1,7 +1,6 @@
 import { Error } from "./errors";
 
-// regular expression suggested by semver.org
-const versionRegexp = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+const versionRegexp = /^(\d+)\.(\d+).(\d+)(-dev|-rc\d*)?$/;
 
 export interface Version {
   major: number;
