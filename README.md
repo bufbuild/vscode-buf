@@ -27,6 +27,8 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.3.1
+  - Accept v1.0.0-rc1 in version parser
 - v0.3.0
   - Change `--version` to read from both `stdout` and `stderr`
 - v0.2.0
