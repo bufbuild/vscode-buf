@@ -1,6 +1,6 @@
 import { Error } from "./errors";
 
-const versionRegexp = /^(\d+)\.(\d+).(\d+)(-dev)?$/;
+const versionRegexp = /^(\d+)\.(\d+).(\d+)(-dev|-rc\d*)?$/;
 
 export interface Version {
   major: number;
@@ -33,26 +33,20 @@ export const parse = (versionString: string): Version | Error => {
       errorMessage: `failed to parse version output: ${versionString}`,
     };
   }
-  let major = 0;
-  try {
-    major = parseInt(match[1]);
-  } catch {
+  const major = parseInt(match[1]);
+  if (Number.isNaN(major)) {
     return {
       errorMessage: "failed to parse major version",
     };
   }
-  let minor = 0;
-  try {
-    minor = parseInt(match[2]);
-  } catch {
+  const minor = parseInt(match[2]);
+  if (Number.isNaN(minor)) {
     return {
       errorMessage: "failed to parse minor version",
     };
   }
-  let patch = 0;
-  try {
-    patch = parseInt(match[3]);
-  } catch {
+  const patch = parseInt(match[3]);
+  if (Number.isNaN(patch)) {
     return {
       errorMessage: "failed to parse patch version",
     };
