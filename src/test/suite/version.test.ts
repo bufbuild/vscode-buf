@@ -138,8 +138,8 @@ suite("Version Test Suite", () => {
       patch: 0,
       releaseCandidate: null,
     };
-    assert.strictEqual(version.less(v1, v2), false);
-    assert.strictEqual(version.less(v2, v1), true);
+    assert.strictEqual(version.less(v1, v2), true);
+    assert.strictEqual(version.less(v2, v1), false);
   });
 
   test("Orders equal versions successfully", () => {
