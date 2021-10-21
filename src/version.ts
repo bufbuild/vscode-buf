@@ -1,6 +1,6 @@
 import { Error } from "./errors";
 
-const versionRegexp = /^(\d+)\.(\d+).(\d+)-dev|-rc(\d*)?$/;
+const versionRegexp = /^(\d+)\.(\d+).(\d+)[\-dev|\-rc]*(\d*)?$/;
 
 export interface Version {
   major: number;
@@ -62,11 +62,10 @@ export const parse = (versionString: string): Version | Error => {
       errorMessage: "failed to parse patch version",
     };
   }
-  let releaseCandidate: number | null = null;
-  const parsedReleaseCandidate = parseInt(match[4]);
-  if (!Number.isNaN(parsedReleaseCandidate)) {
+  let releaseCandidate: number | null = parseInt(match[4]);
+  if (Number.isNaN(releaseCandidate)) {
     // If there is no release candidate number, we explicitly unset it.
-    releaseCandidate = parsedReleaseCandidate;
+    releaseCandidate = null;
   }
   return {
     major: major,
