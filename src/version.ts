@@ -62,10 +62,11 @@ export const parse = (versionString: string): Version | Error => {
       errorMessage: "failed to parse patch version",
     };
   }
-  let releaseCandidate: number | null = parseInt(match[4]);
-  if (Number.isNaN(releaseCandidate)) {
+  let releaseCandidate: number | null = null;
+  const parsedReleaseCandidate = parseInt(match[4]);
+  if (!Number.isNaN(parsedReleaseCandidate)) {
     // If there is no release candidate number, we explicitly unset it.
-    releaseCandidate = null;
+    releaseCandidate = parsedReleaseCandidate;
   }
   return {
     major: major,
