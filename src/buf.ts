@@ -12,12 +12,13 @@ export const latestVersion = {
 };
 */
 
+// 1.0.0-rc6 is when we added the proto file input reference
+// https://github.com/bufbuild/buf/releases/tag/v1.0.0-rc6
 export const minimumVersion = {
-  major: 0,
-  // 0.34.0 was when we moved "buf check lint" to "buf lint"
-  // https://github.com/bufbuild/buf/releases/tag/v0.34.0
-  minor: 34,
+  major: 1,
+  minor: 0,
   patch: 0,
+  releaseCandidate: 6,
 };
 
 export const downloadPage = "https://docs.buf.build/installation";
