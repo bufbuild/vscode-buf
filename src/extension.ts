@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { downloadPage, lint, minimumVersion, version } from "./buf";
 import { isError } from "./errors";
+import { Formatter } from "./formatter";
 import { parseLines, Warning } from "./parser";
 import { format, less } from "./version";
 
@@ -124,6 +125,7 @@ export function activate(context: vscode.ExtensionContext) {
     diagnosticCollection.set(document.uri, diagnostics);
   };
 
+  context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto', new Formatter(binaryPath)));
   context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(doLint));
   context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(doLint));
   context.subscriptions.push(
