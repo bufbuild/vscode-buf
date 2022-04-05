@@ -27,6 +27,8 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.5.0
+  - Add formatting through using buf format. Defaults to format on save.
 - v0.4.0
   - Use single file reference to resolve lint file from any path
 - v0.3.1
