@@ -2,7 +2,7 @@
 	"name": "vscode-buf",
 	"displayName": "Buf",
 	"description": "Visual Studio Code support for Buf",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"icon": "logo.png",
 	"publisher": "bufbuild",
 	"repository": {
@@ -23,6 +23,7 @@
 		"vscode": "^1.63.0"
 	},
 	"categories": [
+		"Formatters",
 		"Linters"
 	],
 	"keywords": [
@@ -31,7 +32,9 @@
 		"protobuf",
 		"protocol buffers",
 		"buf",
-		"lint"
+		"bufbuild",
+		"lint",
+		"format"
 	],
 	"activationEvents": [
 		"workspaceContains:**/*.proto",
@@ -61,6 +64,11 @@
 				}
 			}
 		},
+		"configurationDefaults": {
+			"[proto]": {
+				"editor.formatOnSave": true
+			}
+		},
 		"languages": [
 			{
 				"id": "yaml",
@@ -69,6 +77,16 @@
 					"buf.mod",
 					"buf.work",
 					"buf.gen"
+				]
+			},
+			{
+				"id": "proto",
+				"extensions": [
+					".proto"
+				],
+				"aliases": [
+					"Protocol Buffers",
+					"Protobuf"
 				]
 			}
 		]
