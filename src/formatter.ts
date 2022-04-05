@@ -41,10 +41,10 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
         token: vscode.CancellationToken
     ): Thenable<vscode.TextEdit[]> {
         return new Promise<vscode.TextEdit[]>((resolve, reject) => {
-            const cwd = path.join(os.tmpdir(), this.randomId())
+            const cwd = path.join(os.tmpdir(), this.randomId());
             vscode.workspace.fs.createDirectory(vscode.Uri.file(cwd)).then(() => {
                 // Buf format expects a `.proto` file, so add unique id as a prefix.
-                const backupFile = path.join(cwd, this.randomId() + "-" + path.basename(document.fileName))
+                const backupFile = path.join(cwd, this.randomId() + "-" + path.basename(document.fileName));
                 vscode.workspace.fs.writeFile(vscode.Uri.file(backupFile), new TextEncoder().encode(document.getText())).then(() => {
                     let stdout = '';
                     let stderr = '';
@@ -71,8 +71,8 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
                         ];
                         return resolve(textEdits);
                     });
-                })
+                });
             });
-        })
+        });
     }
 }
