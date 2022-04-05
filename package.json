@@ -33,7 +33,8 @@
 		"protocol buffers",
 		"buf",
 		"bufbuild",
-		"lint"
+		"lint",
+		"format"
 	],
 	"activationEvents": [
 		"workspaceContains:**/*.proto",
@@ -85,7 +86,7 @@
 				],
 				"aliases": [
 					"Protocol Buffers",
-					"Protobufs"
+					"Protobuf"
 				]
 			}
 		]

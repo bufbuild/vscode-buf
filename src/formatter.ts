@@ -33,7 +33,7 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
     }
 
     private randomId(): string {
-        return (Math.floor(Math.random() * 100000)).toString()
+        return (Math.floor(Math.random() * 100000000)).toString();
     }
 
     private runFormatter(
@@ -41,7 +41,7 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
         token: vscode.CancellationToken
     ): Thenable<vscode.TextEdit[]> {
         return new Promise<vscode.TextEdit[]>((resolve, reject) => {
-            const cwd = path.join(os.tmpdir(), this.randomId());
+            const cwd = path.join(os.tmpdir(), "vscode-buf-" + this.randomId());
             vscode.workspace.fs.createDirectory(vscode.Uri.file(cwd)).then(() => {
                 // Buf format expects a `.proto` file, so add unique id as a prefix.
                 const backupFile = path.join(cwd, this.randomId() + "-" + path.basename(document.fileName));
