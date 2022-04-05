@@ -1,6 +1,8 @@
 import * as cp from "child_process";
+import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
+import { TextEncoder } from "util";
 
 export class Formatter implements vscode.DocumentFormattingEditProvider {
     readonly binaryPath: string = '';
@@ -30,38 +32,47 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
         );
     }
 
+    private randomId(): string {
+        return (Math.floor(Math.random() * 100000)).toString()
+    }
+
     private runFormatter(
         document: vscode.TextDocument,
-        // @ts-ignore: TODO: Use the CancellationToken.
         token: vscode.CancellationToken
     ): Thenable<vscode.TextEdit[]> {
         return new Promise<vscode.TextEdit[]>((resolve, reject) => {
-            const cwd = path.dirname(document.fileName);
-            let stdout = '';
-            let stderr = '';
+            const cwd = path.join(os.tmpdir(), this.randomId())
+            vscode.workspace.fs.createDirectory(vscode.Uri.file(cwd)).then(() => {
+                // Buf format expects a `.proto` file, so add unique id as a prefix.
+                const backupFile = path.join(cwd, this.randomId() + "-" + path.basename(document.fileName))
+                vscode.workspace.fs.writeFile(vscode.Uri.file(backupFile), new TextEncoder().encode(document.getText())).then(() => {
+                    let stdout = '';
+                    let stderr = '';
 
-            // Use spawn instead of exec to avoid maxBufferExceeded error
-            const p = cp.spawn(this.binaryPath, [document.fileName], { cwd });
-            // TODO: We need to use the CancellationToken.
-            p.stdout.setEncoding('utf8');
-            p.stdout.on('data', (data: any) => (stdout += data));
-            p.stderr.on('data', (data: any) => (stderr += data));
-            p.on('error', (err: any) => {
-            if (err && (<any>err).code === 'ENOENT') {
-                return reject();
-            }
+                    const p = cp.spawn(this.binaryPath, ['format', backupFile], { cwd });
+                    token.onCancellationRequested(() => !p.killed && p.kill());
+
+                    p.stdout.setEncoding('utf8');
+                    p.stdout.on('data', (data: any) => (stdout += data));
+                    p.stderr.on('data', (data: any) => (stderr += data));
+                    p.on('error', (err: any) => {
+                        if (err && (<any>err).code === 'ENOENT') {
+                            return reject();
+                        }
+                    });
+                    p.on('close', (code: number) => {
+                        if (code !== 0) {
+                            return reject(stderr);
+                        }
+                        const fileStart = new vscode.Position(0, 0);
+                        const fileEnd = document.lineAt(document.lineCount - 1).range.end;
+                        const textEdits: vscode.TextEdit[] = [
+                            new vscode.TextEdit(new vscode.Range(fileStart, fileEnd), stdout)
+                        ];
+                        return resolve(textEdits);
+                    });
+                })
             });
-            p.on('close', (code: number) => {
-                if (code !== 0) {
-                    return reject(stderr);
-                }
-                const fileStart = new vscode.Position(0, 0);
-                const fileEnd = document.lineAt(document.lineCount - 1).range.end;
-                const textEdits: vscode.TextEdit[] = [
-                    new vscode.TextEdit(new vscode.Range(fileStart, fileEnd), stdout)
-                ];
-                return resolve(textEdits);
-            });
-        });
+        })
     }
 }
