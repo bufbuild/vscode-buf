@@ -8,12 +8,12 @@ for detailed installation instructions.
 
 ## Features
 
-Currently only supports linting but expect new features to be added soon!
-
 - Lints your protobuf files using `buf lint`. It checks your currently opened file
   whenever you save it.
 
   ![Lint errors](./lint_errors.png)
+  
+- Formats your protobuf files using `buf format`.
 
 ## Requirements
 
