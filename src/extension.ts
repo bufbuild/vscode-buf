@@ -4,6 +4,13 @@ import { isError } from "./errors";
 import { Formatter } from "./formatter";
 import { parseLines, Warning } from "./parser";
 import { format, less } from "./version";
+import {
+	LanguageClient,
+	LanguageClientOptions,
+	ServerOptions,
+} from 'vscode-languageclient/node';
+
+let client: LanguageClient;
 
 export function activate(context: vscode.ExtensionContext) {
   const binaryPath = vscode.workspace
@@ -136,7 +143,41 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+
+  // Now that the base extension is activated, start the language server
+  // if the user has it configured.
+  const languageServerBinaryPath = vscode.workspace
+    .getConfiguration("bufls")!
+    .get<string>("binaryPath");
+  if (binaryPath === undefined) {
+    // The user doesn't have 'bufls' configured, so the language server
+    // is not enabled.
+    return;
+  }
+
+  const serverOptions: ServerOptions = {
+    command: languageServerBinaryPath !== undefined ? languageServerBinaryPath : '',
+    args: ['serve'],
+  };
+
+  const clientOptions: LanguageClientOptions = {
+    documentSelector: [{ scheme: 'file', language: 'proto' }],
+  };
+
+  // Create the language client and start the client.
+  // This will also start the 'bufls' server.
+  client = new LanguageClient(
+    'bufls',
+    'Buf Language Server',
+    serverOptions,
+    clientOptions
+  );
+  client.start();
 }
 
-// Nothing to do for now
-export function deactivate() {}
+export function deactivate() {
+  if (!client) {
+    return undefined;
+  }
+  return client.stop();
+}
