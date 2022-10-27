@@ -67,6 +67,9 @@
 		"configurationDefaults": {
 			"[proto]": {
 				"editor.formatOnSave": true
+			},
+			"[proto3]": {
+				"editor.formatOnSave": true
 			}
 		},
 		"languages": [
@@ -81,6 +84,16 @@
 			},
 			{
 				"id": "proto",
+				"extensions": [
+					".proto"
+				],
+				"aliases": [
+					"Protocol Buffers",
+					"Protobuf"
+				]
+			},
+			{
+				"id": "proto3",
 				"extensions": [
 					".proto"
 				],

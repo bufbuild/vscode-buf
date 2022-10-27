@@ -126,6 +126,7 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto', new Formatter(binaryPath)));
+  context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto3', new Formatter(binaryPath)));
   context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(doLint));
   context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(doLint));
   context.subscriptions.push(
