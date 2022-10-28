@@ -13,7 +13,6 @@ export function activate(context: vscode.ExtensionContext) {
     console.log("buf binary path was not set");
     return;
   }
-
   const binaryVersion = version(binaryPath);
   if (isError(binaryVersion)) {
     vscode.window.showInformationMessage(
@@ -65,6 +64,10 @@ export function activate(context: vscode.ExtensionContext) {
     if (!document.uri.path.endsWith(".proto")) {
       return;
     }
+    if (!vscode.workspace.getConfiguration("buf.linting")!.get<boolean>("enabled")) {
+      console.log("buf lint is disabled");
+      return;
+    }
 
     if (vscode.workspace.workspaceFolders === undefined) {
       console.log("workspace folders was undefined");
@@ -80,9 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const binaryPath = vscode.workspace
-      .getConfiguration("buf")!
-      .get<string>("binaryPath");
+    const binaryPath = vscode.workspace.getConfiguration("buf")!.get<string>("binaryPath");
     if (binaryPath === undefined) {
       console.log("buf binary path was not set");
       return;
@@ -125,10 +126,19 @@ export function activate(context: vscode.ExtensionContext) {
     diagnosticCollection.set(document.uri, diagnostics);
   };
 
-  context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto', new Formatter(binaryPath)));
   context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto3', new Formatter(binaryPath)));
-  context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(doLint));
-  context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(doLint));
+  context.subscriptions.push(vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
+    const settings = vscode.workspace.getConfiguration("buf.linting")!;
+    if (settings.get<boolean>("enabled") && settings.get<boolean>("lintOnSave")) {
+      doLint(e);
+    }
+  }));
+  context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((e: vscode.TextDocument) => {
+    const settings = vscode.workspace.getConfiguration("buf.linting")!;
+    if (settings.get<boolean>("enabled")) {
+      doLint(e);
+    }
+  }));
   context.subscriptions.push(
     vscode.commands.registerTextEditorCommand(
       "vscode-buf.lint",
