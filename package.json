@@ -107,7 +107,7 @@
 		"@types/node": "^18.11.9",
 		"@types/vscode": "^1.73.1",
 		"@typescript-eslint/eslint-plugin": "^5.41.0",
-		"@typescript-eslint/parser": "^5.41.0",
+		"@typescript-eslint/parser": "^5.44.0",
 		"eslint": "^8.28.0",
 		"glob": "^7.1.6",
 		"mocha": "^10.1.0",
