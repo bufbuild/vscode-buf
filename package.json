@@ -1,118 +1,118 @@
 {
-	"name": "vscode-buf",
-	"displayName": "Buf",
-	"description": "Visual Studio Code support for Buf",
-	"version": "0.5.0",
-	"icon": "logo.png",
-	"publisher": "bufbuild",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/bufbuild/vscode-buf.git"
-	},
-	"bugs": {
-		"url": "https://github.com/bufbuild/vscode-buf/issues"
-	},
-	"license": "Apache-2.0",
-	"licenses": [
-		{
-			"type": "Apache-2.0",
-			"url": "http://www.apache.org/licenses/LICENSE-2.0"
-		}
-	],
-	"engines": {
-		"vscode": "^1.72.0"
-	},
-	"categories": [
-		"Formatters",
-		"Linters"
-	],
-	"keywords": [
-		"proto",
-		"proto3",
-		"protobuf",
-		"protocol buffers",
-		"buf",
-		"bufbuild",
-		"lint",
-		"format"
-	],
-	"activationEvents": [
-		"workspaceContains:**/*.proto",
-		"workspaceContains:**/buf.yaml",
-		"workspaceContains:**/buf.lock",
-		"workspaceContains:**/buf.mod",
-		"workspaceContains:**/buf.work",
-		"workspaceContains:**/buf.gen",
-		"workspaceContains:**/buf.gen.yaml",
-		"workspaceContains:**/buf.work.yaml"
-	],
-	"contributes": {
-		"commands": [
-			{
-				"category": "Linters",
-				"command": "vscode-buf.lint",
-				"title": "Lint protobuf files using Buf"
-			}
-		],
-		"configuration": {
-			"title": "Buf",
-			"properties": {
-				"buf.binaryPath": {
-					"type": "string",
-					"default": "buf",
-					"description": "Path to the buf binary"
-				}
-			}
-		},
-		"configurationDefaults": {
-			"[proto]": {
-				"editor.formatOnSave": true
-			}
-		},
-		"languages": [
-			{
-				"id": "yaml",
-				"filenames": [
-					"buf.lock",
-					"buf.mod",
-					"buf.work",
-					"buf.gen"
-				]
-			},
-			{
-				"id": "proto",
-				"extensions": [
-					".proto"
-				],
-				"aliases": [
-					"Protocol Buffers",
-					"Protobuf"
-				]
-			}
-		]
-	},
-	"main": "./out/extension.js",
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "npx tsc -p ./",
-		"watch": "npx tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"lint": "npx eslint src --ext ts",
-		"test": "node ./out/test/runTest.js",
-		"package": "vsce package"
-	},
-	"devDependencies": {
-		"@types/glob": "^8.0.0",
-		"@types/mocha": "^10.0.0",
-		"@types/node": "^18.11.9",
-		"@types/vscode": "^1.73.1",
-		"@typescript-eslint/eslint-plugin": "^5.45.0",
-		"@typescript-eslint/parser": "^5.45.0",
-		"eslint": "^8.28.0",
-		"glob": "^8.0.3",
-		"mocha": "^10.1.0",
-		"typescript": "^4.9.3",
-		"vsce": "^2.14.0",
-		"@vscode/test-electron": "^2.2.0"
-	}
+  "name": "vscode-buf",
+  "displayName": "Buf",
+  "description": "Visual Studio Code support for Buf",
+  "version": "0.5.0",
+  "icon": "logo.png",
+  "publisher": "bufbuild",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bufbuild/vscode-buf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bufbuild/vscode-buf/issues"
+  },
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "engines": {
+    "vscode": "^1.72.0"
+  },
+  "categories": [
+    "Formatters",
+    "Linters"
+  ],
+  "keywords": [
+    "proto",
+    "proto3",
+    "protobuf",
+    "protocol buffers",
+    "buf",
+    "bufbuild",
+    "lint",
+    "format"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/*.proto",
+    "workspaceContains:**/buf.yaml",
+    "workspaceContains:**/buf.lock",
+    "workspaceContains:**/buf.mod",
+    "workspaceContains:**/buf.work",
+    "workspaceContains:**/buf.gen",
+    "workspaceContains:**/buf.gen.yaml",
+    "workspaceContains:**/buf.work.yaml"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "category": "Linters",
+        "command": "vscode-buf.lint",
+        "title": "Lint protobuf files using Buf"
+      }
+    ],
+    "configuration": {
+      "title": "Buf",
+      "properties": {
+        "buf.binaryPath": {
+          "type": "string",
+          "default": "buf",
+          "description": "Path to the buf binary"
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[proto]": {
+        "editor.formatOnSave": true
+      }
+    },
+    "languages": [
+      {
+        "id": "yaml",
+        "filenames": [
+          "buf.lock",
+          "buf.mod",
+          "buf.work",
+          "buf.gen"
+        ]
+      },
+      {
+        "id": "proto",
+        "extensions": [
+          ".proto"
+        ],
+        "aliases": [
+          "Protocol Buffers",
+          "Protobuf"
+        ]
+      }
+    ]
+  },
+  "main": "./out/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "npx tsc -p ./",
+    "watch": "npx tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "npx eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.11.12",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^5.46.0",
+    "@typescript-eslint/parser": "^5.46.0",
+    "eslint": "^8.29.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "typescript": "^4.9.4",
+    "vsce": "^2.15.0",
+    "@vscode/test-electron": "^2.2.1"
+  }
 }
