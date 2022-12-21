@@ -125,7 +125,9 @@ export function activate(context: vscode.ExtensionContext) {
     diagnosticCollection.set(document.uri, diagnostics);
   };
 
-  context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto', new Formatter(binaryPath)));
+  const formatter = new Formatter(binaryPath);
+  context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto', formatter));
+  context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto3', formatter));
   context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(doLint));
   context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(doLint));
   context.subscriptions.push(
