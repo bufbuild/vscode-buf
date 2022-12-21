@@ -27,6 +27,8 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.5.1
+  - Fix an issue with setting buf format as the default formatter for proto3 files.
 - v0.5.0
   - Add formatting through using buf format. Defaults to format on save.
 - v0.4.0
