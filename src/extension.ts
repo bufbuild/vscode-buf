@@ -108,7 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
     const warningsForThisDocument = warnings.filter(
       (warning: Warning): Boolean => {
-        return warning.path == document.uri.fsPath
+        return warning.path === document.uri.fsPath;
       }
     )
     const diagnostics = warningsForThisDocument.map(
