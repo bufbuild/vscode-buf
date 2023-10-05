@@ -106,7 +106,12 @@ export function activate(context: vscode.ExtensionContext) {
       console.log(warnings);
       return;
     }
-    const diagnostics = warnings.map(
+    const warningsForThisDocument = warnings.filter(
+      (warning: Warning): Boolean => {
+        return warning.path === document.uri.fsPath;
+      }
+    );
+    const diagnostics = warningsForThisDocument.map(
       (error: Warning): vscode.Diagnostic => {
         // VSC lines and columns are 0 indexed, so we need to subtract
         const range = new vscode.Range(
