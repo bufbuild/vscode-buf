@@ -87,7 +87,15 @@
         "aliases": [
           "Protocol Buffers",
           "Protobuf"
-        ]
+        ],
+        "configuration": "./protobuf-language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "proto",
+        "scopeName": "source.proto",
+        "path": "./syntaxes/proto.tmLanguage.json"
       }
     ]
   },
