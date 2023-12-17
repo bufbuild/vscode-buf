@@ -12,8 +12,10 @@ for detailed installation instructions.
   whenever you save it.
 
   ![Lint errors](./lint_errors.png)
-  
+
 - Formats your protobuf files using `buf format`.
+
+- Provides syntax highlighting for `.proto` files.
 
 ## Requirements
 
@@ -27,6 +29,8 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.5.3
+  - Add syntax highlighting for `.proto` files.
 - v0.5.2
   - Fix lint highlighting issue outside of the current file.
 - v0.5.1
