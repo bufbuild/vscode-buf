@@ -29,6 +29,8 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.5.4
+  - Support relative binary path.
 - v0.5.3
   - Add syntax highlighting for `.proto` files.
 - v0.5.2
