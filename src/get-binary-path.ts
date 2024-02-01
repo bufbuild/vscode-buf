@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as vscode from "vscode";
+import { existsSync } from "fs";
 
 const getWorkspaceFolderFsPath = () => {
   if (vscode.workspace.workspaceFolders === undefined) {
@@ -23,12 +24,27 @@ export const getBinaryPath = () => {
   if (workspaceFolderFsPath === undefined) {
     return {};
   }
-  const binaryPath = vscode.workspace
+  let binaryPath = vscode.workspace
     .getConfiguration("buf")!
     .get<string>("binaryPath");
   if (binaryPath === undefined) {
     console.log("buf binary path was not set");
     return {};
+  }
+  const relative = binaryPath.startsWith(".");
+  if (relative) {
+    // check if file exists
+    binaryPath = path.join(workspaceFolderFsPath, binaryPath);
+    if (process.platform === "win32") {
+      if (path.extname(binaryPath) === "" && !existsSync(binaryPath)) {
+        // A common pattern with npm binaries
+        binaryPath += ".exe";
+      }
+    }
+    if (!existsSync(binaryPath)) {
+      console.log("buf binary path does not exist: ", binaryPath);
+      return {};
+    }
   }
   return {
     cwd: workspaceFolderFsPath,
