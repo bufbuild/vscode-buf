@@ -48,8 +48,6 @@ export const getBinaryPath = () => {
   }
   return {
     cwd: workspaceFolderFsPath,
-    binaryPath: binaryPath.startsWith(".")
-      ? path.join(workspaceFolderFsPath, binaryPath)
-      : binaryPath,
+    binaryPath,
   };
 };
