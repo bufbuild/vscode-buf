@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as path from "path";
 import { downloadPage, lint, minimumVersion, version } from "./buf";
 import { isError } from "./errors";
 import { Formatter } from "./formatter";
@@ -7,45 +6,11 @@ import { parseLines, Warning } from "./parser";
 import { format, less } from "./version";
 
 export function activate(context: vscode.ExtensionContext) {
-  const getWorkspaceFolderFsPath = () => {
-    if (vscode.workspace.workspaceFolders === undefined) {
-      console.log("workspace folders was undefined");
-      return;
-    }
-    if (vscode.workspace.workspaceFolders.length === 0) {
-      console.log("workspace folders was not set");
-      return;
-    }
-    const uri = vscode.workspace.workspaceFolders[0].uri;
-    if (uri.scheme !== "file") {
-      console.log("uri was not file: ", uri.scheme);
-      return;
-    }
-    return uri.fsPath;
-  };
-
-  const getBinaryPath = (workspaceFolderFsPath: string) => {
-    const binaryPath = vscode.workspace
-      .getConfiguration("buf")!
-      .get<string>("binaryPath");
-    if (binaryPath === undefined) {
-      console.log("buf binary path was not set");
-      return;
-    }
-
-    if (path.isAbsolute(binaryPath)) {
-      return binaryPath;
-    } else {
-      return path.join(workspaceFolderFsPath, binaryPath);
-    }
-  };
-
-  const workspaceFolderFsPath = getWorkspaceFolderFsPath();
-  if (!workspaceFolderFsPath) {
-    return;
-  }
-  const binaryPath = getBinaryPath(workspaceFolderFsPath);
+  const binaryPath = vscode.workspace
+    .getConfiguration("buf")!
+    .get<string>("binaryPath");
   if (binaryPath === undefined) {
+    console.log("buf binary path was not set");
     return;
   }
 
@@ -101,17 +66,29 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const workspaceFolderFsPath = getWorkspaceFolderFsPath();
-    if (!workspaceFolderFsPath) {
+    if (vscode.workspace.workspaceFolders === undefined) {
+      console.log("workspace folders was undefined");
+      return;
+    }
+    if (vscode.workspace.workspaceFolders.length === 0) {
+      console.log("workspace folders was not set");
+      return;
+    }
+    const uri = vscode.workspace.workspaceFolders[0].uri;
+    if (uri.scheme !== "file") {
+      console.log("uri was not file: ", uri.scheme);
       return;
     }
 
-    const binaryPath = getBinaryPath(workspaceFolderFsPath);
+    const binaryPath = vscode.workspace
+      .getConfiguration("buf")!
+      .get<string>("binaryPath");
     if (binaryPath === undefined) {
+      console.log("buf binary path was not set");
       return;
     }
 
-    const lines = lint(binaryPath, document.uri.fsPath, workspaceFolderFsPath);
+    const lines = lint(binaryPath, document.uri.fsPath, uri.fsPath);
     if (isError(lines)) {
       if (lines.errorMessage.includes("ENOENT")) {
         vscode.window.showInformationMessage(
