@@ -4,6 +4,7 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 import * as buf from "../buf";
 import { getBinaryPath } from "../get-binary-path";
+import path from "path";
 
 suite("Buf CLI tests", () => {
   vscode.window.showInformationMessage("Start all tests.");
@@ -19,9 +20,12 @@ suite("Buf CLI tests", () => {
 
   test("Relative path loaded from config", async () => {
     const { binaryPath } = getBinaryPath();
-    assert.ok(binaryPath);
-    assert.ok(binaryPath.endsWith("/node_modules/.bin/buf"));
-    const version = buf.version(binaryPath);
+    const expectedEndingPath = path.join("node_modules", ".bin", "buf");
+    assert.ok(
+      binaryPath?.endsWith(expectedEndingPath),
+      `Expected ${binaryPath} to end with ${expectedEndingPath}`
+    );
+    const version = buf.version(binaryPath!);
     if ("errorMessage" in version) {
       assert.fail(version.errorMessage);
     } else {
