@@ -26,10 +26,8 @@ suite("Buf CLI tests", () => {
   });
 
   test("Relative path loaded from config", async () => {
-    let { binaryPath } = getBinaryPath();
-    if (process.platform === "win32") {
-      binaryPath += ".exe";
-    }
+    const { binaryPath } = getBinaryPath();
+
     printFilesInDirectory(path.resolve(binaryPath!, ".."));
     const version = buf.version(binaryPath!);
     if ("errorMessage" in version) {
