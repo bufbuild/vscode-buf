@@ -35,6 +35,8 @@ export const getBinaryPath = () => {
   if (relative) {
     // check if file exists
     binaryPath = path.join(workspaceFolderFsPath, binaryPath);
+    console.log(`p: ${process.platform}, ext: ${path.extname(binaryPath)}`);
+    console.log(`exists: ${existsSync(binaryPath)}`);
     if (process.platform === "win32") {
       if (path.extname(binaryPath) === "" && !existsSync(binaryPath)) {
         // A common pattern with npm binaries
