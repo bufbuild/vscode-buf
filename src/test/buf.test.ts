@@ -25,9 +25,9 @@ suite("Buf CLI tests", () => {
 
   test("Relative path loaded from config", async () => {
     const { binaryPath } = getBinaryPath();
-
-    printFilesInDirectory(path.resolve(binaryPath!, ".."));
-    const version = buf.version(binaryPath!);
+    assert.ok(binaryPath);
+    printFilesInDirectory(path.resolve(binaryPath, ".."));
+    const version = buf.version(binaryPath);
     if ("errorMessage" in version) {
       assert.fail(version.errorMessage);
     } else {
