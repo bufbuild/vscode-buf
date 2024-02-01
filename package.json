@@ -104,23 +104,23 @@
     "vscode:prepublish": "npm run compile",
     "compile": "npx tsc -p ./",
     "watch": "npx tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "pretest": "npm run compile && npm run lint && npm run prepworkspaces",
+    "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
     "lint": "npx eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
+    "test": "vscode-test",
     "package": "vsce package"
   },
   "devDependencies": {
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^20.8.9",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.x",
     "@types/vscode": "^1.83.1",
-    "@typescript-eslint/eslint-plugin": "^6.9.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "eslint": "^8.42.0",
-    "glob": "^8.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "eslint": "^8.56.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.1.6",
+    "typescript": "^5.3.3",
     "vsce": "^2.15.0",
-    "@vscode/test-electron": "^2.3.8"
+    "@vscode/test-electron": "^2.3.9",
+    "@vscode/test-cli": "0.0.4"
   }
 }
