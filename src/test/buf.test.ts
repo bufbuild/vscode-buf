@@ -9,8 +9,6 @@ import path from "path";
 function printFilesInDirectory(directory: string) {
   const fs = require("fs");
   const files = fs.readdirSync(directory);
-  console.log(`Files in ${directory}:`);
-  console.log(files.join("\n"));
 }
 
 suite("Buf CLI tests", () => {
