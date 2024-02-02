@@ -25,7 +25,7 @@ for detailed installation instructions.
 
 This extension contributes the following settings:
 
-- `buf.binaryPath`: configure the path to your buf binary. By default it uses `buf` in your `$PATH`. Starting with a `.` means it will be relative to the workspace. If, for example, you want to use buf installed via npm, you can set this to `./node_modules/.bin/buf`.
+- `buf.binaryPath`: configure the path to your buf binary. By default it uses `buf` in your `$PATH`.
 
 ## Changelog
 
