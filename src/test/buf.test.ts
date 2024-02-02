@@ -4,6 +4,8 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 import * as buf from "../buf";
 import { getBinaryPath } from "../get-binary-path";
+import path from "path";
+import { beforeEach, afterEach } from "mocha";
 
 suite("Buf CLI tests", () => {
   vscode.window.showInformationMessage("Start all tests.");
@@ -26,5 +28,37 @@ suite("Buf CLI tests", () => {
     } else {
       assert.ok(version.major >= 1);
     }
+  });
+
+  suite("Abolsute config path", () => {
+    let storedPath: string | undefined;
+
+    beforeEach(() => {
+      const { cwd } = getBinaryPath();
+      storedPath = vscode.workspace
+        .getConfiguration("buf")
+        .get<string>("binaryPath");
+      vscode.workspace
+        .getConfiguration("buf")
+        .update(
+          "binaryPath",
+          path.join(cwd ?? "", "./node_modules", ".bin", "buf")
+        );
+    });
+
+    afterEach(() => {
+      vscode.workspace.getConfiguration("buf").update("binaryPath", storedPath);
+    });
+
+    test("Absolute path loaded from config", async () => {
+      const { binaryPath } = getBinaryPath();
+      assert.ok(binaryPath);
+      const version = buf.version(binaryPath);
+      if ("errorMessage" in version) {
+        assert.fail(version.errorMessage);
+      } else {
+        assert.ok(version.major >= 1);
+      }
+    });
   });
 });

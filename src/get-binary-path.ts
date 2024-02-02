@@ -1,6 +1,10 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import { existsSync } from "fs";
+import pkg from "../package.json";
+
+const defaultBinaryPath =
+  pkg.contributes.configuration.properties["buf.binaryPath"].default;
 
 const getWorkspaceFolderFsPath = () => {
   if (vscode.workspace.workspaceFolders === undefined) {
@@ -31,8 +35,8 @@ export const getBinaryPath = () => {
     console.log("buf binary path was not set");
     return {};
   }
-  const relative = binaryPath.startsWith(".");
-  if (relative) {
+
+  if (!path.isAbsolute(binaryPath) && binaryPath !== defaultBinaryPath) {
     // check if file exists
     binaryPath = path.join(workspaceFolderFsPath, binaryPath);
 
