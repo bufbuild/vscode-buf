@@ -5,7 +5,6 @@ import * as vscode from "vscode";
 import * as buf from "../buf";
 import { getBinaryPath } from "../get-binary-path";
 import path from "path";
-import * as mocha from "mocha";
 
 suite("Buf CLI tests", () => {
   vscode.window.showInformationMessage("Start all tests.");
@@ -33,7 +32,7 @@ suite("Buf CLI tests", () => {
   suite("Abolsute config path", () => {
     let storedPath: string | undefined;
 
-    mocha.beforeEach(() => {
+    setup(() => {
       const { cwd } = getBinaryPath();
       storedPath = vscode.workspace
         .getConfiguration("buf")
@@ -46,7 +45,7 @@ suite("Buf CLI tests", () => {
         );
     });
 
-    mocha.afterEach(() => {
+    teardown(() => {
       vscode.workspace.getConfiguration("buf").update("binaryPath", storedPath);
     });
 
