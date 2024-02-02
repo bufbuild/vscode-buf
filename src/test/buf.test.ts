@@ -29,7 +29,7 @@ suite("Buf CLI tests", () => {
     }
   });
 
-  suite("Abolsute config path", () => {
+  suite("Absolute config path", () => {
     let storedPath: string | undefined;
 
     setup(() => {
@@ -49,7 +49,7 @@ suite("Buf CLI tests", () => {
       vscode.workspace.getConfiguration("buf").update("binaryPath", storedPath);
     });
 
-    test("Absolute path loaded from config", async () => {
+    test("version", async () => {
       const { binaryPath } = getBinaryPath();
       assert.ok(binaryPath);
       const version = buf.version(binaryPath);
