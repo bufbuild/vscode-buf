@@ -13,10 +13,12 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: install-nodejs
-        uses: actions/setup-node@v1
+      - name: setup-node
+        uses: actions/setup-node@v3
         with:
-          node-version: 15.x
+          node-version-file: ".nvmrc"
+          cache: npm
+      - uses: bufbuild/buf-setup-action@v1
       - name: install-deps
         run: make install
       - name: test-with-xvfb

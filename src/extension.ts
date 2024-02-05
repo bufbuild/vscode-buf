@@ -1,16 +1,15 @@
 import * as vscode from "vscode";
+import * as path from "path";
 import { downloadPage, lint, minimumVersion, version } from "./buf";
 import { isError } from "./errors";
 import { Formatter } from "./formatter";
 import { parseLines, Warning } from "./parser";
 import { format, less } from "./version";
+import { getBinaryPath } from "./get-binary-path";
 
 export function activate(context: vscode.ExtensionContext) {
-  const binaryPath = vscode.workspace
-    .getConfiguration("buf")!
-    .get<string>("binaryPath");
+  const { binaryPath } = getBinaryPath();
   if (binaryPath === undefined) {
-    console.log("buf binary path was not set");
     return;
   }
 
@@ -26,9 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
           `This version of vscode-buf requires at least version ${format(
             minimumVersion
           )} of buf.
-          You are current on version ${format(
-            binaryVersion
-          )}.`,
+          You are currently on version ${format(binaryVersion)}.`,
           "Go to download page"
         )
         .then((selection: string | undefined) => {
@@ -58,37 +55,19 @@ export function activate(context: vscode.ExtensionContext) {
     */
   }
 
-  const diagnosticCollection = vscode.languages.createDiagnosticCollection(
-    "vscode-buf.lint"
-  );
+  const diagnosticCollection =
+    vscode.languages.createDiagnosticCollection("vscode-buf.lint");
   const doLint = (document: vscode.TextDocument) => {
     if (!document.uri.path.endsWith(".proto")) {
       return;
     }
 
-    if (vscode.workspace.workspaceFolders === undefined) {
-      console.log("workspace folders was undefined");
-      return;
-    }
-    if (vscode.workspace.workspaceFolders.length === 0) {
-      console.log("workspace folders was not set");
-      return;
-    }
-    const uri = vscode.workspace.workspaceFolders[0].uri;
-    if (uri.scheme !== "file") {
-      console.log("uri was not file: ", uri.scheme);
-      return;
-    }
-
-    const binaryPath = vscode.workspace
-      .getConfiguration("buf")!
-      .get<string>("binaryPath");
+    const { binaryPath, cwd } = getBinaryPath();
     if (binaryPath === undefined) {
-      console.log("buf binary path was not set");
       return;
     }
 
-    const lines = lint(binaryPath, document.uri.fsPath, uri.fsPath);
+    const lines = lint(binaryPath, document.uri.fsPath, cwd);
     if (isError(lines)) {
       if (lines.errorMessage.includes("ENOENT")) {
         vscode.window.showInformationMessage(
@@ -131,8 +110,12 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   const formatter = new Formatter(binaryPath);
-  context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto', formatter));
-  context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('proto3', formatter));
+  context.subscriptions.push(
+    vscode.languages.registerDocumentFormattingEditProvider("proto", formatter)
+  );
+  context.subscriptions.push(
+    vscode.languages.registerDocumentFormattingEditProvider("proto3", formatter)
+  );
   context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(doLint));
   context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(doLint));
   context.subscriptions.push(

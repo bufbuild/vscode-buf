@@ -2,7 +2,7 @@
 
 import * as assert from "assert";
 import * as vscode from "vscode";
-import * as parser from "../../parser";
+import * as parser from "../parser";
 
 suite("Parser Test Suite", () => {
   vscode.window.showInformationMessage("Start all tests.");

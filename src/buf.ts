@@ -34,6 +34,7 @@ export const lint = (
     {
       encoding: "utf-8",
       cwd: cwd,
+      shell: process.platform === "win32",
     }
   );
   if (output.error !== undefined) {
@@ -48,6 +49,7 @@ export const lint = (
 export const version = (binaryPath: string): Version | Error => {
   const output = child_process.spawnSync(binaryPath, ["--version"], {
     encoding: "utf-8",
+    shell: process.platform === "win32",
   });
   if (output.error !== undefined) {
     return { errorMessage: output.error.message };
