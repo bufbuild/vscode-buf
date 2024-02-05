@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
           `This version of vscode-buf requires at least version ${format(
             minimumVersion
           )} of buf.
-          You are current on version ${format(binaryVersion)}.`,
+          You are currently on version ${format(binaryVersion)}.`,
           "Go to download page"
         )
         .then((selection: string | undefined) => {
