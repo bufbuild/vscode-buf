@@ -29,6 +29,10 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.6.2
+  - Reintroduce relative binary path support.
+- v0.6.1
+  - Revert relative binary path support.
 - v0.6.0
   - Support relative binary path.
 - v0.5.3
