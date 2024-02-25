@@ -1,11 +1,14 @@
 import * as vscode from "vscode";
-import * as path from "path";
+import {LanguageClient} from 'vscode-languageclient/node';
 import { downloadPage, lint, minimumVersion, version } from "./buf";
 import { isError } from "./errors";
 import { Formatter } from "./formatter";
 import { parseLines, Warning } from "./parser";
 import { format, less } from "./version";
 import { getBinaryPath } from "./get-binary-path";
+import { newBufLanguageClient } from "./language-server"
+
+let languageClient : LanguageClient
 
 export function activate(context: vscode.ExtensionContext) {
   const { binaryPath } = getBinaryPath();
@@ -126,7 +129,15 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+
+  languageClient = newBufLanguageClient(binaryPath)
+  languageClient.start()
 }
 
 // Nothing to do for now
-export function deactivate() {}
+export function deactivate() {
+  if (!languageClient) {
+    return undefined;
+  }
+  return languageClient.stop();
+}

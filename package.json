@@ -61,6 +61,13 @@
           "type": "string",
           "default": "buf",
           "description": "Path to the buf binary"
+        },
+        "buf.lsp": {
+          "type": "array",
+          "default": [
+            "lsp"
+          ],
+          "description": "command to start language server"
         }
       }
     },
@@ -122,5 +129,8 @@
     "mocha": "^10.2.0",
     "typescript": "^5.3.3",
     "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
   }
 }
