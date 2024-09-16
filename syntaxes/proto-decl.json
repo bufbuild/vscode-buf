@@ -1,0 +1,152 @@
+{
+    "//": [
+        "See https://protobuf.com/docs/language-spec",
+        "Comments in this file are stored in // keys."
+    ],
+    "scopeName": "source.proto-decl",
+    "patterns": [
+        {
+            "name": "comment.line.double-slash.proto-decl",
+            "begin": "//",
+            "end": "$\\N?"
+        },
+        {
+            "name": "comment.line.block.proto-decl",
+            "begin": "/\\*",
+            "end": "\\*/"
+        },
+        {
+            "name": "string.quoted.double.proto-decl",
+            "begin": "\"",
+            "end": "(?<!\\\\)(\\\\\\\\)*\"|$",
+            "patterns": [
+                {
+                    "include": "#escapes"
+                },
+                {
+                    "include": "#bad_escapes"
+                }
+            ],
+            "captures": {
+                "1": {
+                    "name": "constant.character.escape.proto-decl"
+                }
+            }
+        },
+        {
+            "name": "string.quoted.single.proto-decl",
+            "begin": "'",
+            "end": "(?<!\\\\)(\\\\\\\\)*'|$",
+            "patterns": [
+                {
+                    "include": "#escapes"
+                },
+                {
+                    "include": "#bad_escapes"
+                }
+            ],
+            "captures": {
+                "1": {
+                    "name": "constant.character.escape.proto-decl"
+                }
+            }
+        },
+        {
+            "//": "Declarations that name a type",
+            "match": "(builtin|message|group|enum|service) ((?:[^\\s]+\\.)*[^\\s]+)$",
+            "captures": {
+                "1": {
+                    "name": "keyword.control.proto-decl"
+                },
+                "2": {
+                    "name": "entity.name.type.proto-decl"
+                }
+            }
+        },
+        {
+            "//": "Declarations that name a variable",
+            "match": "(field|extension|oneof|const) ((?:[^\\s]+\\.)(?:[^\\s]+))\\.([^\\s]+)$",
+            "captures": {
+                "1": {
+                    "name": "keyword.control.proto-decl"
+                },
+                "2": {
+                    "name": "entity.name.type.proto-decl"
+                },
+                "3": {
+                    "name": "variable.other.proto-decl"
+                }
+            }
+        },
+        {
+            "//": "Declarations that name a variable",
+            "match": "(rpc) ((?:[^\\s]+\\.)(?:[^\\s]+))\\.([^\\s]+)$",
+            "captures": {
+                "1": {
+                    "name": "keyword.control.proto-decl"
+                },
+                "2": {
+                    "name": "entity.name.type.proto-decl"
+                },
+                "3": {
+                    "name": "entity.name.function.proto-decl"
+                }
+            }
+        },
+        {
+            "name": "constant.numeric.proto-decl",
+            "match": "(\\.|\\b)[0-9](\\.|([eE][-+]?)|\\w)*"
+        },
+        {
+            "//": "Declarations that name a function",
+            "match": "(rpc) ((:?[^\\s]+\\.)+)([^\\s]+)",
+            "captures": {
+                "1": {
+                    "name": "keyword.control.proto-decl"
+                },
+                "2": {
+                    "name": "entity.name.type.proto-decl"
+                },
+                "3": {
+                    "name": "entity.name.function.proto-decl"
+                }
+            }
+        },
+        {
+            "name": "keyword.other.proto-decl",
+            "match": "\\b(weak|public|group|map|extensions|reserved|stream|returns|to|optional|required|repeated)\\b"
+        },
+        {
+            "name": "constant.language.proto-decl",
+            "match": "\\b(inf|nan|true|false|max)\\b"
+        },
+        {
+            "//": [
+                "This picks up any loose identifiers/numbers that aren't otherwise highlighted.",
+                "The pattern is VERY generous: it matches all kinds of Unicode characters."
+            ],
+            "name": "variable.other.proto-decl",
+            "match": "\\b\\w+\\b"
+        }
+    ],
+    "repository": {
+        "escapes": {
+            "name": "constant.character.escape.proto-decl",
+            "//": [
+                "This pattern will match all possible escape sequences, so they can be highlighted as such.",
+                "They are as follows, without regex escaping applied:",
+                "simple_escape_seq: \\[abfnrtv\\'\"?]",
+                "hex_escape_seq:    \\[xX][a-fA-F0-9]{1,2}",
+                "octal_escape_seq:  \\[0-7]{1,3}",
+                "unicode_escape_seq:  \\u[a-fA-F0-9]{4}",
+                "unicode_escape_seq:  \\U[a-fA-F0-9]{8}"
+            ],
+            "match": "(\\\\[abfnrtv\\\\'\"\\?])|(\\\\[xX][a-fA-F0-9]{1,2})|(\\\\[0-7]{1,3})|(\\\\u[a-fA-F0-9]{4})|(\\\\U[a-fA-F0-9]{8})"
+        },
+        "bad_escapes": {
+            "name": "invalid.error",
+            "//": "This pattern picks up all invalid variants of the above. For example, this will highlight \\xxx, not just the \\x.",
+            "match": "(\\\\[xX][^'\"\\\\]{1,2})|(\\\\u[^'\"\\\\]{1,4})|(\\\\U[^'\"\\\\]{0,8})|(\\\\.)"
+        }
+    }
+}

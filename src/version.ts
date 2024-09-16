@@ -1,86 +1,74 @@
-import { Error } from "./errors";
+import { Error, Result } from "./error";
 
-const versionRegexp = /^(\d+)\.(\d+).(\d+)(?:\-dev|\-rc)?(\d*)?$/;
+/** A version number. */
+export class Version {
+  readonly major: number;
+  readonly minor: number;
+  readonly patch: number;
+  readonly releaseCandidate: number | null;
 
-export interface Version {
-  major: number;
-  minor: number;
-  patch: number;
-  // Not all versions will have release candidates. We will deliberately set the release
-  // candidate to null if none are found, and that version takes precedence over the
-  // release candidates.
-  releaseCandidate: number | null;
+  constructor(major: number, minor: number, patch: number, releaseCandidate: number | null = null) {
+    this.major = major;
+    this.minor = minor;
+    this.patch = patch;
+    this.releaseCandidate = releaseCandidate;
+  }
+
+  private static regex = /^(\d+)\.(\d+).(\d+)(?:\-dev|\-rc)?(\d*)?$/;
+
+  /** Parses a version string. */
+  static parse(from: string): Result<Version> {
+    let match = from.match(this.regex);
+    if (match === null || match.length < 4) {
+      return new Error(`failed to parse version output: ${from}`)
+    }
+
+    let major = parseInt(match[1]);
+    if (Number.isNaN(major)) {
+      return new Error(`failed to parse major version: ${from}`)
+    }
+
+    let minor = parseInt(match[2]);
+    if (Number.isNaN(minor)) {
+      return new Error(`failed to parse minor version: ${from}`)
+    }
+
+    let patch = parseInt(match[3]);
+    if (Number.isNaN(patch)) {
+      return new Error(`failed to parse patch version: ${from}`)
+    }
+
+    let releaseCandidate: number | null = parseInt(match[4]);
+    if (Number.isNaN(releaseCandidate)) {
+      // If there is no release candidate number, we explicitly unset it.
+      releaseCandidate = null;
+    }
+
+    return new Version(major, minor, patch, releaseCandidate);
+  }
+
+  /** Compares two versions for ordering. */
+  olderThan(that: Version): boolean {
+    if (this.major < that.major) return true;
+    if (this.major === that.major && this.minor < that.minor) return true;
+    if (this.major === that.major && this.minor === that.minor && this.patch < that.patch) return true;
+
+    return this.major === that.major &&
+      this.minor === that.minor &&
+      this.patch === that.patch &&
+      this.releaseCandidate !== null && (
+        that.releaseCandidate === null ||
+        this.releaseCandidate < that.releaseCandidate
+      );
+  }
+
+  /** Converts this version back into a string. */
+  toString(): string {
+    let str = `v${this.major}.${this.minor}.${this.patch}`;
+
+    if (this.releaseCandidate !== null) {
+      return `${str}-rc${this.releaseCandidate}`;
+    }
+    return str;
+  }
 }
-
-export const less = (first: Version, second: Version): boolean => {
-  if (first.major < second.major) {
-    return true;
-  }
-  if (first.major === second.major && first.minor < second.minor) {
-    return true;
-  }
-  if (first.major === second.major && first.minor === second.minor && first.patch < second.patch) {
-    return true;
-  }
-  return (
-    first.major === second.major &&
-    first.minor === second.minor &&
-    first.patch === second.patch &&
-    checkReleaseCandidate(first.releaseCandidate, second.releaseCandidate)
-  );
-};
-
-export const format = (version: Version): string => {
-  if (version.releaseCandidate !== null) {
-    return `v${version.major}.${version.minor}.${version.patch}-rc${version.releaseCandidate}`;
-  }
-  return `v${version.major}.${version.minor}.${version.patch}`;
-};
-
-export const parse = (versionString: string): Version | Error => {
-  const match = versionString.match(versionRegexp);
-  if (match === null || match.length < 4) {
-    return {
-      errorMessage: `failed to parse version output: ${versionString}`,
-    };
-  }
-  const major = parseInt(match[1]);
-  if (Number.isNaN(major)) {
-    return {
-      errorMessage: "failed to parse major version",
-    };
-  }
-  const minor = parseInt(match[2]);
-  if (Number.isNaN(minor)) {
-    return {
-      errorMessage: "failed to parse minor version",
-    };
-  }
-  const patch = parseInt(match[3]);
-  if (Number.isNaN(patch)) {
-    return {
-      errorMessage: "failed to parse patch version",
-    };
-  }
-  let releaseCandidate: number | null = parseInt(match[4]);
-  if (Number.isNaN(releaseCandidate)) {
-    // If there is no release candidate number, we explicitly unset it.
-    releaseCandidate = null;
-  }
-  return {
-    major: major,
-    minor: minor,
-    patch: patch,
-    releaseCandidate: releaseCandidate,
-  };
-};
-
-export const checkReleaseCandidate = (firstReleaseCandidate: number | null, secondReleaseCandidate: number | null): boolean => {
-  if (firstReleaseCandidate === null) {
-    return false;
-  }
-  if (secondReleaseCandidate === null) {
-    return true;
-  }
-  return (firstReleaseCandidate < secondReleaseCandidate);
-};

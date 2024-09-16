@@ -49,9 +49,19 @@
   "contributes": {
     "commands": [
       {
-        "category": "Linters",
-        "command": "vscode-buf.lint",
-        "title": "Lint protobuf files using Buf"
+        "category": "Buf",
+        "command": "buf.restartServer",
+        "title": "Restart language server"
+      },
+      {
+        "category": "Buf",
+        "command": "buf.stopServer",
+        "title": "Stop language server"
+      },
+      {
+        "category": "Buf",
+        "command": "buf.outputPanel",
+        "title": "Reveal output panel"
       }
     ],
     "configuration": {
@@ -89,13 +99,22 @@
           "Protobuf"
         ],
         "configuration": "./protobuf-language-configuration.json"
+      },
+      {
+        "//": "This is a special language used by the 'declaration' part of hover inlays in Markdown.",
+        "id": "proto-decl"
       }
     ],
     "grammars": [
       {
         "language": "proto",
         "scopeName": "source.proto",
-        "path": "./syntaxes/proto.tmLanguage.json"
+        "path": "./syntaxes/proto.json"
+      },
+      {
+        "language": "proto-decl",
+        "scopeName": "source.proto-decl",
+        "path": "./syntaxes/proto-decl.json"
       }
     ]
   },
@@ -118,6 +137,7 @@
     "@typescript-eslint/parser": "^6.20.0",
     "@vscode/test-cli": "0.0.4",
     "@vscode/test-electron": "^2.3.9",
+    "vscode-languageclient": "^9.0.0",
     "eslint": "^8.56.0",
     "mocha": "^10.2.0",
     "typescript": "^5.3.3",
