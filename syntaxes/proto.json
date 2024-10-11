@@ -61,11 +61,6 @@
             "match": "(\\b|\\.)[0-9](\\.|([eE][-+]?)|\\w)*"
         },
         {
-            "//": "This is not done by semantic highlighting right now so it's here",
-            "name": "entity.name.type.proto",
-            "match": "(?<=package\\s+)(?:[\\w]+\\s*\\.\\s*)*\\s*[\\w]+\\b"
-        },
-        {
             "//": "Protobuf does not have control flow, so we repurpose it for 'definition' keywords.",
             "name": "keyword.control.proto",
             "match": "\\b(syntax|edition|import|package|option|message|enum|service|extend|oneof|group|rpc)\\b"
