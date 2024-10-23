@@ -1,20 +1,15 @@
-import * as child_process from "child_process";
-import * as fs from "fs";
+import * as child from "child_process";
 import * as lsp from 'vscode-languageclient/node';
-import * as path from 'path';
 import * as vscode from "vscode";
 
+import { Binary, Installer } from "./binary";
 import { Error, Result } from "./error";
-
-import { Binary } from "./binary"
-import { Version } from "./version";
-import pkg from "../package.json";
 
 export class Context extends vscode.Disposable {
   subscriptions: vscode.Disposable[] = [];
 
+  installer!: Installer;
   binary!: Binary;
-  version!: Version;
   output!: vscode.OutputChannel;
   client!: lsp.LanguageClient;
 
@@ -25,43 +20,24 @@ export class Context extends vscode.Disposable {
   };
   statusItem!: vscode.StatusBarItem;
 
-  async activate(output: vscode.OutputChannel) {
+  async activate(output: vscode.OutputChannel, storageDir: string) {
     this.output = output;
+    this.installer = new Installer(storageDir);
 
-    let binary = Binary.find();
-    if (binary instanceof Error) {
-      this.clientError(binary);
-      return;
+    while (true) {
+      let binary = await this.installer.get();
+      if (binary instanceof Error) {
+        await vscode.window.showErrorMessage(`${binary}`);
+        continue;
+      }
+      
+      this.binary = binary;
+      break;
     }
-    this.binary = binary;
-
-    let curVersion = this.findVersion();
-    if (curVersion instanceof Error) {
-      this.output.append(`error checking buf version: ${curVersion.message}`);
-      return;
-    }
-
-    if (curVersion.olderThan(minVersion)) {
-      vscode.window
-        .showErrorMessage(
-          `This version of vscode-buf requires at least version ${minVersion.toString()} of buf.
-            You are currently on version ${curVersion.toString()}.`,
-          "Go to download page"
-        )
-        .then((selection: string | undefined) => {
-          if (selection === undefined || selection !== "Go to download page") {
-            return;
-          }
-
-          vscode.env.openExternal(vscode.Uri.parse(downloadPage));
-        });
-
-      return;
-    }
-    this.version = curVersion;
+    console.log(`obtained binary: ${this.binary.path}`);
 
     let buflsp: lsp.Executable = {
-      command: binary.path,
+      command: this.binary.path,
       transport: lsp.TransportKind.pipe,
       args: [
         '--debug', // This will get dumped into the output pane.
@@ -70,7 +46,7 @@ export class Context extends vscode.Disposable {
         'beta', 'lsp',
       ],
       options: {
-        cwd: binary.cwd,
+        cwd: this.binary.cwd,
       },
     };
 
@@ -96,15 +72,15 @@ export class Context extends vscode.Disposable {
 
     this.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(() => this.updateStatus()));
     this.subscriptions.push(this.client.onDidChangeState((_) => {
-      if (this.client.state == lsp.State.Stopped) {
+      if (this.client.state === lsp.State.Stopped) {
         this.status.health = "stopped";
-        this.status.message = "Server is currently not running."
+        this.status.message = "Server is currently not running.";
       } else {
         this.status.health = "ok";
       }
       this.status.ongoing.clear();
 
-      this.updateStatus()
+      this.updateStatus();
     }));
     this.subscriptions.push(this.client.onNotification("$/progress", (params) => {
       switch (params.value.kind) {
@@ -117,9 +93,9 @@ export class Context extends vscode.Disposable {
       }
 
       this.updateStatus();
-    }))
+    }));
 
-    this.client.start();
+    await this.client.start();
     console.log('Buf Language Server is now active!');
   }
 
@@ -130,7 +106,7 @@ export class Context extends vscode.Disposable {
   updateStatus() {
     let current = vscode.window.activeTextEditor?.document;
     if (!current || current.uri.scheme === "output") {
-      return
+      return;
     }
 
     this.statusItem.show();
@@ -143,21 +119,21 @@ export class Context extends vscode.Disposable {
       case "ok":
         this.statusItem.color = undefined;
         this.statusItem.backgroundColor = undefined;
-        icon = "pass"
+        icon = "pass";
         break;
       case "warning":
-        this.statusItem.color = new vscode.ThemeColor("statusBarItem.warningForeground")
-        this.statusItem.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground")
+        this.statusItem.color = new vscode.ThemeColor("statusBarItem.warningForeground");
+        this.statusItem.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
         icon = "warning";
         break;
       case "error":
-        this.statusItem.color = new vscode.ThemeColor("statusBarItem.errorForeground")
-        this.statusItem.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground")
+        this.statusItem.color = new vscode.ThemeColor("statusBarItem.errorForeground");
+        this.statusItem.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
         icon = "error";
         break;
       case "stopped":
-        this.statusItem.color = new vscode.ThemeColor("statusBarItem.warningForeground")
-        this.statusItem.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground")
+        this.statusItem.color = new vscode.ThemeColor("statusBarItem.warningForeground");
+        this.statusItem.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
         this.statusItem.command = "buf.restartServer";
         icon = "warning";
         break;
@@ -172,33 +148,18 @@ export class Context extends vscode.Disposable {
       "[$(terminal) Reveal Server Output](command:buf.outputPanel)\n\n" +
       "[$(debug-stop) Stop Server](command:buf.stopServer)\n\n" +
       "[$(debug-restart) Restart Server](command:buf.restartServer)\n\n" +
-      "---\n\nBuf Language Server " + this.version
+      "---\n\nBuf Language Server " + this.binary.version()
     );
 
-    if (this.status.health != "stopped" && this.status.ongoing.size > 0) {
+    if (this.status.health !== "stopped" && this.status.ongoing.size > 0) {
       icon = "loading~spin";
     }
 
     this.statusItem.text = `$(${icon}) Buf`;
   }
 
-  findVersion(): Result<Version> {
-    let output = child_process.spawnSync(this.binary.path, ["--version"], {
-      encoding: "utf-8",
-      shell: process.platform === "win32",
-    });
-
-    if (output.error !== undefined) {
-      return new Error(output.error.message)
-    }
-    if (output.stderr.trim() !== "") {
-      return Version.parse(output.stderr.trim());
-    }
-    return Version.parse(output.stdout.trim());
-  }
-
   starting(): boolean {
-    return this.client && this.client.state == lsp.State.Starting;
+    return this.client && this.client.state === lsp.State.Starting;
   }
 
   dispose() {
@@ -206,21 +167,16 @@ export class Context extends vscode.Disposable {
     if (this.client) {
       this.client.stop();
     }
-    this.subscriptions = []
+    this.subscriptions = [];
   }
 }
-
-// 1.0.0-rc6 is when we added the proto file input reference
-// https://github.com/bufbuild/buf/releases/tag/v1.0.0-rc6
-const minVersion = new Version(1, 0, 0, 6);
-const downloadPage = "https://docs.buf.build/installation";
 
 export const lint = (
   binaryPath: string,
   filePath: string,
   cwd: string
 ): Result<string[]> => {
-  const output = child_process.spawnSync(
+  const output = child.spawnSync(
     binaryPath,
     ["lint", filePath + "#include_package_files=true", "--error-format=json"],
     {
@@ -230,7 +186,7 @@ export const lint = (
     }
   );
   if (output.error !== undefined) {
-    return new Error(output.error.message)
+    return new Error(output.error.message);
   }
   if (output.status !== null && output.status === 0) {
     return [];
