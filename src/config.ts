@@ -12,21 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * An error value.
- */
-export class Error {
-  /** The message associated with this error. */
-  readonly message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-
-  toString(): string {
-    return this.message;
-  }
-}
-
-/** A result that might not succeed. */
-export type Result<T> = T | Error;
+// Keep in sync with `contributes.commands.configuration` `package.json`.
+export const cliPath = "buf.commandLine.path";
+export const cliUpdates = "buf.commandLine.checkForUpdates";
+export const breakingStrategy = "buf.linting.breakingAgainst.strategy";
+export const breakingGitRef = "buf.linting.breakingAgainst.gitRef";

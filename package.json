@@ -70,42 +70,51 @@
       }
     ],
     "configuration": {
+      "//": [
+        "VSCode currently ignores 'title' in configuration.properties, so the names of",
+        "properties are chosen to generate user-friendly names in the GUI",
+        "https://github.com/microsoft/vscode/issues/124438",
+      
+        "When adding a new property, make sure to update `config.ts` in this repo,",
+        "and `buflsp/config.go` in bufbuild/buf."
+      ],
       "title": "Buf",
       "properties": {
-        "buf.binaryPath": {
+        "buf.commandLine.path": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Specifies a path to the `buf` binary, relative to $PATH. If empty, the extension will automatically manage downloading `buf` for you."
+          "markdownDescription": "Specifies a path to the Buf CLI, relative to $PATH. If not specified, the extension will automatically manage an installation of it for you. (You will need to install `buf` separately to use it from the command-line.)"
         },
-        "buf.against": {
+        "buf.commandLine.checkForUpdates": {
+          "title": "Automatically Check for Updates",
+          "type": "boolean",
+          "default": "true",
+          "markdownDescription": "Automatically check for new versions of the Buf CLI and prompt for installation."
+        },
+        "buf.linting.breakingAgainst.strategy": {
+          "order": 0,
           "type": "string",
           "enum": [
-            "trunk",
-            "head",
-            "lastSaved"
+            "git",
+            "disk"
           ],
           "markdownEnumDescriptions": [
-            "Compares against the same file in the default Git branch (e.g. relative to `main`).",
-            "Compares against the same file in the most recent commit for your current branch (specifically, `HEAD`).",
+            "Compares against the same file in the Git branch specified in GitRef.",
             "Compares against the last-saved contents of the file (beware: does not pair well with autosave)."
           ],
           "enumItemLabels": [
-            "Main Git branch",
-            "Current Git branch",
+            "Configured Git branch",
             "Last saved to disk"
           ],
-          "default": "trunk",
+          "default": "git",
           "markdownDescription": "Controls how the `--against` file is chosen for breaking lints."
         },
-        "buf.gitRemote": {
+        "buf.linting.breakingAgainst.gitRef": {
+          "order": 1,
+          "title": "Breaking Lint Against Git Ref",
           "type": "string",
-          "default": "origin",
-          "markdownDescription": "Specifies the name of the Git remote to use for finding `--against` files. If this is not a valid remote name, it is treated as the name of a local branch, instead."
-        },
-        "buf.checkForUpdates": {
-          "type": "boolean",
-          "default": "true",
-          "markdownDescription": "Automatically check for new versions of `buf` and prompt for installation."
+          "default": "origin/HEAD",
+          "markdownDescription": "Specifies the name of the Git ref to use for `--against` in breaking lints. `origin/HEAD` will typically be the main branch of your remote. Specifying `HEAD` will use the last committed changes. [Learn more about Git refs.](https://git-scm.com/book/ms/v2/Git-Internals-Git-References)"
         }
       }
     },
