@@ -2,7 +2,7 @@
   "name": "vscode-buf",
   "displayName": "Buf",
   "description": "Visual Studio Code support for Buf",
-  "version": "0.6.2",
+  "version": "0.7.0-devel",
   "icon": "logo.png",
   "publisher": "bufbuild",
   "repository": {
@@ -49,18 +49,72 @@
   "contributes": {
     "commands": [
       {
-        "category": "Linters",
-        "command": "vscode-buf.lint",
-        "title": "Lint protobuf files using Buf"
+        "category": "Buf",
+        "command": "buf.restartServer",
+        "title": "Restart language server"
+      },
+      {
+        "category": "Buf",
+        "command": "buf.stopServer",
+        "title": "Stop language server"
+      },
+      {
+        "category": "Buf",
+        "command": "buf.outputPanel",
+        "title": "Reveal output panel"
+      },
+      {
+        "category": "Buf",
+        "command": "buf.checkForUpdates",
+        "title": "Check for language server updates"
       }
     ],
     "configuration": {
+      "//": [
+        "VSCode currently ignores 'title' in configuration.properties, so the names of",
+        "properties are chosen to generate user-friendly names in the GUI",
+        "https://github.com/microsoft/vscode/issues/124438",
+      
+        "When adding a new property, make sure to update `config.ts` in this repo,",
+        "and `buflsp/config.go` in bufbuild/buf."
+      ],
       "title": "Buf",
       "properties": {
-        "buf.binaryPath": {
+        "buf.commandLine.path": {
           "type": "string",
-          "default": "buf",
-          "description": "Path to the buf binary"
+          "default": "",
+          "markdownDescription": "Specifies a path to the Buf CLI, relative to $PATH. If not specified, the extension will automatically manage an installation of it for you. (You will need to install `buf` separately to use it from the command-line.)"
+        },
+        "buf.commandLine.checkForUpdates": {
+          "title": "Automatically Check for Updates",
+          "type": "boolean",
+          "default": "true",
+          "markdownDescription": "Automatically check for new versions of the Buf CLI and prompt for installation."
+        },
+        "buf.checks.breaking.againstStrategy": {
+          "order": 0,
+          "type": "string",
+          "enum": [
+            "git",
+            "disk"
+          ],
+          "markdownEnumDescriptions": [
+            "Compares against the same file in the Git branch specified in GitRef.",
+            "Compares against the last-saved contents of the file (beware: does not pair well with autosave)."
+          ],
+          "enumItemLabels": [
+            "Configured Git branch",
+            "Last saved to disk"
+          ],
+          "default": "git",
+          "markdownDescription": "Controls how the `--against` file is chosen for breaking lints."
+        },
+        "buf.checks.breaking.againstGitRef": {
+          "order": 1,
+          "title": "Breaking Lint Against Git Ref",
+          "type": "string",
+          "default": "origin/HEAD",
+          "markdownDescription": "Specifies the name of the Git ref to use for `--against` in breaking lints. `origin/HEAD` will typically be the main branch of your remote. Specifying `HEAD` will use the last committed changes. [Learn more about Git refs.](https://git-scm.com/book/ms/v2/Git-Internals-Git-References)"
         }
       }
     },
@@ -89,13 +143,22 @@
           "Protobuf"
         ],
         "configuration": "./protobuf-language-configuration.json"
+      },
+      {
+        "//": "This is a special language used by the 'declaration' part of hover inlays in Markdown.",
+        "id": "proto-decl"
       }
     ],
     "grammars": [
       {
         "language": "proto",
         "scopeName": "source.proto",
-        "path": "./syntaxes/proto.tmLanguage.json"
+        "path": "./syntaxes/proto.json"
+      },
+      {
+        "language": "proto-decl",
+        "scopeName": "source.proto-decl",
+        "path": "./syntaxes/proto-decl.json"
       }
     ]
   },
@@ -109,6 +172,17 @@
     "lint": "npx eslint src --ext ts",
     "test": "vscode-test",
     "package": "vsce package"
+  },
+  "dependencies": {
+    "@types/gunzip-maybe": "^1.4.2",
+    "@types/node-fetch": "^2.6.11",
+    "@types/tar-fs": "^2.0.4",
+    "abort-controller": "^3.0.0",
+    "gunzip-maybe": "^1.4.2",
+    "node-fetch": "^3.3.2",
+    "semver": "^7.3.2",
+    "tar-fs": "^3.0.6",
+    "vscode-languageclient": "^9.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
