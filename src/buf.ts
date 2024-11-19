@@ -55,7 +55,7 @@ export class Context extends vscode.Disposable {
       transport: lsp.TransportKind.pipe,
       args: [
         '--debug', // This will get dumped into the output pane.
-        '--timeout', '10000000m',
+        '--timeout', '0',
         '--log-format', 'text',
         'beta', 'lsp',
       ],

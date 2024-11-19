@@ -91,7 +91,7 @@
           "default": "true",
           "markdownDescription": "Automatically check for new versions of the Buf CLI and prompt for installation."
         },
-        "buf.linting.breakingAgainst.strategy": {
+        "buf.checks.breaking.againstStrategy": {
           "order": 0,
           "type": "string",
           "enum": [
@@ -109,7 +109,7 @@
           "default": "git",
           "markdownDescription": "Controls how the `--against` file is chosen for breaking lints."
         },
-        "buf.linting.breakingAgainst.gitRef": {
+        "buf.checks.breaking.againstGitRef": {
           "order": 1,
           "title": "Breaking Lint Against Git Ref",
           "type": "string",

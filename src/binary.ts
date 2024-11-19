@@ -56,7 +56,7 @@ export class Binary {
     }
 
     if (output.stderr.trim() !== "") {
-      return output.stderr.trim();
+      return new Error(output.stderr.trim());
     } else {
       return output.stdout.trim();
     }
