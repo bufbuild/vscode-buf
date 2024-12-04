@@ -57,6 +57,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   const diagnosticCollection =
     vscode.languages.createDiagnosticCollection("vscode-buf.lint");
+  const outputChannel = vscode.window.createOutputChannel("Buf", "console");
+
   const doLint = (document: vscode.TextDocument) => {
     if (!document.uri.path.endsWith(".proto")) {
       return;
@@ -82,7 +84,8 @@ export function activate(context: vscode.ExtensionContext) {
     }
     const warnings = parseLines(lines);
     if (isError(warnings)) {
-      console.log(warnings);
+      outputChannel.appendLine(warnings.errorMessage);
+      outputChannel.show();
       return;
     }
     const warningsForThisDocument = warnings.filter(

@@ -5,6 +5,7 @@ import * as vscode from "vscode";
 import { TextEncoder } from "util";
 
 export class Formatter implements vscode.DocumentFormattingEditProvider {
+    outputChannel = vscode.window.createOutputChannel("Buf", "console");
     readonly binaryPath: string = '';
 
     constructor(binaryPath: string) {
@@ -26,8 +27,9 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
         return this.runFormatter(document, token).then(
             (edits) => edits,
             (err) => {
-                console.log(err);
-                return Promise.reject('Check the console in dev tools to find errors when formatting.');
+                this.outputChannel.appendLine(err);
+                this.outputChannel.show();
+                return Promise.reject('Check the console to find errors when formatting.');
             }
         );
     }

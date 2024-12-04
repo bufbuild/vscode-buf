@@ -7,23 +7,28 @@ const defaultBinaryPath =
   pkg.contributes.configuration.properties["buf.binaryPath"].default;
 
 const getWorkspaceFolderFsPath = () => {
+  const outputChannel = vscode.window.createOutputChannel("Buf", "console");
   if (vscode.workspace.workspaceFolders === undefined) {
-    console.log("workspace folders was undefined");
+    outputChannel.appendLine("workspace folders was undefined");
+    outputChannel.show();
     return;
   }
   if (vscode.workspace.workspaceFolders.length === 0) {
-    console.log("workspace folders was not set");
+    outputChannel.appendLine("workspace folders was not set");
+    outputChannel.show();
     return;
   }
   const uri = vscode.workspace.workspaceFolders[0].uri;
   if (uri.scheme !== "file") {
-    console.log("uri was not file: ", uri.scheme);
+    outputChannel.appendLine(`uri was not file: ${uri.scheme}`);
+    outputChannel.show();
     return;
   }
   return uri.fsPath;
 };
 
 export const getBinaryPath = () => {
+  const outputChannel = vscode.window.createOutputChannel("Buf", "console");
   const workspaceFolderFsPath = getWorkspaceFolderFsPath();
   if (workspaceFolderFsPath === undefined) {
     return {};
@@ -32,7 +37,8 @@ export const getBinaryPath = () => {
     .getConfiguration("buf")!
     .get<string>("binaryPath");
   if (binaryPath === undefined) {
-    console.log("buf binary path was not set");
+    outputChannel.appendLine("buf binary path was not set");
+    outputChannel.show();
     return {};
   }
 
@@ -41,7 +47,8 @@ export const getBinaryPath = () => {
     binaryPath = path.join(workspaceFolderFsPath, binaryPath);
 
     if (!existsSync(binaryPath)) {
-      console.log("buf binary path does not exist: ", binaryPath);
+      outputChannel.appendLine(`buf binary path does not exist: ${binaryPath}`);
+      outputChannel.show();
       return {};
     }
   }

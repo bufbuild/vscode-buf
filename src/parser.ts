@@ -29,15 +29,12 @@ export const parseLines = (errorLines: string[]): Warning[] | Error => {
   for (let index = 0; index < errorLines.length; index++) {
     try {
       const warning = JSON.parse(errorLines[index]);
-      if (!isWarning(warning)) {
-        return {
-          errorMessage: `failed to parse "${errorLines[index]}" as warning`,
-        };
+      if (isWarning(warning)) {
+        warnings.push(warning);
       }
-      warnings.push(warning);
     } catch (error) {
       return {
-        errorMessage: `failed to parse "${errorLines[index]}" as warning: ${error}`,
+        errorMessage: `${errorLines.join(",")}`,
       };
     }
   }
