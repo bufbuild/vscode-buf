@@ -5,14 +5,15 @@ import * as vscode from "vscode";
 import { TextEncoder } from "util";
 
 export class Formatter implements vscode.DocumentFormattingEditProvider {
-    outputChannel = vscode.window.createOutputChannel("Buf", "console");
+    outputChannel: vscode.OutputChannel | undefined;
     readonly binaryPath: string = '';
 
-    constructor(binaryPath: string) {
+    constructor(binaryPath: string, outputChannel: vscode.OutputChannel) {
         if (!binaryPath || binaryPath.length === 0) {
             throw new Error('binaryPath is required to construct a formatter');
         }
         this.binaryPath = binaryPath;
+        this.outputChannel = outputChannel;
     }
 
     public provideDocumentFormattingEdits(
@@ -27,8 +28,8 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
         return this.runFormatter(document, token).then(
             (edits) => edits,
             (err) => {
-                this.outputChannel.appendLine(err);
-                this.outputChannel.show();
+                this.outputChannel?.appendLine(err);
+                this.outputChannel?.show();
                 return Promise.reject('Check the console to find errors when formatting.');
             }
         );

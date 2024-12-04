@@ -6,8 +6,7 @@ import pkg from "../package.json";
 const defaultBinaryPath =
   pkg.contributes.configuration.properties["buf.binaryPath"].default;
 
-const getWorkspaceFolderFsPath = () => {
-  const outputChannel = vscode.window.createOutputChannel("Buf", "console");
+const getWorkspaceFolderFsPath = (outputChannel: vscode.OutputChannel) => {
   if (vscode.workspace.workspaceFolders === undefined) {
     outputChannel.appendLine("workspace folders was undefined");
     outputChannel.show();
@@ -27,9 +26,8 @@ const getWorkspaceFolderFsPath = () => {
   return uri.fsPath;
 };
 
-export const getBinaryPath = () => {
-  const outputChannel = vscode.window.createOutputChannel("Buf", "console");
-  const workspaceFolderFsPath = getWorkspaceFolderFsPath();
+export const getBinaryPath = (outputChannel: vscode.OutputChannel) => {
+  const workspaceFolderFsPath = getWorkspaceFolderFsPath(outputChannel);
   if (workspaceFolderFsPath === undefined) {
     return {};
   }
