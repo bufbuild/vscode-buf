@@ -38,7 +38,7 @@ export const lint = (
     }
   );
   // If the command fails to run, such as a failed module/workspace build, return the error.
-  if (output.status == 1)  {
+  if (output.status === 1)  {
     return output.stderr.trim().split("\n");
   }
   // If the command succeeds with no lint failures and an empty output will be returned.
