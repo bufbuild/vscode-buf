@@ -8,6 +8,7 @@ import path from "path";
 
 suite("Buf CLI tests", () => {
   vscode.window.showInformationMessage("Start all tests.");
+  const outputChannel = vscode.window.createOutputChannel("Buf-test", "console");
 
   test("Default path succeeds when buf is installed", async () => {
     const version = buf.version("buf");
@@ -19,7 +20,7 @@ suite("Buf CLI tests", () => {
   });
 
   test("Relative path loaded from config", async () => {
-    const { binaryPath } = getBinaryPath();
+    const { binaryPath } = getBinaryPath(outputChannel);
     assert.ok(binaryPath);
     const version = buf.version(binaryPath);
     if ("errorMessage" in version) {
@@ -33,7 +34,7 @@ suite("Buf CLI tests", () => {
     let storedPath: string | undefined;
 
     setup(() => {
-      const { cwd } = getBinaryPath();
+      const { cwd } = getBinaryPath(outputChannel);
       storedPath = vscode.workspace
         .getConfiguration("buf")
         .get<string>("binaryPath");
@@ -50,7 +51,7 @@ suite("Buf CLI tests", () => {
     });
 
     test("version", async () => {
-      const { binaryPath } = getBinaryPath();
+      const { binaryPath } = getBinaryPath(outputChannel);
       assert.ok(binaryPath);
       const version = buf.version(binaryPath);
       if ("errorMessage" in version) {

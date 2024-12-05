@@ -8,7 +8,8 @@ import { format, less } from "./version";
 import { getBinaryPath } from "./get-binary-path";
 
 export function activate(context: vscode.ExtensionContext) {
-  const { binaryPath } = getBinaryPath();
+  const outputChannel = vscode.window.createOutputChannel("Buf", "console");
+  const { binaryPath } = getBinaryPath(outputChannel);
   if (binaryPath === undefined) {
     return;
   }
@@ -57,12 +58,13 @@ export function activate(context: vscode.ExtensionContext) {
 
   const diagnosticCollection =
     vscode.languages.createDiagnosticCollection("vscode-buf.lint");
+
   const doLint = (document: vscode.TextDocument) => {
     if (!document.uri.path.endsWith(".proto")) {
       return;
     }
 
-    const { binaryPath, cwd } = getBinaryPath();
+    const { binaryPath, cwd } = getBinaryPath(outputChannel);
     if (binaryPath === undefined) {
       return;
     }
@@ -82,7 +84,8 @@ export function activate(context: vscode.ExtensionContext) {
     }
     const warnings = parseLines(lines);
     if (isError(warnings)) {
-      console.log(warnings);
+      outputChannel.appendLine(warnings.errorMessage);
+      outputChannel.show();
       return;
     }
     const warningsForThisDocument = warnings.filter(
@@ -109,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
     diagnosticCollection.set(document.uri, diagnostics);
   };
 
-  const formatter = new Formatter(binaryPath);
+  const formatter = new Formatter(binaryPath, outputChannel);
   context.subscriptions.push(
     vscode.languages.registerDocumentFormattingEditProvider("proto", formatter)
   );
