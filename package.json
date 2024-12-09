@@ -106,7 +106,7 @@
     "watch": "npx tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint && npm run prepworkspaces",
     "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
-    "lint": "npx eslint src --ext ts",
+    "lint": "npx eslint src",
     "test": "vscode-test",
     "package": "vsce package"
   },
