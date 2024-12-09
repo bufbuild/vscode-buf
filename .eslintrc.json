@@ -16,5 +16,4 @@
         "no-throw-literal": "warn",
         "semi": "off"
     },
-    "files": ["**/*.ts"]
-}
+
