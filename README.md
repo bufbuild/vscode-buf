@@ -29,6 +29,8 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.7.0
+  - Output errors to "Buf" channel in the VSCode output console.
 - v0.6.2
   - Reintroduce relative binary path support.
 - v0.6.1
