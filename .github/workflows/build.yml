@@ -18,7 +18,9 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: npm
-      - uses: bufbuild/buf-setup-action@v1
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
       - name: install-deps
         run: make install
       - name: test-with-xvfb
