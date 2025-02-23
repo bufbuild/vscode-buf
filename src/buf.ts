@@ -30,7 +30,7 @@ export const lint = (
 ): string[] | Error => {
   const output = child_process.spawnSync(
     binaryPath,
-    ["lint", filePath + "#include_package_files=true", "--error-format=json"],
+    ["lint", `"${filePath}"` + "#include_package_files=true", "--error-format=json"],
     {
       encoding: "utf-8",
       cwd: cwd,
