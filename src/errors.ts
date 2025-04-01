@@ -1,7 +1,3 @@
-export interface Error {
-  errorMessage: string;
-}
-
-export function isError(value: any): value is Error {
-  return (value as Error).errorMessage !== undefined;
-}
+export const unwrapError = (err: unknown) => {
+  return err instanceof Error ? err.message : String(err);
+};

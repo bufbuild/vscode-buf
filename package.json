@@ -44,23 +44,96 @@
     "workspaceContains:**/buf.work",
     "workspaceContains:**/buf.gen",
     "workspaceContains:**/buf.gen.yaml",
-    "workspaceContains:**/buf.work.yaml"
+    "workspaceContains:**/buf.work.yaml",
+    "onLangauge:proto"
   ],
   "contributes": {
-    "commands": [
-      {
-        "category": "Linters",
-        "command": "vscode-buf.lint",
-        "title": "Lint protobuf files using Buf"
-      }
-    ],
     "configuration": {
       "title": "Buf",
       "properties": {
-        "buf.binaryPath": {
+        "buf.path": {
           "type": "string",
-          "default": "buf",
           "description": "Path to the buf binary"
+        },
+        "buf.arguments": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Arguments for buf server."
+        },
+        "buf.trace": {
+          "type": "string",
+          "description": "Names a file that buf should log a performance trace to, in chrome trace-viewer JSON format."
+        },
+        "buf.fallbackFlags": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Extra buf flags used to parse files when no compilation database is found."
+        },
+        "buf.restartAfterCrash": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto restart buf (up to 4 times) if it crashes."
+        },
+        "buf.checkUpdates": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check for language server updates on startup."
+        },
+        "buf.enableHover": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hovers provided by the language server"
+        },
+        "buf.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable buf language server features"
+        },
+        "buf.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable debug mode."
+        },
+        "buf.timeout": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": 0,
+          "description": "Buf language server timeout duration"
+        },
+        "buf.log-format": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "text",
+            "color",
+            "json"
+          ],
+          "default": "text",
+          "description": "Buf language server log format."
+        },
+        "buf.checks.breaking.againstStrategy": {
+          "type": "string",
+          "enum": [
+            "disk",
+            "git"
+          ],
+          "default": "git",
+          "description": "The strategy to use when checking breaking changes against a specific reference."
+        },
+        "buf.checks.breaking.againstGitRef": {
+          "type": "string",
+          "default": "refs/remotes/origin/HEAD",
+          "description": "The git reference to check breaking changes against."
         }
       }
     },
@@ -97,30 +170,81 @@
         "scopeName": "source.proto",
         "path": "./syntaxes/proto.tmLanguage.json"
       }
+    ],
+    "commands": [
+      {
+        "command": "buf.generate",
+        "category": "Buf",
+        "title": "$(run) Generate",
+        "description": "Run Buf to generate code with protoc plugins"
+      },
+      {
+        "command": "buf.openYaml",
+        "category": "Buf",
+        "title": "$(settings) Open buf.yaml"
+      },
+      {
+        "command": "buf.showOutput",
+        "category": "Buf",
+        "title": "$(output) Show Buf Output"
+      },
+      {
+        "command": "buf.install",
+        "category": "Buf",
+        "title": "$(cloud-download) Install cli",
+        "description": "Install the Buf cli from github releases"
+      },
+      {
+        "command": "buf.update",
+        "category": "Buf",
+        "title": "$(arrow-swap) Update cli",
+        "description": "Check for updates and install the latest version of the buf cli"
+      },
+      {
+        "command": "buf.restart",
+        "category": "Buf",
+        "title": "$(debug-restart) Restart Buf language server"
+      }
     ]
   },
-  "main": "./out/extension.js",
+  "main": "./out/src/extension.js",
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "clean": "rm -rf ./dist/* && rm -rf ./out/* && rm -rf ./bin/* && rm *.vsix",
     "compile": "npx tsc -p ./",
-    "watch": "npx tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint && npm run prepworkspaces",
-    "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
     "lint": "npx eslint src --ext ts",
-    "test": "vscode-test",
-    "package": "vsce package"
+    "package": "vsce package",
+    "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
+    "pretest": "npm run compile && npm run lint && npm run prepworkspaces",
+    "test-compile": "tsc -p ./",
+    "test": "npm run test-compile && node ./out/test/runTest.js",
+    "unit-test": "npm run test-compile && node ./node_modules/mocha/bin/_mocha -u tdd --timeout 5000 ./out/test/unit",
+    "vscode:prepublish": "npm run compile",
+    "watch": "npx tsc -watch -p ./"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.x",
+    "@types/proxyquire": "^1.3.31",
+    "@types/sinon": "^17.0.4",
     "@types/vscode": "^1.83.1",
+    "@types/which": "^3.0.4",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vscode/test-cli": "0.0.4",
     "@vscode/test-electron": "^2.3.9",
+    "@vscode/vsce": "^2.15.0",
     "eslint": "^8.56.0",
+    "glob": "^11.0.1",
     "mocha": "^10.2.0",
-    "typescript": "^5.7.2",
-    "@vscode/vsce": "^2.15.0"
+    "proxyquire": "^2.1.3",
+    "sinon": "^19.0.4",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "rimraf": "^6.0.1",
+    "semver": "^7.7.1",
+    "vscode-languageclient": "^9.0.1",
+    "which": "^5.0.0"
   }
 }

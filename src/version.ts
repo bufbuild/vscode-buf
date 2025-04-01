@@ -1,86 +1,59 @@
-import { Error } from "./errors";
+import * as semver from "semver";
+import * as github from "./github";
 
-const versionRegexp = /^(\d+)\.(\d+).(\d+)(?:\-dev|\-rc)?(\d*)?$/;
+import { execFile } from "./util";
 
-export interface Version {
-  major: number;
-  minor: number;
-  patch: number;
-  // Not all versions will have release candidates. We will deliberately set the release
-  // candidate to null if none are found, and that version takes precedence over the
-  // release candidates.
-  releaseCandidate: number | null;
+const loose: semver.Options = {
+  loose: true,
+};
+
+export class BufVersion {
+  constructor(public readonly path: string, public readonly version: semver.Range) {}
+
+  static async fromPath(path: string): Promise<BufVersion> {
+    const version = await getBufVersion(path);
+    return new BufVersion(path, version);
+  }
+
+  async hasUpgrade(release: github.Release) {
+    const releasedVer = getReleaseVersion(release);
+    return {
+      old: this.version.raw,
+      new: releasedVer.raw,
+      upgrade: rangeGreater(releasedVer, this.version),
+    };
+  }
 }
 
-export const less = (first: Version, second: Version): boolean => {
-  if (first.major < second.major) {
-    return true;
+export const getBufVersion = async (bufPath: string): Promise<semver.Range> => {
+  const { stdout, stderr } = await execFile(bufPath, ["--version"]);
+
+  if (stderr) {
+    throw new Error(`Error getting version of '${bufPath}'! ${stderr}`);
   }
-  if (first.major === second.major && first.minor < second.minor) {
-    return true;
+
+  // Some vendors add trailing ~patchlevel, ignore this.
+  const rawVersion = stdout.trim().split(/\s|~/, 1)[0];
+
+  if (!rawVersion) {
+    throw new Error(`Unable to determine version of '${bufPath}'!`);
   }
-  if (first.major === second.major && first.minor === second.minor && first.patch < second.patch) {
-    return true;
-  }
-  return (
-    first.major === second.major &&
-    first.minor === second.minor &&
-    first.patch === second.patch &&
-    checkReleaseCandidate(first.releaseCandidate, second.releaseCandidate)
-  );
+
+  return new semver.Range(rawVersion, loose);
 };
 
-export const format = (version: Version): string => {
-  if (version.releaseCandidate !== null) {
-    return `v${version.major}.${version.minor}.${version.patch}-rc${version.releaseCandidate}`;
-  }
-  return `v${version.major}.${version.minor}.${version.patch}`;
+// Get the version of a github release, by parsing the tag or name.
+const getReleaseVersion = (release: github.Release): semver.Range => {
+  // Prefer the tag name, but fall back to the release name.
+  return !semver.validRange(release.tag_name, loose) && semver.validRange(release.name, loose)
+    ? new semver.Range(release.name, loose)
+    : new semver.Range(release.tag_name, loose);
 };
 
-export const parse = (versionString: string): Version | Error => {
-  const match = versionString.match(versionRegexp);
-  if (match === null || match.length < 4) {
-    return {
-      errorMessage: `failed to parse version output: ${versionString}`,
-    };
+const rangeGreater = (newVer: semver.Range, oldVer: semver.Range) => {
+  const minVersion = semver.minVersion(newVer);
+  if (minVersion === null) {
+    throw new Error(`Couldn't parse version range: ${newVer}`);
   }
-  const major = parseInt(match[1]);
-  if (Number.isNaN(major)) {
-    return {
-      errorMessage: "failed to parse major version",
-    };
-  }
-  const minor = parseInt(match[2]);
-  if (Number.isNaN(minor)) {
-    return {
-      errorMessage: "failed to parse minor version",
-    };
-  }
-  const patch = parseInt(match[3]);
-  if (Number.isNaN(patch)) {
-    return {
-      errorMessage: "failed to parse patch version",
-    };
-  }
-  let releaseCandidate: number | null = parseInt(match[4]);
-  if (Number.isNaN(releaseCandidate)) {
-    // If there is no release candidate number, we explicitly unset it.
-    releaseCandidate = null;
-  }
-  return {
-    major: major,
-    minor: minor,
-    patch: patch,
-    releaseCandidate: releaseCandidate,
-  };
-};
-
-export const checkReleaseCandidate = (firstReleaseCandidate: number | null, secondReleaseCandidate: number | null): boolean => {
-  if (firstReleaseCandidate === null) {
-    return false;
-  }
-  if (secondReleaseCandidate === null) {
-    return true;
-  }
-  return (firstReleaseCandidate < secondReleaseCandidate);
+  return semver.gtr(minVersion, oldVer);
 };
