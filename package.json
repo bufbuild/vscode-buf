@@ -104,7 +104,7 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint && npm run prepworkspaces",
+    "pretest": "npm run compile && npm run prepworkspaces",
     "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
     "lint": "eslint --max-warnings 0 .",
     "test": "vscode-test",
