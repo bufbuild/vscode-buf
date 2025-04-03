@@ -11,6 +11,7 @@ export interface Warning {
   message: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- is type assertion so we need to allow any on incoming.
 function isWarning(o: any): o is Warning {
   return (
     "path" in o &&
@@ -31,7 +32,7 @@ export const parseLines = (errorLines: string[]): Warning[] | Error => {
       if (isWarning(warning)) {
         warnings.push(warning);
       }
-    } catch (error) {
+    } catch (_error: unknown) {
       return {
         errorMessage: `${errorLines.join(",")}`,
       };

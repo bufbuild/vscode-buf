@@ -18,8 +18,7 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
 
   public provideDocumentFormattingEdits(
     document: vscode.TextDocument,
-    // @ts-ignore: The formatter doesn't have any options, but we need to implement the interface.
-    options: vscode.FormattingOptions,
+    _options: vscode.FormattingOptions,
     token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.TextEdit[]> {
     if (
@@ -72,10 +71,11 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
             token.onCancellationRequested(() => !p.killed && p.kill());
 
             p.stdout.setEncoding("utf8");
-            p.stdout.on("data", (data: any) => (stdout += data));
-            p.stderr.on("data", (data: any) => (stderr += data));
-            p.on("error", (err: any) => {
-              if (err && (<any>err).code === "ENOENT") {
+            p.stdout.on("data", (data: unknown) => (stdout += data));
+            p.stderr.on("data", (data: unknown) => (stderr += data));
+            p.on("error", (err: Error) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              if (err && (err as any).code === "ENOENT") {
                 return reject();
               }
             });
