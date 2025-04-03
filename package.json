@@ -102,11 +102,11 @@
   "main": "./out/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "npx tsc -p ./",
-    "watch": "npx tsc -watch -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint && npm run prepworkspaces",
     "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
-    "lint": "npx eslint src --ext ts",
+    "lint": "eslint src --ext ts",
     "test": "vscode-test",
     "package": "vsce package",
     "format": "prettier --write '**/*.{json,js,jsx,ts,tsx,css,yaml,yml,mjs,mts,md}' --log-level error"
