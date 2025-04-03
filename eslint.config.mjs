@@ -1,12 +1,12 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
-import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import eslintPluginUnicorn from "eslint-plugin-unicorn";
 
 export default tseslint.config({
   ignores: [".vscode-dist"],
   extends: [eslint.configs.recommended, ...tseslint.configs.recommended],
   plugins: {
-    "unicorn": eslintPluginUnicorn,
+    unicorn: eslintPluginUnicorn,
   },
   rules: {
     "@typescript-eslint/no-unused-vars": [
@@ -32,8 +32,8 @@ export default tseslint.config({
     "unicorn/filename-case": [
       "error",
       {
-        "case": "kebabCase"
-      }
-    ]
-  }
+        case: "kebabCase",
+      },
+    ],
+  },
 });
