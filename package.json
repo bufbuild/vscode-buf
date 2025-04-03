@@ -108,7 +108,8 @@
     "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
     "lint": "npx eslint src --ext ts",
     "test": "vscode-test",
-    "package": "vsce package"
+    "package": "vsce package",
+    "format": "prettier --write '**/*.{json,js,jsx,ts,tsx,css,yaml,yml,mjs,mts,md}' --log-level error"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
@@ -118,9 +119,10 @@
     "@typescript-eslint/parser": "^6.21.0",
     "@vscode/test-cli": "0.0.4",
     "@vscode/test-electron": "^2.3.9",
+    "@vscode/vsce": "^2.15.0",
     "eslint": "^8.56.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.7.2",
-    "@vscode/vsce": "^2.15.0"
+    "prettier": "^3.5.3",
+    "typescript": "^5.7.2"
   }
 }
