@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 import { Error } from "./errors";
 
 // Lines and columns are 1-indexed
@@ -25,7 +25,7 @@ function isWarning(o: any): o is Warning {
 }
 
 export const parseLines = (errorLines: string[]): Warning[] | Error => {
-  let warnings: Warning[] = [];
+  const warnings: Warning[] = [];
   for (let index = 0; index < errorLines.length; index++) {
     try {
       const warning = JSON.parse(errorLines[index]);

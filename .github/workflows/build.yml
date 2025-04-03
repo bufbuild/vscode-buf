@@ -23,9 +23,14 @@ jobs:
           setup_only: true
       - name: install-deps
         run: make install
+      - name: lint
+        run: npm run lint
+      - name: format
+        run: npm run format
       - name: test-with-xvfb
         run: xvfb-run -a npm test
         if: runner.os == 'Linux'
       - name: test
         run: npm test
         if: runner.os != 'Linux'
+     

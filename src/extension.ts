@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as path from "path";
 import { downloadPage, lint, minimumVersion, version } from "./buf";
 import { isError } from "./errors";
 import { Formatter } from "./formatter";
@@ -89,7 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
     const warningsForThisDocument = warnings.filter(
-      (warning: Warning): Boolean => {
+      (warning: Warning): boolean => {
         return warning.path === document.uri.fsPath;
       }
     );

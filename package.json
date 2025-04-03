@@ -112,17 +112,19 @@
     "format": "prettier --write '**/*.{json,js,jsx,ts,tsx,css,yaml,yml,mjs,mts,md}' --log-level error"
   },
   "devDependencies": {
+    "@eslint/js": "^9.23.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.x",
     "@types/vscode": "^1.83.1",
-    "@typescript-eslint/eslint-plugin": "^6.20.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.0",
     "@vscode/test-cli": "0.0.4",
     "@vscode/test-electron": "^2.3.9",
     "@vscode/vsce": "^2.15.0",
-    "eslint": "^8.56.0",
+    "eslint": "^9.23.0",
     "mocha": "^10.2.0",
     "prettier": "^3.5.3",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.29.0"
   }
 }

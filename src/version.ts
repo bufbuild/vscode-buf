@@ -1,6 +1,6 @@
 import { Error } from "./errors";
 
-const versionRegexp = /^(\d+)\.(\d+).(\d+)(?:\-dev|\-rc)?(\d*)?$/;
+const versionRegexp = /^(\d+)\.(\d+).(\d+)(?:-dev|-rc)?(\d*)?$/;
 
 export interface Version {
   major: number;
