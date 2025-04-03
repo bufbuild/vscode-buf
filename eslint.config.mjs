@@ -12,14 +12,12 @@ export default defineConfig(
     "out",
     "test-workspaces",
   ]),
-  tseslint.config(
-    {
-      files: ["scripts/**/*.mjs"],
-      languageOptions: {
-        globals: globals.node,
-      }
-    }
-  ),
+  tseslint.config({
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  }),
   tseslint.config({
     extends: [eslint.configs.recommended, ...tseslint.configs.recommended],
     plugins: {
