@@ -1,4 +1,3 @@
- 
 import { Error } from "./errors";
 
 // Lines and columns are 1-indexed

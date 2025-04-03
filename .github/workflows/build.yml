@@ -33,4 +33,5 @@ jobs:
       - name: test
         run: npm test
         if: runner.os != 'Linux'
-     
+      - name: check diff
+        run: node scripts/gh-diffcheck.mjs
