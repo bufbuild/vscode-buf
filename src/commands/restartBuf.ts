@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import * as lsp from "vscode-languageclient/node";
 import * as config from "../config";
 
-import { Command, CommandType, loadBufModules } from ".";
+import { Command, CommandType } from ".";
 import { protoDocumentSelector } from "../const";
 import { log } from "../util";
 import { BufContext, ServerStatus } from "../context";

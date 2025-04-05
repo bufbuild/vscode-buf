@@ -22,8 +22,8 @@ export async function activate(ctx: vscode.ExtensionContext) {
     await commands.installBuf.execute();
   }
 
-  if (!bufCtx.buf) {
-    // Load modules asynchronously.
+  if (bufCtx.buf) {
+    // Load modules asynchronously. If we don't load here, it'll load after we update / install.
     commands.loadBufModules.execute();
   }
 
