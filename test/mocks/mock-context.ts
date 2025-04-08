@@ -1,6 +1,6 @@
 import { Disposable, ExtensionContext } from "vscode";
 
-type ExtensionContextPlus = ExtensionContext &
+export type ExtensionContextPlus = ExtensionContext &
   Pick<MockExtensionContext, "teardown">;
 
 export class MockExtensionContext implements Partial<ExtensionContext> {

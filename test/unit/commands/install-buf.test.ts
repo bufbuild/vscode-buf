@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as assert from "assert";
 import * as fs from "fs";
 import * as semver from "semver";
@@ -22,11 +21,12 @@ suite("commands.installBuf", () => {
   let logErrorStub: sinon.SinonStub;
   let logInfoStub: sinon.SinonStub;
 
-  let ctx: any;
+  let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
 
   let serverOutputChannelStub: sinon.SinonStub;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cmdCallback: (...args: any[]) => any;
 
   setup(() => {
@@ -55,6 +55,7 @@ suite("commands.installBuf", () => {
 
     sandbox
       .stub(vscode.commands, "registerCommand")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .callsFake((_: string, callback: (...args: any[]) => any) => {
         cmdCallback = callback;
         return {
@@ -133,9 +134,9 @@ suite("commands.installBuf", () => {
     sandbox.stub(github, "findAsset").resolves(dummyAsset);
 
     const storagePath = "/path/to/storage";
-    ctx.globalStorageUri = {
+    sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
       fsPath: storagePath,
-    } as vscode.Uri;
+    });
 
     sandbox.stub(fs.promises, "mkdir").resolves();
     sandbox.stub(fs.promises, "access").throws("File not found");

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as assert from "assert";
 import * as path from "path";
@@ -9,13 +9,16 @@ import * as github from "../../src/github";
 import * as util from "../../src/util";
 
 import { BufVersion, getBufVersion } from "../../src/version";
-import { MockExtensionContext } from "../mocks/mock-context";
+import {
+  ExtensionContextPlus,
+  MockExtensionContext,
+} from "../mocks/mock-context";
 
 suite("version", () => {
   vscode.window.showInformationMessage("Start all version tests.");
 
   let sandbox: sinon.SinonSandbox;
-  let ctx: any;
+  let ctx: ExtensionContextPlus;
 
   setup(() => {
     sandbox = sinon.createSandbox();
@@ -35,9 +38,9 @@ suite("version", () => {
 
     test("fromPath creates BufVersion instance", async () => {
       const storagePath = "/path/to/storage";
-      ctx.globalStorageUri = {
+      sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
         fsPath: storagePath,
-      } as vscode.Uri;
+      });
       const execFileStub = sandbox
         .stub(util, "execFile")
         .resolves({ stdout: "1.34.15\n", stderr: "" });
@@ -79,9 +82,9 @@ suite("version", () => {
         },
       } as unknown as vscode.WorkspaceConfiguration);
 
-      ctx.globalStorageUri = {
+      sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
         fsPath: storagePath,
-      } as vscode.Uri;
+      });
 
       sandbox
         .stub(util, "execFile")
@@ -103,9 +106,9 @@ suite("version", () => {
         },
       } as unknown as vscode.WorkspaceConfiguration);
 
-      ctx.globalStorageUri = {
+      sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
         fsPath: storagePath,
-      } as vscode.Uri;
+      });
 
       sandbox
         .stub(util, "execFile")

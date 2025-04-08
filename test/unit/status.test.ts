@@ -1,12 +1,12 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
-import { describe, setup, teardown, it } from "mocha";
 import sinon from "sinon";
 import * as assert from "assert";
 import * as vscode from "vscode";
 import * as status from "../../src/status";
 
-import { MockExtensionContext } from "../mocks/mock-context";
+import {
+  ExtensionContextPlus,
+  MockExtensionContext,
+} from "../mocks/mock-context";
 import { BufContext } from "../../src/context";
 
 describe("status", function () {
@@ -14,12 +14,13 @@ describe("status", function () {
 
   let sandbox: sinon.SinonSandbox;
 
-  let ctx: any;
+  let ctx: ExtensionContextPlus;
 
   let statusBarItem: vscode.StatusBarItem;
   let createStatusBarItemStub: sinon.SinonStub;
 
   let bufCtx: BufContext;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let bufCtxonDidChangeContextSpy: any;
 
   let createOutputChannelStub: sinon.SinonStub;

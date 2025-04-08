@@ -51,7 +51,7 @@ export const restartBuf = new Command(
 
       const traceFile = config.get<string>("trace");
 
-      if (!!traceFile) {
+      if (traceFile) {
         const trace = { BUF_TRACE: traceFile };
         buf.options = { env: { ...process.env, ...trace } };
       }
@@ -107,7 +107,7 @@ export const restartBuf = new Command(
 );
 
 const getBufArgs = () => {
-  let bufArgs = config.get<string[]>("arguments");
+  const bufArgs = config.get<string[]>("arguments");
 
   if (config.get<string>("debug")) {
     bufArgs.push("--debug");

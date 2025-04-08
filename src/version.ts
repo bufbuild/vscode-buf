@@ -7,6 +7,12 @@ const loose: semver.Options = {
   loose: true,
 };
 
+export interface Upgrade {
+  old: string;
+  new: string;
+  upgrade: boolean;
+}
+
 export class BufVersion {
   constructor(
     public readonly path: string,
@@ -18,7 +24,7 @@ export class BufVersion {
     return new BufVersion(path, version);
   }
 
-  async hasUpgrade(release: github.Release) {
+  hasUpgrade(release: github.Release): Upgrade {
     const releasedVer = getReleaseVersion(release);
     return {
       old: this.version.raw,

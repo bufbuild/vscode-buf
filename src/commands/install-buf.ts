@@ -35,7 +35,7 @@ export const installBuf = new Command(
         const release = await github.latestRelease();
         const asset = await github.findAsset(release);
 
-        var bufPath = await install(ctx, release, asset, abort);
+        const bufPath = await install(ctx, release, asset, abort);
 
         bufCtx.buf = await BufVersion.fromPath(bufPath);
         vscode.window.showInformationMessage(
@@ -76,7 +76,9 @@ export const install = async (
 
     // If we made it to this point, the binary is valid, reuse it.
     return downloadBin;
-  } catch {}
+  } catch {
+    // Ignore errors, we will download it.
+  }
 
   // If we've fallen out here.. lets proceed to download.
   log.info(`Downloading ${asset.name} to ${downloadBin}...`);

@@ -1,12 +1,13 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as assert from "assert";
+import * as semver from "semver";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import * as cmds from "../../../src/commands";
 import * as util from "../../../src/util";
 
 import { BufContext } from "../../../src/context";
+import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
 
 suite("commands.loadBufModules", () => {
@@ -16,13 +17,15 @@ suite("commands.loadBufModules", () => {
   let execFileStub: sinon.SinonStub;
   let logErrorStub: sinon.SinonStub;
   let logInfoStub: sinon.SinonStub;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let createFileSystemWatcherSpy: any;
 
-  let ctx: any;
+  let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
 
   let serverOutputChannelStub: sinon.SinonStub;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cmdCallback: (...args: any[]) => any;
 
   setup(() => {
@@ -51,6 +54,7 @@ suite("commands.loadBufModules", () => {
 
     sandbox
       .stub(vscode.commands, "registerCommand")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .callsFake((_: string, callback: (...args: any[]) => any) => {
         cmdCallback = callback;
         return {
@@ -89,7 +93,7 @@ suite("commands.loadBufModules", () => {
   });
 
   test("runs 'buf ls-files'", async () => {
-    bufCtx.buf = { path: "/path/to/buf", version: "1.0.0" } as any;
+    bufCtx.buf = new BufVersion("/path/to/buf", new semver.Range("1.0.0"));
 
     execFileStub.resolves({
       stdout: `{"path":"external/google/type/latlng.proto","import_path":"google/type/latlng.proto","module":"google","commit":"","is_import":false}`,

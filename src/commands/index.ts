@@ -1,35 +1,30 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as vscode from "vscode";
 
 import { BufContext } from "../context";
 
-type CommandCallback<T extends unknown = any> = (
-  ...args: any
-) => Promise<T> | T;
+type CommandCallback<T = any> = (...args: any) => Promise<T> | T;
 
-export type CommandFactory<T extends unknown = any> = (
+export type CommandFactory<T = any> = (
   ctx: vscode.ExtensionContext,
   bufCtx: BufContext
 ) => CommandCallback<T>;
 
 export enum CommandType {
   // Commands to run buf commands e.g. generate
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   COMMAND_BUF,
 
   // Extension commands
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   COMMAND_EXTENSION,
 
   // Commands to setup the extension e.g. install buf
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   COMMAND_SETUP,
 
   // Internal commands. Note: these are not registered in the command palette
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   COMMAND_INTERNAL,
 }
 
-export class Command<T extends unknown = any> {
+export class Command<T = any> {
   constructor(
     public readonly command: string,
     public readonly type: CommandType,

@@ -8,15 +8,10 @@ export type BufFile = {
 };
 
 export enum ServerStatus {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   SERVER_DISABLED,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   SERVER_STARTING,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   SERVER_RUNNING,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   SERVER_STOPPED,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   SERVER_ERRORED,
 }
 

@@ -10,11 +10,15 @@ export const showCommands = new Command(
   "buf.showCommands",
   CommandType.COMMAND_EXTENSION,
   () => {
-    let quickPickList: BufQuickPickItem[] = [];
+    const quickPickList: BufQuickPickItem[] = [];
 
     const pkgJSON = vscode.extensions.getExtension(extensionId)?.packageJSON;
     if (pkgJSON.contributes && pkgJSON.contributes.commands) {
-      const commands: any[] = pkgJSON.contributes.commands;
+      const commands: {
+        command: string;
+        title: string;
+        description: string;
+      }[] = pkgJSON.contributes.commands;
       const bufCommands: BufQuickPickItem[] = [];
       const extCommands: BufQuickPickItem[] = [];
       const setupCommands: BufQuickPickItem[] = [];

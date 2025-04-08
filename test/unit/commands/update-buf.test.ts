@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as assert from "assert";
 import * as semver from "semver";
@@ -21,11 +21,12 @@ suite("commands.updateBuf", () => {
   let logErrorStub: sinon.SinonStub;
   let logInfoStub: sinon.SinonStub;
 
-  let ctx: any;
+  let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
 
   let serverOutputChannelStub: sinon.SinonStub;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cmdCallback: (...args: any[]) => any;
 
   setup(() => {
@@ -54,6 +55,7 @@ suite("commands.updateBuf", () => {
 
     sandbox
       .stub(vscode.commands, "registerCommand")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .callsFake((_: string, callback: (...args: any[]) => any) => {
         cmdCallback = callback;
         return {
@@ -128,6 +130,7 @@ suite("commands.updateBuf", () => {
 
     const showInfoMessageStub = sandbox
       .stub(vscode.window, "showInformationMessage")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .resolves("Install cli v1.34.15" as any);
     const installBufStub = sandbox
       .stub(installBuf, "install")

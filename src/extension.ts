@@ -6,7 +6,7 @@ import * as status from "./status";
 import { BufContext, ServerStatus } from "./context";
 import { log } from "./util";
 
-let bufCtx = new BufContext();
+const bufCtx = new BufContext();
 
 export async function activate(ctx: vscode.ExtensionContext) {
   status.activate(ctx, bufCtx);

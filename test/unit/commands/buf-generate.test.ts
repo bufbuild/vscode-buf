@@ -1,11 +1,14 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-import * as vscode from "vscode";
 import * as assert from "assert";
+import * as semver from "semver";
 import * as sinon from "sinon";
+import * as vscode from "vscode";
 import * as util from "../../../src/util";
+
 import { bufGenerate } from "../../../src/commands/buf-generate";
 import { BufContext } from "../../../src/context";
+import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
 
 suite("commands.bufGenerate", () => {
@@ -16,11 +19,12 @@ suite("commands.bufGenerate", () => {
   let logErrorStub: sinon.SinonStub;
   let logInfoStub: sinon.SinonStub;
 
-  let ctx: any;
+  let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
 
   let serverOutputChannelStub: sinon.SinonStub;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cmdCallback: (...args: any[]) => any;
 
   setup(() => {
@@ -49,6 +53,7 @@ suite("commands.bufGenerate", () => {
 
     sandbox
       .stub(vscode.commands, "registerCommand")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .callsFake((_: string, callback: (...args: any[]) => any) => {
         cmdCallback = callback;
         return {
@@ -73,7 +78,7 @@ suite("commands.bufGenerate", () => {
   });
 
   test("should call 'buf generate'", async () => {
-    bufCtx.buf = { path: "/path/to/buf", version: "1.0.0" } as any;
+    bufCtx.buf = new BufVersion("/path/to/buf", new semver.Range("1.0.0"));
     execFileStub.resolves({ stdout: "Generated successfully", stderr: "" });
 
     await cmdCallback();
@@ -88,7 +93,7 @@ suite("commands.bufGenerate", () => {
   });
 
   test("should throw an error if anything is written to stderr", async () => {
-    bufCtx.buf = { path: "/path/to/buf", version: "1.0.0" } as any;
+    bufCtx.buf = new BufVersion("/path/to/buf", new semver.Range("1.0.0"));
     execFileStub.resolves({ stdout: "", stderr: "Error occurred" });
 
     await cmdCallback();
@@ -101,7 +106,7 @@ suite("commands.bufGenerate", () => {
   });
 
   test("should throw an error if executing buf throws an error", async () => {
-    bufCtx.buf = { path: "/path/to/buf", version: "1.0.0" } as any;
+    bufCtx.buf = new BufVersion("/path/to/buf", new semver.Range("1.0.0"));
     execFileStub.rejects(new Error("Execution failed"));
 
     await cmdCallback();

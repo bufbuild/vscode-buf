@@ -1,12 +1,11 @@
 import * as vscode from "vscode";
 import * as commands from "./commands";
-import * as config from "./config";
 
 import { BufContext, ServerStatus } from "./context";
 
 export let statusBarItem: vscode.StatusBarItem | undefined;
 
-const STATUS_BAR_ITEM_NAME = "Buf";
+const StatusBarItemName = "Buf";
 
 type StatusBarConfig = {
   icon: string;
@@ -61,11 +60,11 @@ export function activate(ctx: vscode.ExtensionContext, bufCtx: BufContext) {
 const updateStatusBar = (bufCtx: BufContext) => {
   if (!statusBarItem) {
     statusBarItem = vscode.window.createStatusBarItem(
-      STATUS_BAR_ITEM_NAME,
+      StatusBarItemName,
       vscode.StatusBarAlignment.Right,
       100
     );
-    statusBarItem.name = STATUS_BAR_ITEM_NAME;
+    statusBarItem.name = StatusBarItemName;
     statusBarItem.show();
   }
 

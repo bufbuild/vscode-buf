@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as assert from "assert";
 import * as fs from "fs";
 import path from "path";
@@ -19,13 +18,15 @@ suite("commands.findBuf", () => {
 
   let sandbox: sinon.SinonSandbox;
 
-  let ctx: any;
+  let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
 
   let serverOutputChannelStub: sinon.SinonStub;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cmdCallback: (...args: any[]) => any;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let findBufMod: any;
   let whichStub: sinon.SinonStub;
 
@@ -51,6 +52,7 @@ suite("commands.findBuf", () => {
 
     sandbox
       .stub(vscode.commands, "registerCommand")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .callsFake((_: string, callback: (...args: any[]) => any) => {
         cmdCallback = callback;
         return {
@@ -109,9 +111,11 @@ suite("commands.findBuf", () => {
   test("when buf installed by extension, finds buf in the extension storage", async () => {
     const storagePath = "/path/to/storage";
     const bufPath = path.join(storagePath, "v1", bufFilename);
-    ctx.globalStorageUri = {
+
+    sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
       fsPath: storagePath,
-    } as vscode.Uri;
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sandbox.stub(fs.promises, "readdir").resolves(["v1" as any]);
 
     sandbox
@@ -128,9 +132,9 @@ suite("commands.findBuf", () => {
     whichStub.returns(bufPath);
 
     const storagePath = "/path/to/storage";
-    ctx.globalStorageUri = {
+    sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
       fsPath: storagePath,
-    } as vscode.Uri;
+    });
 
     sandbox
       .stub(version.BufVersion, "fromPath")

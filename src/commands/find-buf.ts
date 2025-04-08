@@ -66,7 +66,7 @@ export const findBuf = new Command(
 );
 
 const findBufInPath = async (): Promise<BufVersion | null> => {
-  let bufPath = await which(bufFilename, { nothrow: true });
+  const bufPath = await which(bufFilename, { nothrow: true });
 
   if (bufPath) {
     return BufVersion.fromPath(bufPath);

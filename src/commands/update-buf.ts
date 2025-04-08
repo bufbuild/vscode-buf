@@ -5,7 +5,7 @@ import * as github from "../github";
 import { Command, CommandType, loadBufModules, restartBuf } from ".";
 import { install } from "./install-buf";
 import { log } from "../util";
-import { BufVersion } from "../version";
+import { BufVersion, Upgrade } from "../version";
 
 export const updateBuf = new Command(
   "buf.update",
@@ -17,12 +17,16 @@ export const updateBuf = new Command(
         return;
       }
 
+      let release: github.Release;
+      let asset: github.Asset;
+      let upgrade: Upgrade;
+
       // Gather all the version information to see if there's an upgrade.
       try {
         log.info("Checking for buf update...");
-        var release = await github.latestRelease();
-        var asset = await github.findAsset(release); // Ensure a binary for this platform.
-        var upgrade = await bufCtx.buf?.hasUpgrade(release);
+        release = await github.latestRelease();
+        asset = await github.findAsset(release); // Ensure a binary for this platform.
+        upgrade = await bufCtx.buf?.hasUpgrade(release);
       } catch (e) {
         log.info(`Failed to check for buf update: ${e}`);
 

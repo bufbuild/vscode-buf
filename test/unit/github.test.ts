@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import * as assert from "assert";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
@@ -11,6 +9,7 @@ suite("github", () => {
 
   let sandbox: sinon.SinonSandbox;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let github: any;
   let osPlatformStub: sinon.SinonStub;
   let osArchStub: sinon.SinonStub;
