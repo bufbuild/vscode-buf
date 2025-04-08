@@ -6,7 +6,7 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 import * as status from "../../src/status";
 
-import { MockExtensionContext } from "../mocks/MockContext";
+import { MockExtensionContext } from "../mocks/mock-context";
 import { BufContext } from "../../src/context";
 
 describe("status", function () {

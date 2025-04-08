@@ -9,7 +9,7 @@ import * as github from "../../src/github";
 import * as util from "../../src/util";
 
 import { BufVersion, getBufVersion } from "../../src/version";
-import { MockExtensionContext } from "../mocks/MockContext";
+import { MockExtensionContext } from "../mocks/mock-context";
 
 suite("version", () => {
   vscode.window.showInformationMessage("Start all version tests.");

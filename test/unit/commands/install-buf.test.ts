@@ -12,7 +12,7 @@ import * as github from "../../../src/github";
 
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
-import { MockExtensionContext } from "../../mocks/MockContext";
+import { MockExtensionContext } from "../../mocks/mock-context";
 
 suite("commands.installBuf", () => {
   vscode.window.showInformationMessage("Start all installBuf tests.");

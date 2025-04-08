@@ -1,20 +1,22 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import * as vscode from "vscode";
 import * as assert from "assert";
 import * as sinon from "sinon";
+import * as vscode from "vscode";
+import * as cmds from "../../../src/commands";
 import * as util from "../../../src/util";
-import { bufGenerate } from "../../../src/commands/bufGenerate";
-import { BufContext } from "../../../src/context";
-import { MockExtensionContext } from "../../mocks/MockContext";
 
-suite("commands.bufGenerate", () => {
-  vscode.window.showInformationMessage("Start all bufGenerate tests.");
+import { BufContext } from "../../../src/context";
+import { MockExtensionContext } from "../../mocks/mock-context";
+
+suite("commands.loadBufModules", () => {
+  vscode.window.showInformationMessage("Start all loadBufModules tests.");
 
   let sandbox: sinon.SinonSandbox;
   let execFileStub: sinon.SinonStub;
   let logErrorStub: sinon.SinonStub;
   let logInfoStub: sinon.SinonStub;
+  let createFileSystemWatcherSpy: any;
 
   let ctx: any;
   let bufCtx: BufContext;
@@ -56,7 +58,12 @@ suite("commands.bufGenerate", () => {
         } as unknown as vscode.Disposable;
       });
 
-    bufGenerate.register(ctx, bufCtx);
+    createFileSystemWatcherSpy = sandbox.spy(
+      vscode.workspace,
+      "createFileSystemWatcher"
+    );
+
+    cmds.loadBufModules.register(ctx, bufCtx);
   });
 
   teardown(() => {
@@ -64,52 +71,38 @@ suite("commands.bufGenerate", () => {
     bufCtx.dispose();
   });
 
-  test("should log an error if buf is not installed", async () => {
+  test("construction sets up file watchers", async () => {
+    assert.strictEqual(createFileSystemWatcherSpy.calledOnce, true);
+    assert.strictEqual(
+      createFileSystemWatcherSpy.getCall(0).args[0],
+      "**/buf.yaml"
+    );
+  });
+
+  test("logs an error and does nothing if buf is not installed", async () => {
     bufCtx.buf = undefined;
 
     await cmdCallback();
 
     assert.strictEqual(logErrorStub.calledOnce, true);
+    assert.strictEqual(execFileStub.notCalled, true);
   });
 
-  test("should call 'buf generate'", async () => {
+  test("runs 'buf ls-files'", async () => {
     bufCtx.buf = { path: "/path/to/buf", version: "1.0.0" } as any;
-    execFileStub.resolves({ stdout: "Generated successfully", stderr: "" });
+
+    execFileStub.resolves({
+      stdout: `{"path":"external/google/type/latlng.proto","import_path":"google/type/latlng.proto","module":"google","commit":"","is_import":false}`,
+      stderr: "",
+    });
 
     await cmdCallback();
 
     assert.strictEqual(execFileStub.calledOnce, true);
-    assert.deepStrictEqual(execFileStub.args[0], [
-      "/path/to/buf",
-      ["generate"],
-      { cwd: vscode.workspace.rootPath },
-    ]);
-    assert.strictEqual(logInfoStub.calledWith("Generated successfully"), true);
-  });
-
-  test("should throw an error if anything is written to stderr", async () => {
-    bufCtx.buf = { path: "/path/to/buf", version: "1.0.0" } as any;
-    execFileStub.resolves({ stdout: "", stderr: "Error occurred" });
-
-    await cmdCallback();
-
-    assert.strictEqual(logErrorStub.calledOnce, true);
+    assert.strictEqual(bufCtx.bufFiles.size, 1);
     assert.strictEqual(
-      logErrorStub.calledWith("Error generating buf: Error occurred"),
-      true
-    );
-  });
-
-  test("should throw an error if executing buf throws an error", async () => {
-    bufCtx.buf = { path: "/path/to/buf", version: "1.0.0" } as any;
-    execFileStub.rejects(new Error("Execution failed"));
-
-    await cmdCallback();
-
-    assert.strictEqual(logErrorStub.calledOnce, true);
-    assert.strictEqual(
-      logErrorStub.calledWith("Error generating buf: Execution failed"),
-      true
+      bufCtx.bufFiles.get("external/google/type/latlng.proto")?.module,
+      "google"
     );
   });
 });

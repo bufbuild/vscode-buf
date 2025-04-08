@@ -12,7 +12,7 @@ import * as version from "../../../src/version";
 import { bufFilename } from "../../../src/const";
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
-import { MockExtensionContext } from "../../mocks/MockContext";
+import { MockExtensionContext } from "../../mocks/mock-context";
 
 suite("commands.findBuf", () => {
   vscode.window.showInformationMessage("Start all findBuf tests.");

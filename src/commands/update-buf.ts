@@ -3,7 +3,7 @@ import * as config from "../config";
 import * as github from "../github";
 
 import { Command, CommandType, loadBufModules, restartBuf } from ".";
-import { install } from "./installBuf";
+import { install } from "./install-buf";
 import { log } from "../util";
 import { BufVersion } from "../version";
 

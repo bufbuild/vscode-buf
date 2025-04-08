@@ -7,11 +7,11 @@ import * as vscode from "vscode";
 import * as cmds from "../../../src/commands";
 import * as util from "../../../src/util";
 import * as github from "../../../src/github";
-import * as installBuf from "../../../src/commands/installBuf";
+import * as installBuf from "../../../src/commands/install-buf";
 
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
-import { MockExtensionContext } from "../../mocks/MockContext";
+import { MockExtensionContext } from "../../mocks/mock-context";
 
 suite("commands.updateBuf", () => {
   vscode.window.showInformationMessage("Start all updateBuf tests.");

@@ -10,7 +10,7 @@ import * as lsp from "vscode-languageclient/node";
 
 import { BufContext, ServerStatus } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
-import { MockExtensionContext } from "../../mocks/MockContext";
+import { MockExtensionContext } from "../../mocks/mock-context";
 
 suite("commands.restartBuf", () => {
   vscode.window.showInformationMessage("Start all restartBuf tests.");

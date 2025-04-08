@@ -3,15 +3,15 @@ import * as vscode from "vscode";
 import { BufContext } from "../context";
 
 import { Command } from ".";
-import { bufGenerate } from "./bufGenerate";
-import { findBuf } from "./findBuf";
-import { installBuf } from "./installBuf";
-import { loadBufModules } from "./loadBufModules";
-import { openBufYaml } from "./openBufYaml";
-import { restartBuf } from "./restartBuf";
-import { showCommands } from "./showCommands";
-import { showOutput } from "./showOutput";
-import { updateBuf } from "./updateBuf";
+import { bufGenerate } from "./buf-generate";
+import { findBuf } from "./find-buf";
+import { installBuf } from "./install-buf";
+import { loadBufModules } from "./load-buf-modules";
+import { openBufYaml } from "./open-buf-yaml";
+import { restartBuf } from "./restart-buf";
+import { showCommands } from "./show-commands";
+import { showOutput } from "./show-output";
+import { updateBuf } from "./update-buf";
 
 const commands = [
   bufGenerate,

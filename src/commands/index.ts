@@ -75,13 +75,13 @@ export class Command<T extends unknown = any> {
 }
 
 // Must be after above definitions due to circular dependency
-export { bufGenerate } from "./bufGenerate";
-export { findBuf } from "./findBuf";
-export { installBuf } from "./installBuf";
-export { loadBufModules } from "./loadBufModules";
-export { openBufYaml } from "./openBufYaml";
-export { registerAllCommands } from "./registerAllCommands";
-export { restartBuf } from "./restartBuf";
-export { showCommands } from "./showCommands";
-export { showOutput } from "./showOutput";
-export { updateBuf } from "./updateBuf";
+export { bufGenerate } from "./buf-generate";
+export { findBuf } from "./find-buf";
+export { installBuf } from "./install-buf";
+export { loadBufModules } from "./load-buf-modules";
+export { openBufYaml } from "./open-buf-yaml";
+export { registerAllCommands } from "./register-all-commands";
+export { restartBuf } from "./restart-buf";
+export { showCommands } from "./show-commands";
+export { showOutput } from "./show-output";
+export { updateBuf } from "./update-buf";
