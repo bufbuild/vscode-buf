@@ -20,15 +20,17 @@ suite("config", () => {
   });
 
   test("get returns config value", () => {
-    const getConfigurationStub = sandbox.stub(vscode.workspace, "getConfiguration").returns({
-      get: function (key: string) {
-        if (key === "buf") {
-          return "value";
-        }
+    const getConfigurationStub = sandbox
+      .stub(vscode.workspace, "getConfiguration")
+      .returns({
+        get: function (key: string) {
+          if (key === "buf") {
+            return "value";
+          }
 
-        return undefined;
-      },
-    } as unknown as vscode.WorkspaceConfiguration);
+          return undefined;
+        },
+      } as unknown as vscode.WorkspaceConfiguration);
 
     const result = get("buf");
     assert.strictEqual(result, "value");
@@ -36,17 +38,19 @@ suite("config", () => {
   });
 
   test("get returns doesn't return config value", () => {
-    const getConfigurationStub = sandbox.stub(vscode.workspace, "getConfiguration").returns({
-      get: function (key: string) {
-        if (key === "buf") {
-          return {
-            key: "value",
-          };
-        }
+    const getConfigurationStub = sandbox
+      .stub(vscode.workspace, "getConfiguration")
+      .returns({
+        get: function (key: string) {
+          if (key === "buf") {
+            return {
+              key: "value",
+            };
+          }
 
-        return undefined;
-      },
-    } as unknown as vscode.WorkspaceConfiguration);
+          return undefined;
+        },
+      } as unknown as vscode.WorkspaceConfiguration);
 
     const result = get("test");
     assert.strictEqual(result, undefined);

@@ -2,7 +2,9 @@ import * as vscode from "vscode";
 
 import { BufContext } from "../context";
 
-type CommandCallback<T extends unknown = any> = (...args: any) => Promise<T> | T;
+type CommandCallback<T extends unknown = any> = (
+  ...args: any
+) => Promise<T> | T;
 
 export type CommandFactory<T extends unknown = any> = (
   ctx: vscode.ExtensionContext,
@@ -35,14 +37,22 @@ export class Command<T extends unknown = any> {
   ) {}
 
   register(ctx: vscode.ExtensionContext, bufCtx: BufContext) {
-    ctx.subscriptions.push(vscode.commands.registerCommand(this.command, this.wrapCommand(ctx, bufCtx)));
+    ctx.subscriptions.push(
+      vscode.commands.registerCommand(
+        this.command,
+        this.wrapCommand(ctx, bufCtx)
+      )
+    );
   }
 
   execute(): Thenable<T> {
     return vscode.commands.executeCommand<T>(this.command);
   }
 
-  private wrapCommand(ctx: vscode.ExtensionContext, bufCtx: BufContext): CommandCallback<T> {
+  private wrapCommand(
+    ctx: vscode.ExtensionContext,
+    bufCtx: BufContext
+  ): CommandCallback<T> {
     const fn = this.factory(ctx, bufCtx);
 
     return async (...args: any[]) => {

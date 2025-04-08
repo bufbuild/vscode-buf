@@ -49,7 +49,9 @@ suite("github", () => {
         status: 200,
         statusText: "OK",
       };
-      const fetchStub = sandbox.stub(global, "fetch").resolves(dummyResponse as Response);
+      const fetchStub = sandbox
+        .stub(global, "fetch")
+        .resolves(dummyResponse as Response);
 
       const release = await github.latestRelease();
       assert.deepStrictEqual(release, dummyRelease);

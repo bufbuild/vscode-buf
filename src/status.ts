@@ -20,8 +20,14 @@ const icons: Record<ServerStatus, StatusBarConfig> = {
     icon: "$(circle-slash)",
     colour: new vscode.ThemeColor("statusBarItem.warningBackground"),
   },
-  [ServerStatus.SERVER_STARTING]: { icon: "$(sync~spin)", command: commands.showOutput.command },
-  [ServerStatus.SERVER_RUNNING]: { icon: "$(check)", command: commands.showCommands.command },
+  [ServerStatus.SERVER_STARTING]: {
+    icon: "$(sync~spin)",
+    command: commands.showOutput.command,
+  },
+  [ServerStatus.SERVER_RUNNING]: {
+    icon: "$(check)",
+    command: commands.showCommands.command,
+  },
   [ServerStatus.SERVER_STOPPED]: {
     icon: "$(x)",
     command: commands.restartBuf.command,
@@ -54,7 +60,11 @@ export function activate(ctx: vscode.ExtensionContext, bufCtx: BufContext) {
 
 const updateStatusBar = (bufCtx: BufContext) => {
   if (!statusBarItem) {
-    statusBarItem = vscode.window.createStatusBarItem(STATUS_BAR_ITEM_NAME, vscode.StatusBarAlignment.Right, 100);
+    statusBarItem = vscode.window.createStatusBarItem(
+      STATUS_BAR_ITEM_NAME,
+      vscode.StatusBarAlignment.Right,
+      100
+    );
     statusBarItem.name = STATUS_BAR_ITEM_NAME;
     statusBarItem.show();
   }
@@ -72,7 +82,9 @@ const updateStatusBar = (bufCtx: BufContext) => {
   if (config.tooltip) {
     statusBarItem.tooltip.appendMarkdown(`${config.tooltip}\n\n`);
   } else if (bufCtx.module) {
-    statusBarItem.tooltip.appendMarkdown(`$(file-submodule) ${bufCtx.module}\n\n`);
+    statusBarItem.tooltip.appendMarkdown(
+      `$(file-submodule) ${bufCtx.module}\n\n`
+    );
   }
 };
 

@@ -38,7 +38,9 @@ suite("version", () => {
       ctx.globalStorageUri = {
         fsPath: storagePath,
       } as vscode.Uri;
-      const execFileStub = sandbox.stub(util, "execFile").resolves({ stdout: "1.34.15\n", stderr: "" });
+      const execFileStub = sandbox
+        .stub(util, "execFile")
+        .resolves({ stdout: "1.34.15\n", stderr: "" });
 
       const bufVersion = await BufVersion.fromPath("/path/to/buf");
 
@@ -57,7 +59,9 @@ suite("version", () => {
         },
       } as unknown as vscode.WorkspaceConfiguration);
 
-      sandbox.stub(util, "execFile").resolves({ stdout: "1.34.15\n", stderr: "" });
+      sandbox
+        .stub(util, "execFile")
+        .resolves({ stdout: "1.34.15\n", stderr: "" });
 
       const bufVersion = await BufVersion.fromPath(bufPath);
     });
@@ -79,7 +83,9 @@ suite("version", () => {
         fsPath: storagePath,
       } as vscode.Uri;
 
-      sandbox.stub(util, "execFile").resolves({ stdout: "1.34.15\n", stderr: "" });
+      sandbox
+        .stub(util, "execFile")
+        .resolves({ stdout: "1.34.15\n", stderr: "" });
 
       const bufVersion = await BufVersion.fromPath(bufPath);
     });
@@ -101,13 +107,18 @@ suite("version", () => {
         fsPath: storagePath,
       } as vscode.Uri;
 
-      sandbox.stub(util, "execFile").resolves({ stdout: "1.34.15\n", stderr: "" });
+      sandbox
+        .stub(util, "execFile")
+        .resolves({ stdout: "1.34.15\n", stderr: "" });
 
       const bufVersion = await BufVersion.fromPath(bufPath);
     });
 
     test("hasUpgrade detects upgrade", async () => {
-      const release = { tag_name: "v1.35.0", name: "Release 1.35.0" } as github.Release;
+      const release = {
+        tag_name: "v1.35.0",
+        name: "Release 1.35.0",
+      } as github.Release;
       const bufVersion = new BufVersion(".", new semver.Range("1.34.15"));
 
       const result = await bufVersion.hasUpgrade(release);
@@ -115,7 +126,10 @@ suite("version", () => {
     });
 
     test("hasUpgrade detects no upgrade", async () => {
-      const release = { tag_name: "v1.34.15", name: "Release 1.34.15" } as github.Release;
+      const release = {
+        tag_name: "v1.34.15",
+        name: "Release 1.34.15",
+      } as github.Release;
       const bufVersion = new BufVersion(".", new semver.Range("1.34.15"));
 
       const result = await bufVersion.hasUpgrade(release);
@@ -125,7 +139,9 @@ suite("version", () => {
 
   suite("getBufVersion", () => {
     test("returns correct version", async () => {
-      const execFileStub = sandbox.stub(util, "execFile").resolves({ stdout: "1.34.15\n", stderr: "" });
+      const execFileStub = sandbox
+        .stub(util, "execFile")
+        .resolves({ stdout: "1.34.15\n", stderr: "" });
 
       const version = await getBufVersion("/path/to/buf");
       assert.strictEqual(version.raw, "1.34.15");

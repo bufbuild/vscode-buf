@@ -58,32 +58,40 @@ export const log = new Log();
 
 export const execFile = promisify(cp.execFile);
 
-export const download = async (url: string, dest: string, abort: AbortController): Promise<void> => {
-  return progress(`Downloading ${path.basename(dest)}`, abort, async (progress) => {
-    const response = await fetch(url, { signal: abort.signal });
-    if (!response.ok || response.body === null) {
-      throw new Error(`Can't fetch ${url}: ${response.statusText}`);
+export const download = async (
+  url: string,
+  dest: string,
+  abort: AbortController
+): Promise<void> => {
+  return progress(
+    `Downloading ${path.basename(dest)}`,
+    abort,
+    async (progress) => {
+      const response = await fetch(url, { signal: abort.signal });
+      if (!response.ok || response.body === null) {
+        throw new Error(`Can't fetch ${url}: ${response.statusText}`);
+      }
+
+      const size = Number(response.headers.get("content-length")) || 0;
+      let read = 0;
+      const out = fs.createWriteStream(dest);
+
+      const progressStream = new Transform({
+        transform(chunk, _, callback) {
+          read += chunk.length;
+          if (size > 0) {
+            progress(read / size);
+          }
+          callback(null, chunk);
+        },
+      });
+
+      try {
+        await pipelineAsync(response.body, progressStream, out);
+      } catch (e) {
+        fs.unlink(dest, (_) => null);
+        throw e;
+      }
     }
-
-    const size = Number(response.headers.get("content-length")) || 0;
-    let read = 0;
-    const out = fs.createWriteStream(dest);
-
-    const progressStream = new Transform({
-      transform(chunk, _, callback) {
-        read += chunk.length;
-        if (size > 0) {
-          progress(read / size);
-        }
-        callback(null, chunk);
-      },
-    });
-
-    try {
-      await pipelineAsync(response.body, progressStream, out);
-    } catch (e) {
-      fs.unlink(dest, (_) => null);
-      throw e;
-    }
-  });
+  );
 };

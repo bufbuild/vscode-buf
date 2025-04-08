@@ -36,27 +36,31 @@ suite("commands.restartBuf", () => {
     logWarnStub = sandbox.stub(util.log, "warn");
     logInfoStub = sandbox.stub(util.log, "info");
 
-    serverOutputChannelStub = sandbox.stub(vscode.window, "createOutputChannel").returns({
-      name: "Buf (server)",
-      dispose: () => {},
-      logLevel: vscode.LogLevel.Info,
-      onDidChangeLogLevel: { event: () => () => {} },
-      trace: () => {},
-      debug: () => {},
-      info: () => {},
-      warn: () => {},
-      error: () => {},
-    } as unknown as vscode.LogOutputChannel);
+    serverOutputChannelStub = sandbox
+      .stub(vscode.window, "createOutputChannel")
+      .returns({
+        name: "Buf (server)",
+        dispose: () => {},
+        logLevel: vscode.LogLevel.Info,
+        onDidChangeLogLevel: { event: () => () => {} },
+        trace: () => {},
+        debug: () => {},
+        info: () => {},
+        warn: () => {},
+        error: () => {},
+      } as unknown as vscode.LogOutputChannel);
 
     ctx = MockExtensionContext.new();
     bufCtx = new BufContext();
 
-    sandbox.stub(vscode.commands, "registerCommand").callsFake((_: string, callback: (...args: any[]) => any) => {
-      cmdCallback = callback;
-      return {
-        dispose: () => {},
-      } as unknown as vscode.Disposable;
-    });
+    sandbox
+      .stub(vscode.commands, "registerCommand")
+      .callsFake((_: string, callback: (...args: any[]) => any) => {
+        cmdCallback = callback;
+        return {
+          dispose: () => {},
+        } as unknown as vscode.Disposable;
+      });
 
     cmds.restartBuf.register(ctx, bufCtx);
   });
@@ -84,9 +88,21 @@ suite("commands.restartBuf", () => {
 
     await cmdCallback();
 
-    assert.strictEqual(stopStub.calledOnce, true, "stop() should be called once");
-    assert.strictEqual(bufCtx.client, undefined, "client should be undefined after stopping");
-    assert.strictEqual(bufCtx.status, ServerStatus.SERVER_DISABLED, "status should be SERVER_DISABLED");
+    assert.strictEqual(
+      stopStub.calledOnce,
+      true,
+      "stop() should be called once"
+    );
+    assert.strictEqual(
+      bufCtx.client,
+      undefined,
+      "client should be undefined after stopping"
+    );
+    assert.strictEqual(
+      bufCtx.status,
+      ServerStatus.SERVER_DISABLED,
+      "status should be SERVER_DISABLED"
+    );
   });
 
   test("if buf not enabled, logs warning and does nothing", async () => {
@@ -121,7 +137,11 @@ suite("commands.restartBuf", () => {
     await cmdCallback();
 
     assert.strictEqual(bufCtx.client, undefined, "client should be undefined");
-    assert.strictEqual(bufCtx.status, ServerStatus.SERVER_STOPPED, "status should be SERVER_STOPPED");
+    assert.strictEqual(
+      bufCtx.status,
+      ServerStatus.SERVER_STOPPED,
+      "status should be SERVER_STOPPED"
+    );
     assert.strictEqual(logErrorStub.called, true, "error should be logged");
   });
 
@@ -155,8 +175,20 @@ suite("commands.restartBuf", () => {
 
     await cmdCallback();
 
-    assert.strictEqual(startStub.calledOnce, true, "start() should be called once");
-    assert.strictEqual(bufCtx.status, ServerStatus.SERVER_RUNNING, "status should be SERVER_RUNNING");
-    assert.strictEqual(logInfoStub.calledWith("Buf Language Server started."), true, "info should be logged");
+    assert.strictEqual(
+      startStub.calledOnce,
+      true,
+      "start() should be called once"
+    );
+    assert.strictEqual(
+      bufCtx.status,
+      ServerStatus.SERVER_RUNNING,
+      "status should be SERVER_RUNNING"
+    );
+    assert.strictEqual(
+      logInfoStub.calledWith("Buf Language Server started."),
+      true,
+      "info should be logged"
+    );
   });
 });

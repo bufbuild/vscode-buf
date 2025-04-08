@@ -28,24 +28,30 @@ describe("status", function () {
     sandbox = sinon.createSandbox();
 
     statusBarItem = vscode.window.createStatusBarItem();
-    createStatusBarItemStub = sandbox.stub(vscode.window, "createStatusBarItem").returns(statusBarItem);
+    createStatusBarItemStub = sandbox
+      .stub(vscode.window, "createStatusBarItem")
+      .returns(statusBarItem);
 
     ctx = MockExtensionContext.new();
 
-    createOutputChannelStub = sandbox.stub(vscode.window, "createOutputChannel").returns({
-      name: "Buf (server)",
-      dispose: () => {},
-      logLevel: vscode.LogLevel.Info,
-      onDidChangeLogLevel: { event: () => () => {} },
-      trace: () => {},
-      debug: () => {},
-      info: () => {},
-      warn: () => {},
-      error: () => {},
-    } as unknown as vscode.LogOutputChannel);
+    createOutputChannelStub = sandbox
+      .stub(vscode.window, "createOutputChannel")
+      .returns({
+        name: "Buf (server)",
+        dispose: () => {},
+        logLevel: vscode.LogLevel.Info,
+        onDidChangeLogLevel: { event: () => () => {} },
+        trace: () => {},
+        debug: () => {},
+        info: () => {},
+        warn: () => {},
+        error: () => {},
+      } as unknown as vscode.LogOutputChannel);
 
     bufCtx = new BufContext();
-    bufCtxonDidChangeContextSpy = sandbox.spy(bufCtx, "onDidChangeContext", ["get"]);
+    bufCtxonDidChangeContextSpy = sandbox.spy(bufCtx, "onDidChangeContext", [
+      "get",
+    ]);
 
     status.activate(ctx, bufCtx);
   });

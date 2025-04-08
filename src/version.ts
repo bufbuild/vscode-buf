@@ -8,7 +8,10 @@ const loose: semver.Options = {
 };
 
 export class BufVersion {
-  constructor(public readonly path: string, public readonly version: semver.Range) {}
+  constructor(
+    public readonly path: string,
+    public readonly version: semver.Range
+  ) {}
 
   static async fromPath(path: string): Promise<BufVersion> {
     const version = await getBufVersion(path);
@@ -45,7 +48,8 @@ export const getBufVersion = async (bufPath: string): Promise<semver.Range> => {
 // Get the version of a github release, by parsing the tag or name.
 const getReleaseVersion = (release: github.Release): semver.Range => {
   // Prefer the tag name, but fall back to the release name.
-  return !semver.validRange(release.tag_name, loose) && semver.validRange(release.name, loose)
+  return !semver.validRange(release.tag_name, loose) &&
+    semver.validRange(release.name, loose)
     ? new semver.Range(release.name, loose)
     : new semver.Range(release.tag_name, loose);
 };

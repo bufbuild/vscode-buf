@@ -13,7 +13,9 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   commands.registerAllCommands(ctx, bufCtx);
 
-  ctx.subscriptions.push(vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange));
+  ctx.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange)
+  );
 
   await commands.findBuf.execute();
 

@@ -30,7 +30,10 @@ commands.forEach((command) => {
   commandMap.set(command.command, command);
 });
 
-export const registerAllCommands = (ctx: vscode.ExtensionContext, bufCtx: BufContext) => {
+export const registerAllCommands = (
+  ctx: vscode.ExtensionContext,
+  bufCtx: BufContext
+) => {
   commands.forEach((command) => {
     command.register(ctx, bufCtx);
   });

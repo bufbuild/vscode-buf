@@ -9,7 +9,11 @@ export function get<T>(key: string): T {
 }
 
 // Sets the config value `buf.<key>`. Does not apply substitutions.
-export function update<T>(key: string, value: T, target?: vscode.ConfigurationTarget) {
+export function update<T>(
+  key: string,
+  value: T,
+  target?: vscode.ConfigurationTarget
+) {
   return vscode.workspace.getConfiguration("buf").update(key, value, target);
 }
 
@@ -39,7 +43,11 @@ function replacement(name: string): string | undefined {
   if (name === "userHome") {
     return homedir();
   }
-  if (name === "workspaceRoot" || name === "workspaceFolder" || name === "cwd") {
+  if (
+    name === "workspaceRoot" ||
+    name === "workspaceFolder" ||
+    name === "cwd"
+  ) {
     if (vscode.workspace.rootPath !== undefined) {
       return vscode.workspace.rootPath;
     }
@@ -48,7 +56,10 @@ function replacement(name: string): string | undefined {
     }
     return process.cwd();
   }
-  if (name === "workspaceFolderBasename" && vscode.workspace.rootPath !== undefined) {
+  if (
+    name === "workspaceFolderBasename" &&
+    vscode.workspace.rootPath !== undefined
+  ) {
     return path.basename(vscode.workspace.rootPath);
   }
   const envPrefix = "env:";
@@ -57,7 +68,9 @@ function replacement(name: string): string | undefined {
   }
   const configPrefix = "config:";
   if (name.startsWith(configPrefix)) {
-    const config = vscode.workspace.getConfiguration().get(name.substr(configPrefix.length));
+    const config = vscode.workspace
+      .getConfiguration()
+      .get(name.substr(configPrefix.length));
     return typeof config === "string" ? config : undefined;
   }
 

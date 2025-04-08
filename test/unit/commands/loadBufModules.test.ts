@@ -32,29 +32,36 @@ suite("commands.loadBufModules", () => {
     logErrorStub = sandbox.stub(util.log, "error");
     logInfoStub = sandbox.stub(util.log, "info");
 
-    serverOutputChannelStub = sandbox.stub(vscode.window, "createOutputChannel").returns({
-      name: "Buf (server)",
-      dispose: () => {},
-      logLevel: vscode.LogLevel.Info,
-      onDidChangeLogLevel: { event: () => () => {} },
-      trace: () => {},
-      debug: () => {},
-      info: () => {},
-      warn: () => {},
-      error: () => {},
-    } as unknown as vscode.LogOutputChannel);
+    serverOutputChannelStub = sandbox
+      .stub(vscode.window, "createOutputChannel")
+      .returns({
+        name: "Buf (server)",
+        dispose: () => {},
+        logLevel: vscode.LogLevel.Info,
+        onDidChangeLogLevel: { event: () => () => {} },
+        trace: () => {},
+        debug: () => {},
+        info: () => {},
+        warn: () => {},
+        error: () => {},
+      } as unknown as vscode.LogOutputChannel);
 
     ctx = MockExtensionContext.new();
     bufCtx = new BufContext();
 
-    sandbox.stub(vscode.commands, "registerCommand").callsFake((_: string, callback: (...args: any[]) => any) => {
-      cmdCallback = callback;
-      return {
-        dispose: () => {},
-      } as unknown as vscode.Disposable;
-    });
+    sandbox
+      .stub(vscode.commands, "registerCommand")
+      .callsFake((_: string, callback: (...args: any[]) => any) => {
+        cmdCallback = callback;
+        return {
+          dispose: () => {},
+        } as unknown as vscode.Disposable;
+      });
 
-    createFileSystemWatcherSpy = sandbox.spy(vscode.workspace, "createFileSystemWatcher");
+    createFileSystemWatcherSpy = sandbox.spy(
+      vscode.workspace,
+      "createFileSystemWatcher"
+    );
 
     cmds.loadBufModules.register(ctx, bufCtx);
   });
@@ -66,7 +73,10 @@ suite("commands.loadBufModules", () => {
 
   test("construction sets up file watchers", async () => {
     assert.strictEqual(createFileSystemWatcherSpy.calledOnce, true);
-    assert.strictEqual(createFileSystemWatcherSpy.getCall(0).args[0], "**/buf.yaml");
+    assert.strictEqual(
+      createFileSystemWatcherSpy.getCall(0).args[0],
+      "**/buf.yaml"
+    );
   });
 
   test("logs an error and does nothing if buf is not installed", async () => {
@@ -90,6 +100,9 @@ suite("commands.loadBufModules", () => {
 
     assert.strictEqual(execFileStub.calledOnce, true);
     assert.strictEqual(bufCtx.bufFiles.size, 1);
-    assert.strictEqual(bufCtx.bufFiles.get("external/google/type/latlng.proto")?.module, "google");
+    assert.strictEqual(
+      bufCtx.bufFiles.get("external/google/type/latlng.proto")?.module,
+      "google"
+    );
   });
 });

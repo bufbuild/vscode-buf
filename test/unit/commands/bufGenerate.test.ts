@@ -30,27 +30,31 @@ suite("commands.bufGenerate", () => {
     logErrorStub = sandbox.stub(util.log, "error");
     logInfoStub = sandbox.stub(util.log, "info");
 
-    serverOutputChannelStub = sandbox.stub(vscode.window, "createOutputChannel").returns({
-      name: "Buf (server)",
-      dispose: () => {},
-      logLevel: vscode.LogLevel.Info,
-      onDidChangeLogLevel: { event: () => () => {} },
-      trace: () => {},
-      debug: () => {},
-      info: () => {},
-      warn: () => {},
-      error: () => {},
-    } as unknown as vscode.LogOutputChannel);
+    serverOutputChannelStub = sandbox
+      .stub(vscode.window, "createOutputChannel")
+      .returns({
+        name: "Buf (server)",
+        dispose: () => {},
+        logLevel: vscode.LogLevel.Info,
+        onDidChangeLogLevel: { event: () => () => {} },
+        trace: () => {},
+        debug: () => {},
+        info: () => {},
+        warn: () => {},
+        error: () => {},
+      } as unknown as vscode.LogOutputChannel);
 
     ctx = MockExtensionContext.new();
     bufCtx = new BufContext();
 
-    sandbox.stub(vscode.commands, "registerCommand").callsFake((_: string, callback: (...args: any[]) => any) => {
-      cmdCallback = callback;
-      return {
-        dispose: () => {},
-      } as unknown as vscode.Disposable;
-    });
+    sandbox
+      .stub(vscode.commands, "registerCommand")
+      .callsFake((_: string, callback: (...args: any[]) => any) => {
+        cmdCallback = callback;
+        return {
+          dispose: () => {},
+        } as unknown as vscode.Disposable;
+      });
 
     bufGenerate.register(ctx, bufCtx);
   });
@@ -75,7 +79,11 @@ suite("commands.bufGenerate", () => {
     await cmdCallback();
 
     assert.strictEqual(execFileStub.calledOnce, true);
-    assert.deepStrictEqual(execFileStub.args[0], ["/path/to/buf", ["generate"], { cwd: vscode.workspace.rootPath }]);
+    assert.deepStrictEqual(execFileStub.args[0], [
+      "/path/to/buf",
+      ["generate"],
+      { cwd: vscode.workspace.rootPath },
+    ]);
     assert.strictEqual(logInfoStub.calledWith("Generated successfully"), true);
   });
 
@@ -86,7 +94,10 @@ suite("commands.bufGenerate", () => {
     await cmdCallback();
 
     assert.strictEqual(logErrorStub.calledOnce, true);
-    assert.strictEqual(logErrorStub.calledWith("Error generating buf: Error occurred"), true);
+    assert.strictEqual(
+      logErrorStub.calledWith("Error generating buf: Error occurred"),
+      true
+    );
   });
 
   test("should throw an error if executing buf throws an error", async () => {
@@ -96,6 +107,9 @@ suite("commands.bufGenerate", () => {
     await cmdCallback();
 
     assert.strictEqual(logErrorStub.calledOnce, true);
-    assert.strictEqual(logErrorStub.calledWith("Error generating buf: Execution failed"), true);
+    assert.strictEqual(
+      logErrorStub.calledWith("Error generating buf: Execution failed"),
+      true
+    );
   });
 });

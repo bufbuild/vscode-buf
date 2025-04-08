@@ -63,5 +63,7 @@ export const findAsset = async (release: Release): Promise<Asset> => {
     return asset;
   }
 
-  throw new Error(`No buf ${release.name} binary available, looking for '${platformKey}'`);
+  throw new Error(
+    `No buf ${release.name} binary available, looking for '${platformKey}'`
+  );
 };

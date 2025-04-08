@@ -32,27 +32,31 @@ suite("commands.findBuf", () => {
   setup(() => {
     sandbox = sinon.createSandbox();
 
-    serverOutputChannelStub = sandbox.stub(vscode.window, "createOutputChannel").returns({
-      name: "Buf (server)",
-      dispose: () => {},
-      logLevel: vscode.LogLevel.Info,
-      onDidChangeLogLevel: { event: () => () => {} },
-      trace: () => {},
-      debug: () => {},
-      info: () => {},
-      warn: () => {},
-      error: () => {},
-    } as unknown as vscode.LogOutputChannel);
+    serverOutputChannelStub = sandbox
+      .stub(vscode.window, "createOutputChannel")
+      .returns({
+        name: "Buf (server)",
+        dispose: () => {},
+        logLevel: vscode.LogLevel.Info,
+        onDidChangeLogLevel: { event: () => () => {} },
+        trace: () => {},
+        debug: () => {},
+        info: () => {},
+        warn: () => {},
+        error: () => {},
+      } as unknown as vscode.LogOutputChannel);
 
     ctx = MockExtensionContext.new();
     bufCtx = new BufContext();
 
-    sandbox.stub(vscode.commands, "registerCommand").callsFake((_: string, callback: (...args: any[]) => any) => {
-      cmdCallback = callback;
-      return {
-        dispose: () => {},
-      } as unknown as vscode.Disposable;
-    });
+    sandbox
+      .stub(vscode.commands, "registerCommand")
+      .callsFake((_: string, callback: (...args: any[]) => any) => {
+        cmdCallback = callback;
+        return {
+          dispose: () => {},
+        } as unknown as vscode.Disposable;
+      });
 
     whichStub = sandbox.stub();
 
@@ -71,15 +75,17 @@ suite("commands.findBuf", () => {
   test("when buf.path set in config, uses buf from config", async () => {
     const bufPath = "/usr/local/bin/buf";
 
-    const getConfigurationStub = sandbox.stub(vscode.workspace, "getConfiguration").returns({
-      get: function (key: string) {
-        if (key === "path") {
-          return bufPath;
-        }
+    const getConfigurationStub = sandbox
+      .stub(vscode.workspace, "getConfiguration")
+      .returns({
+        get: function (key: string) {
+          if (key === "path") {
+            return bufPath;
+          }
 
-        return undefined;
-      },
-    } as unknown as vscode.WorkspaceConfiguration);
+          return undefined;
+        },
+      } as unknown as vscode.WorkspaceConfiguration);
 
     const versionFromPathStub = sandbox
       .stub(version.BufVersion, "fromPath")
@@ -88,8 +94,16 @@ suite("commands.findBuf", () => {
     await cmdCallback();
 
     assert.strictEqual(bufCtx.buf?.path, bufPath, "Paths should match");
-    assert.strictEqual(versionFromPathStub.calledOnce, true, "fromPath should be called once");
-    assert.strictEqual(getConfigurationStub.calledOnce, true, "getConfiguration should be called once");
+    assert.strictEqual(
+      versionFromPathStub.calledOnce,
+      true,
+      "fromPath should be called once"
+    );
+    assert.strictEqual(
+      getConfigurationStub.calledOnce,
+      true,
+      "getConfiguration should be called once"
+    );
   });
 
   test("when buf installed by extension, finds buf in the extension storage", async () => {
@@ -100,7 +114,9 @@ suite("commands.findBuf", () => {
     } as vscode.Uri;
     sandbox.stub(fs.promises, "readdir").resolves(["v1" as any]);
 
-    sandbox.stub(version.BufVersion, "fromPath").resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
+    sandbox
+      .stub(version.BufVersion, "fromPath")
+      .resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
 
     await cmdCallback();
 
@@ -116,7 +132,9 @@ suite("commands.findBuf", () => {
       fsPath: storagePath,
     } as vscode.Uri;
 
-    sandbox.stub(version.BufVersion, "fromPath").resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
+    sandbox
+      .stub(version.BufVersion, "fromPath")
+      .resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
 
     await cmdCallback();
 

@@ -35,27 +35,31 @@ suite("commands.updateBuf", () => {
     logErrorStub = sandbox.stub(util.log, "error");
     logInfoStub = sandbox.stub(util.log, "info");
 
-    serverOutputChannelStub = sandbox.stub(vscode.window, "createOutputChannel").returns({
-      name: "Buf (server)",
-      dispose: () => {},
-      logLevel: vscode.LogLevel.Info,
-      onDidChangeLogLevel: { event: () => () => {} },
-      trace: () => {},
-      debug: () => {},
-      info: () => {},
-      warn: () => {},
-      error: () => {},
-    } as unknown as vscode.LogOutputChannel);
+    serverOutputChannelStub = sandbox
+      .stub(vscode.window, "createOutputChannel")
+      .returns({
+        name: "Buf (server)",
+        dispose: () => {},
+        logLevel: vscode.LogLevel.Info,
+        onDidChangeLogLevel: { event: () => () => {} },
+        trace: () => {},
+        debug: () => {},
+        info: () => {},
+        warn: () => {},
+        error: () => {},
+      } as unknown as vscode.LogOutputChannel);
 
     ctx = MockExtensionContext.new();
     bufCtx = new BufContext();
 
-    sandbox.stub(vscode.commands, "registerCommand").callsFake((_: string, callback: (...args: any[]) => any) => {
-      cmdCallback = callback;
-      return {
-        dispose: () => {},
-      } as unknown as vscode.Disposable;
-    });
+    sandbox
+      .stub(vscode.commands, "registerCommand")
+      .callsFake((_: string, callback: (...args: any[]) => any) => {
+        cmdCallback = callback;
+        return {
+          dispose: () => {},
+        } as unknown as vscode.Disposable;
+      });
 
     cmds.updateBuf.register(ctx, bufCtx);
   });
@@ -91,7 +95,10 @@ suite("commands.updateBuf", () => {
     sandbox.stub(github, "latestRelease").resolves(dummyRelease);
     sandbox.stub(github, "findAsset").resolves(dummyAsset);
 
-    const showInfoMessageStub = sandbox.spy(vscode.window, "showInformationMessage");
+    const showInfoMessageStub = sandbox.spy(
+      vscode.window,
+      "showInformationMessage"
+    );
 
     const installBufSpy = sandbox.spy(installBuf, "install");
 
@@ -122,16 +129,23 @@ suite("commands.updateBuf", () => {
     const showInfoMessageStub = sandbox
       .stub(vscode.window, "showInformationMessage")
       .resolves("Install cli v1.34.15" as any);
-    const installBufStub = sandbox.stub(installBuf, "install").resolves(bufPath);
+    const installBufStub = sandbox
+      .stub(installBuf, "install")
+      .resolves(bufPath);
 
-    sandbox.stub(BufVersion, "fromPath").resolves(new BufVersion(bufPath, new semver.Range("1.34.14")));
+    sandbox
+      .stub(BufVersion, "fromPath")
+      .resolves(new BufVersion(bufPath, new semver.Range("1.34.14")));
     const restartBufStub = sandbox.stub(cmds.restartBuf, "execute").resolves();
 
     await cmdCallback();
 
     assert.strictEqual(showInfoMessageStub.callCount, 2);
     assert.strictEqual(installBufStub.calledOnce, true);
-    assert.strictEqual(installBufStub.calledWith(ctx, dummyRelease, dummyAsset), true);
+    assert.strictEqual(
+      installBufStub.calledWith(ctx, dummyRelease, dummyAsset),
+      true
+    );
     assert.strictEqual(restartBufStub.calledOnce, true);
   });
 });

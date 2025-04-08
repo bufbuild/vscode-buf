@@ -10,45 +10,51 @@ import { showHelp } from "../ui";
 import { download, log } from "../util";
 import { BufVersion } from "../version";
 
-export const installBuf = new Command("buf.install", CommandType.COMMAND_SETUP, (ctx, bufCtx) => {
-  return async () => {
-    if (bufCtx.buf) {
-      // If 'buf.path' is set explicitly, we don't want to do anything.
-      if (config.get<string>("path")) {
-        vscode.window.showErrorMessage(
-          "'buf.path' is explicitly set. Please remove it to use the extension's bundled version."
-        );
+export const installBuf = new Command(
+  "buf.install",
+  CommandType.COMMAND_SETUP,
+  (ctx, bufCtx) => {
+    return async () => {
+      if (bufCtx.buf) {
+        // If 'buf.path' is set explicitly, we don't want to do anything.
+        if (config.get<string>("path")) {
+          vscode.window.showErrorMessage(
+            "'buf.path' is explicitly set. Please remove it to use the extension's bundled version."
+          );
+          return;
+        }
+
+        // Assume the user wants to attempt an upgrade...
+        await updateBuf.execute();
         return;
       }
 
-      // Assume the user wants to attempt an upgrade...
-      await updateBuf.execute();
-      return;
-    }
+      const abort = new AbortController();
+      try {
+        log.info("Checking github releases for latest release...");
+        const release = await github.latestRelease();
+        const asset = await github.findAsset(release);
 
-    const abort = new AbortController();
-    try {
-      log.info("Checking github releases for latest release...");
-      const release = await github.latestRelease();
-      const asset = await github.findAsset(release);
+        var bufPath = await install(ctx, release, asset, abort);
 
-      var bufPath = await install(ctx, release, asset, abort);
+        bufCtx.buf = await BufVersion.fromPath(bufPath);
+        vscode.window.showInformationMessage(
+          `Buf ${release.name} is now installed.`
+        );
 
-      bufCtx.buf = await BufVersion.fromPath(bufPath);
-      vscode.window.showInformationMessage(`Buf ${release.name} is now installed.`);
+        await restartBuf.execute();
+        loadBufModules.execute();
+      } catch (e) {
+        if (!abort.signal.aborted) {
+          log.info(`Failed to install buf: ${e}`);
 
-      await restartBuf.execute();
-      loadBufModules.execute();
-    } catch (e) {
-      if (!abort.signal.aborted) {
-        log.info(`Failed to install buf: ${e}`);
-
-        const message = `Failed to install Buf cli: ${e}\nYou may want to install it manually.`;
-        showHelp(message, installURL);
+          const message = `Failed to install Buf cli: ${e}\nYou may want to install it manually.`;
+          showHelp(message, installURL);
+        }
       }
-    }
-  };
-});
+    };
+  }
+);
 
 export const install = async (
   ctx: vscode.ExtensionContext,

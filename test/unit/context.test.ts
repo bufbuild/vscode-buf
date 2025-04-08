@@ -15,17 +15,19 @@ suite("context", () => {
   setup(() => {
     sandbox = sinon.createSandbox();
 
-    serverOutputChannelStub = sandbox.stub(vscode.window, "createOutputChannel").returns({
-      name: "Buf (server)",
-      dispose: () => {},
-      logLevel: vscode.LogLevel.Info,
-      onDidChangeLogLevel: { event: () => () => {} },
-      trace: () => {},
-      debug: () => {},
-      info: () => {},
-      warn: () => {},
-      error: () => {},
-    } as unknown as vscode.LogOutputChannel);
+    serverOutputChannelStub = sandbox
+      .stub(vscode.window, "createOutputChannel")
+      .returns({
+        name: "Buf (server)",
+        dispose: () => {},
+        logLevel: vscode.LogLevel.Info,
+        onDidChangeLogLevel: { event: () => () => {} },
+        trace: () => {},
+        debug: () => {},
+        info: () => {},
+        warn: () => {},
+        error: () => {},
+      } as unknown as vscode.LogOutputChannel);
   });
 
   teardown(() => {
@@ -35,7 +37,10 @@ suite("context", () => {
   suite("BufContext", () => {
     test("constructs a new output channel", () => {
       const context = new BufContext();
-      assert.strictEqual(serverOutputChannelStub.calledOnceWith("Buf (server)"), true);
+      assert.strictEqual(
+        serverOutputChannelStub.calledOnceWith("Buf (server)"),
+        true
+      );
       // Optionally verify the name if needed:
       assert.strictEqual(
         context.serverOutputChannel.name,
@@ -46,7 +51,11 @@ suite("context", () => {
 
     test("status is SERVER_STOPPED by default", () => {
       const context = new BufContext();
-      assert.strictEqual(context.status, ServerStatus.SERVER_STOPPED, "The default status should be SERVER_STOPPED.");
+      assert.strictEqual(
+        context.status,
+        ServerStatus.SERVER_STOPPED,
+        "The default status should be SERVER_STOPPED."
+      );
     });
 
     test("changing status emits event", (done) => {
@@ -56,7 +65,11 @@ suite("context", () => {
         eventFired = true;
         subscription.dispose();
         // Ensure that the updated status is set correctly.
-        assert.strictEqual(context.status, ServerStatus.SERVER_RUNNING, "The status should change to SERVER_RUNNING.");
+        assert.strictEqual(
+          context.status,
+          ServerStatus.SERVER_RUNNING,
+          "The status should change to SERVER_RUNNING."
+        );
         context.dispose();
         done();
       });
@@ -79,7 +92,11 @@ suite("context", () => {
         eventFired = true;
         subscription.dispose();
         // Assert busy changed to true
-        assert.strictEqual(context.busy, true, "Busy should be true after setting.");
+        assert.strictEqual(
+          context.busy,
+          true,
+          "Busy should be true after setting."
+        );
         context.dispose();
         done();
       });
