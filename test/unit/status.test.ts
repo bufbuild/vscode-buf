@@ -9,7 +9,7 @@ import {
 } from "../mocks/mock-context";
 import { BufContext } from "../../src/context";
 
-describe("status", function () {
+suite("status", function () {
   vscode.window.showInformationMessage("Start all status tests.");
 
   let sandbox: sinon.SinonSandbox;
@@ -64,11 +64,11 @@ describe("status", function () {
     status.disposeStatusBar();
   });
 
-  it("activate creates an output channel", function () {
+  test("activate creates an output channel", function () {
     assert.strictEqual(createOutputChannelStub.callCount, 1);
   });
 
-  it("activate sets up subscriptions", function () {
+  test("activate sets up subscriptions", function () {
     assert.strictEqual(ctx.subscriptions.length, 2);
     assert.strictEqual(bufCtxonDidChangeContextSpy.get.calledOnce, true);
   });

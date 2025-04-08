@@ -134,7 +134,7 @@ suite("commands.installBuf", () => {
     sandbox.stub(github, "findAsset").resolves(dummyAsset);
 
     const storagePath = "/path/to/storage";
-    sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
+    sandbox.stub(ctx, "globalStorageUri").value({
       fsPath: storagePath,
     });
 

@@ -38,7 +38,7 @@ suite("version", () => {
 
     test("fromPath creates BufVersion instance", async () => {
       const storagePath = "/path/to/storage";
-      sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
+      sandbox.stub(ctx, "globalStorageUri").value({
         fsPath: storagePath,
       });
       const execFileStub = sandbox
@@ -82,7 +82,7 @@ suite("version", () => {
         },
       } as unknown as vscode.WorkspaceConfiguration);
 
-      sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
+      sandbox.stub(ctx, "globalStorageUri").value({
         fsPath: storagePath,
       });
 
@@ -106,10 +106,10 @@ suite("version", () => {
         },
       } as unknown as vscode.WorkspaceConfiguration);
 
-      sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
+      sandbox.stub(ctx, "globalStorageUri").value({
         fsPath: storagePath,
       });
-
+      
       sandbox
         .stub(util, "execFile")
         .resolves({ stdout: "1.34.15\n", stderr: "" });

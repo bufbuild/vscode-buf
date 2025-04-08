@@ -62,7 +62,7 @@ suite("commands.findBuf", () => {
 
     whichStub = sandbox.stub();
 
-    findBufMod = proxyquire("../../../src/commands/findBuf", {
+    findBufMod = proxyquire("../../../src/commands/find-buf", {
       which: whichStub,
     });
 
@@ -112,7 +112,7 @@ suite("commands.findBuf", () => {
     const storagePath = "/path/to/storage";
     const bufPath = path.join(storagePath, "v1", bufFilename);
 
-    sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
+    sandbox.stub(ctx, "globalStorageUri").value({
       fsPath: storagePath,
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -132,7 +132,7 @@ suite("commands.findBuf", () => {
     whichStub.returns(bufPath);
 
     const storagePath = "/path/to/storage";
-    sandbox.spy(ctx, "globalStorageUri", ["get"]).get().returns({
+    sandbox.stub(ctx, "globalStorageUri").value({
       fsPath: storagePath,
     });
 
