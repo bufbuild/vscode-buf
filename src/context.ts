@@ -13,6 +13,7 @@ export enum ServerStatus {
   SERVER_RUNNING,
   SERVER_STOPPED,
   SERVER_ERRORED,
+  SERVER_NOT_INSTALLED,
 }
 
 export class BufContext implements vscode.Disposable {
@@ -50,6 +51,9 @@ export class BufContext implements vscode.Disposable {
   public set buf(value: version.BufVersion | undefined) {
     if (this._buf !== value) {
       this._buf = value;
+      if (!value) {
+        this._status = ServerStatus.SERVER_NOT_INSTALLED;
+      }
       this.onDidChangeContextEmitter.fire();
     }
   }

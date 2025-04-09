@@ -6,6 +6,7 @@ import { Command, CommandType, restartBuf } from ".";
 import { install } from "./install-buf";
 import { log } from "../log";
 import { BufVersion, Upgrade } from "../version";
+import { ServerStatus } from "../context";
 
 export const updateBuf = new Command(
   "buf.update",
@@ -22,14 +23,13 @@ export const updateBuf = new Command(
 
       if (!bufCtx.buf) {
         log.error("Buf is not installed. Please install Buf.");
+        bufCtx.status = ServerStatus.SERVER_NOT_INSTALLED;
         return;
       }
 
       const version = config.get<string>("commandLine.version");
-      if (bufCtx.buf?.version.raw === version) {
-        log.info(
-          `Buf is already at the requested version (${version}). No update needed.`
-        );
+      if (version) {
+        log.info(`Buf set to version '${version}'. Skipping update.`);
         return;
       }
 

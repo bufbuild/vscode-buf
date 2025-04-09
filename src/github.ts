@@ -14,7 +14,7 @@ export interface Asset {
 
 // Fetch the metadata for the latest stable release.
 export const getRelease = async (tag?: string): Promise<Release> => {
-  const releaseUrl = `${githubReleaseURL}${tag ? `tag/${tag}` : "latest"}`;
+  const releaseUrl = `${githubReleaseURL}${tag ? `tags/${tag}` : "latest"}`;
 
   const timeoutController = new AbortController();
   const timeout = setTimeout(() => {
@@ -26,7 +26,9 @@ export const getRelease = async (tag?: string): Promise<Release> => {
     });
     if (!response.ok) {
       console.error(response.url, response.status, response.statusText);
-      throw new Error(`Can't fetch release: ${response.statusText}`);
+      throw new Error(
+        `Can't fetch release '${tag ? tag : "latest"}': ${response.statusText}`
+      );
     }
     return (await response.json()) as Release;
   } finally {

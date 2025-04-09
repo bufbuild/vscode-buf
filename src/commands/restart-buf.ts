@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import * as lsp from "vscode-languageclient/node";
 import * as config from "../config";
 
-import { Command, CommandType } from ".";
+import { Command, CommandType, stopBuf } from ".";
 import { protoDocumentSelector } from "../const";
 import { BufContext, ServerStatus } from "../context";
 import { log } from "../log";
@@ -11,15 +11,10 @@ import { log } from "../log";
 export const restartBuf = new Command(
   "buf.restart",
   CommandType.COMMAND_EXTENSION,
-  (ctx, bufCtx) => {
+  (_, bufCtx) => {
     const callback = async () => {
       if (bufCtx.client) {
-        log.info(
-          `Request to stop language server (enabled: ${config.get<boolean>("enable")})`
-        );
-        await bufCtx.client.stop();
-        bufCtx.client = undefined;
-        bufCtx.status = ServerStatus.SERVER_STOPPED;
+        await stopBuf.execute();
       }
 
       if (!config.get<boolean>("enable")) {
@@ -30,6 +25,7 @@ export const restartBuf = new Command(
 
       if (!bufCtx.buf) {
         log.error("Buf is not installed. Please install Buf.");
+        bufCtx.status = ServerStatus.SERVER_NOT_INSTALLED;
         return;
       }
 
@@ -47,13 +43,6 @@ export const restartBuf = new Command(
 
       if (os.platform() !== "win32") {
         buf.transport = lsp.TransportKind.pipe;
-      }
-
-      const traceFile = config.get<string>("trace");
-
-      if (traceFile) {
-        const trace = { BUF_TRACE: traceFile };
-        buf.options = { env: { ...process.env, ...trace } };
       }
 
       const serverOptions: lsp.ServerOptions = buf;
@@ -89,14 +78,6 @@ export const restartBuf = new Command(
 
       log.info("Buf Language Server started.");
     };
-
-    ctx.subscriptions.push(
-      vscode.workspace.onDidChangeConfiguration(async (e) => {
-        if (e.affectsConfiguration("buf")) {
-          callback();
-        }
-      })
-    );
 
     return callback;
   }

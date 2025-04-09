@@ -41,9 +41,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
 export async function deactivate() {
   log.info("Deactivating extension.");
 
-  await bufCtx.client?.stop();
-  bufCtx.client = undefined;
-  bufCtx.status = ServerStatus.SERVER_STOPPED;
+  await commands.stopBuf.execute();
 
   status.disposeStatusBar();
 }
@@ -53,8 +51,12 @@ const handleOnDidConfigChange = async (e: vscode.ConfigurationChangeEvent) => {
     return;
   }
 
-  if (e.affectsConfiguration("buf.commandLine.path")) {
+  if (
+    e.affectsConfiguration("buf.commandLine.path") ||
+    e.affectsConfiguration("buf.commandLine.version")
+  ) {
     await commands.findBuf.execute();
-    commands.restartBuf.execute();
   }
+
+  commands.restartBuf.execute();
 };

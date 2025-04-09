@@ -27,7 +27,6 @@ suite("commands.findBuf", () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cmdCallback: (...args: any[]) => any;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let findBufMod: typeof findBufType;
   let whichStub: sinon.SinonStub;
 
@@ -109,6 +108,39 @@ suite("commands.findBuf", () => {
     );
   });
 
+  test("when buf.commandLine.version set, finds specific buf version in the extension storage", async () => {
+    const storagePath = "/path/to/storage";
+    const bufPath = path.join(storagePath, "v1", bufFilename);
+
+    sandbox.stub(ctx, "globalStorageUri").value({
+      fsPath: storagePath,
+    });
+    sandbox
+      .stub(fs.promises, "readdir")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .resolves(["v2" as any, "v1" as any, "v3" as any]);
+
+    const getConfigurationStub = sandbox
+      .stub(vscode.workspace, "getConfiguration")
+      .returns({
+        get: function (key: string) {
+          if (key === "commandLine.version") {
+            return "v1";
+          }
+
+          return undefined;
+        },
+      } as unknown as vscode.WorkspaceConfiguration);
+
+    sandbox
+      .stub(version.BufVersion, "fromPath")
+      .resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
+
+    await cmdCallback();
+
+    assert.strictEqual(bufCtx.buf?.path, bufPath, "buf path should match");
+  });
+
   test("when buf installed by extension, finds buf in the extension storage", async () => {
     const storagePath = "/path/to/storage";
     const bufPath = path.join(storagePath, "v1", bufFilename);
@@ -116,8 +148,10 @@ suite("commands.findBuf", () => {
     sandbox.stub(ctx, "globalStorageUri").value({
       fsPath: storagePath,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    sandbox.stub(fs.promises, "readdir").resolves(["v1" as any]);
+    sandbox
+      .stub(fs.promises, "readdir")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .resolves(["v2" as any, "v1" as any, "v3" as any]);
 
     sandbox
       .stub(version.BufVersion, "fromPath")

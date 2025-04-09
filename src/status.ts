@@ -41,6 +41,12 @@ const icons: Record<ServerStatus, StatusBarConfig> = {
     command: commands.restartBuf.command,
     tooltip: "$(debug-restart) Restart language server",
   },
+  [ServerStatus.SERVER_NOT_INSTALLED]: {
+    icon: "$(circle-slash)",
+    colour: new vscode.ThemeColor("statusBarItem.errorBackground"),
+    command: commands.installBuf.command,
+    tooltip: "$(circle-slash) Buf not installed",
+  },
 };
 
 const busyStatusBarConfig: StatusBarConfig = {

@@ -83,11 +83,16 @@ suite("github", () => {
         .resolves(dummyResponse as Response);
 
       const release = await github.getRelease("v1.0.0");
-      assert.deepStrictEqual(release, dummyRelease);
+      assert.deepStrictEqual(
+        release,
+        dummyRelease,
+        "Release details should be correct"
+      );
 
       assert.strictEqual(
-        fetchStub.calledOnceWith(githubReleaseURL + "tag/v1.0.0"),
-        true
+        fetchStub.calledOnceWith(githubReleaseURL + "tags/v1.0.0"),
+        true,
+        "Release URL should be correct"
       );
       fetchStub.restore();
     });
