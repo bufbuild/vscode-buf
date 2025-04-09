@@ -12,6 +12,7 @@ import { bufFilename } from "../../../src/const";
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
+import type * as findBufType from "../../../src/commands/find-buf";
 
 suite("commands.findBuf", () => {
   vscode.window.showInformationMessage("Start all findBuf tests.");
@@ -27,7 +28,7 @@ suite("commands.findBuf", () => {
   let cmdCallback: (...args: any[]) => any;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let findBufMod: any;
+  let findBufMod: typeof findBufType;
   let whichStub: sinon.SinonStub;
 
   setup(() => {
@@ -81,7 +82,7 @@ suite("commands.findBuf", () => {
       .stub(vscode.workspace, "getConfiguration")
       .returns({
         get: function (key: string) {
-          if (key === "path") {
+          if (key === "commandLine.path") {
             return bufPath;
           }
 

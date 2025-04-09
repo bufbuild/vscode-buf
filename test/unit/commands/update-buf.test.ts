@@ -5,11 +5,12 @@ import * as semver from "semver";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import * as cmds from "../../../src/commands";
-import * as util from "../../../src/util";
-import * as github from "../../../src/github";
 import * as installBuf from "../../../src/commands/install-buf";
+import * as github from "../../../src/github";
+import * as util from "../../../src/util";
 
 import { BufContext } from "../../../src/context";
+import { log } from "../../../src/log";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
 
@@ -33,8 +34,8 @@ suite("commands.updateBuf", () => {
     sandbox = sinon.createSandbox();
 
     execFileStub = sandbox.stub(util, "execFile");
-    logErrorStub = sandbox.stub(util.log, "error");
-    logInfoStub = sandbox.stub(util.log, "info");
+    logErrorStub = sandbox.stub(log, "error");
+    logInfoStub = sandbox.stub(log, "info");
 
     serverOutputChannelStub = sandbox
       .stub(vscode.window, "createOutputChannel")
@@ -94,7 +95,7 @@ suite("commands.updateBuf", () => {
       browser_download_url: "http://dummy",
     };
 
-    sandbox.stub(github, "latestRelease").resolves(dummyRelease);
+    sandbox.stub(github, "getRelease").resolves(dummyRelease);
     sandbox.stub(github, "findAsset").resolves(dummyAsset);
 
     const showInfoMessageStub = sandbox.spy(
@@ -125,7 +126,7 @@ suite("commands.updateBuf", () => {
       browser_download_url: "http://dummy",
     };
 
-    sandbox.stub(github, "latestRelease").resolves(dummyRelease);
+    sandbox.stub(github, "getRelease").resolves(dummyRelease);
     sandbox.stub(github, "findAsset").resolves(dummyAsset);
 
     const showInfoMessageStub = sandbox

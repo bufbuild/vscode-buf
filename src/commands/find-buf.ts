@@ -7,7 +7,7 @@ import which from "which";
 import { Command, CommandType } from ".";
 import { bufFilename } from "../const";
 import { unwrapError } from "../errors";
-import { log } from "../util";
+import { log } from "../log";
 import { BufVersion } from "../version";
 
 // This command is used to find the buf binary and set it in the context.
@@ -23,7 +23,7 @@ export const findBuf = new Command(
     return async () => {
       let buf: BufVersion | null = null;
 
-      const configPath = config.get<string>("path");
+      const configPath = config.get<string>("commandLine.path");
       if (configPath) {
         buf = await BufVersion.fromPath(configPath);
 

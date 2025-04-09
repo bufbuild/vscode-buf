@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as config from "../config";
 
 import { Command, CommandType } from ".";
 import { extensionId } from "../const";
@@ -22,6 +23,8 @@ export const showCommands = new Command(
       const bufCommands: BufQuickPickItem[] = [];
       const extCommands: BufQuickPickItem[] = [];
       const setupCommands: BufQuickPickItem[] = [];
+
+      const configPathSet = !!config.get<string>("commandLine.path");
 
       for (const cmd of commands.sort((a, b) =>
         a.command.localeCompare(b.command)
@@ -54,11 +57,13 @@ export const showCommands = new Command(
             });
             break;
           case CommandType.COMMAND_SETUP:
-            setupCommands.push({
-              label: cmd.title,
-              command: extCmd,
-              detail: cmd.description,
-            });
+            if (!configPathSet) {
+              setupCommands.push({
+                label: cmd.title,
+                command: extCmd,
+                detail: cmd.description,
+              });
+            }
             break;
           default:
             throw new Error(`Command ${cmd.title} has an unknown type!`);

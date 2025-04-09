@@ -4,7 +4,7 @@ import * as config from "./config";
 import * as status from "./status";
 
 import { BufContext, ServerStatus } from "./context";
-import { log } from "./util";
+import { log } from "./log";
 
 const bufCtx = new BufContext();
 
@@ -22,11 +22,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
   if (!bufCtx.buf) {
     log.warn("No buf cli found. Installing buf...");
     await commands.installBuf.execute();
-  }
-
-  if (bufCtx.buf) {
-    // Load modules asynchronously. If we don't load here, it'll load after we update / install.
-    commands.loadBufModules.execute();
   }
 
   if (config.get<boolean>("checkUpdates")) {
@@ -58,9 +53,8 @@ const handleOnDidConfigChange = async (e: vscode.ConfigurationChangeEvent) => {
     return;
   }
 
-  if (e.affectsConfiguration("buf.path")) {
+  if (e.affectsConfiguration("buf.commandLine.path")) {
     await commands.findBuf.execute();
     commands.restartBuf.execute();
-    commands.loadBufModules.execute();
   }
 };

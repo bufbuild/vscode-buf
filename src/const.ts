@@ -7,8 +7,7 @@ export const bufFilename = os.platform() === "win32" ? "buf.exe" : "buf";
 
 export const minBufVersion = "v1.43.0";
 
-export const githubReleaseURL =
-  "https://api.github.com/repos/bufbuild/buf/releases/latest";
+export const githubReleaseURL = "https://api.github.com/repos/bufbuild/buf/releases/";
 export const installURL = "https://buf.build/docs/cli/installation/";
 
 export const protoDocumentSelector = [{ scheme: "file", language: "proto" }];

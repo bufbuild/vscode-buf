@@ -13,13 +13,15 @@ export interface Asset {
 }
 
 // Fetch the metadata for the latest stable release.
-export const latestRelease = async (): Promise<Release> => {
+export const getRelease = async (tag?: string): Promise<Release> => {
+  const releaseUrl = `${githubReleaseURL}${tag ? `tag/${tag}` : "latest"}`;
+
   const timeoutController = new AbortController();
   const timeout = setTimeout(() => {
     timeoutController.abort();
   }, 5000);
   try {
-    const response = await fetch(githubReleaseURL, {
+    const response = await fetch(releaseUrl, {
       signal: timeoutController.signal,
     });
     if (!response.ok) {

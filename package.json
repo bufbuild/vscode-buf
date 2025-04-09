@@ -51,29 +51,13 @@
     "configuration": {
       "title": "Buf",
       "properties": {
-        "buf.path": {
+        "buf.commandLine.path": {
           "type": "string",
           "description": "Path to the buf binary"
         },
-        "buf.arguments": {
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "description": "Arguments for buf server."
-        },
-        "buf.trace": {
+        "buf.commandLine.version": {
           "type": "string",
-          "description": "Names a file that buf should log a performance trace to, in chrome trace-viewer JSON format."
-        },
-        "buf.fallbackFlags": {
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "description": "Extra buf flags used to parse files when no compilation database is found."
+          "description": "Specific version (git tag) of buf release to download and install."
         },
         "buf.restartAfterCrash": {
           "type": "boolean",
@@ -99,14 +83,6 @@
           "type": "boolean",
           "default": false,
           "description": "Enable debug mode."
-        },
-        "buf.timeout": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "default": 0,
-          "description": "Buf language server timeout duration"
         },
         "buf.log-format": {
           "type": [
@@ -179,11 +155,6 @@
         "description": "Run Buf to generate code with protoc plugins"
       },
       {
-        "command": "buf.openYaml",
-        "category": "Buf",
-        "title": "$(settings) Open buf.yaml"
-      },
-      {
         "command": "buf.showOutput",
         "category": "Buf",
         "title": "$(output) Show Buf Output"
@@ -232,7 +203,7 @@
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
     "@vscode/test-cli": "0.0.4",
-    "@vscode/test-electron": "^2.3.9",
+    "@vscode/test-electron": "^2.5.1",
     "@vscode/vsce": "^2.15.0",
     "eslint": "^9.23.0",
     "eslint-plugin-unicorn": "^58.0.0",

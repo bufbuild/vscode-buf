@@ -18,14 +18,17 @@ const icons: Record<ServerStatus, StatusBarConfig> = {
   [ServerStatus.SERVER_DISABLED]: {
     icon: "$(circle-slash)",
     colour: new vscode.ThemeColor("statusBarItem.warningBackground"),
+    tooltip: "$(circle-slash) Language server disabled",
   },
   [ServerStatus.SERVER_STARTING]: {
     icon: "$(sync~spin)",
     command: commands.showOutput.command,
+    tooltip: "$(debug-start) Starting language server",
   },
   [ServerStatus.SERVER_RUNNING]: {
     icon: "$(check)",
     command: commands.showCommands.command,
+    tooltip: "$(check) Language server running",
   },
   [ServerStatus.SERVER_STOPPED]: {
     icon: "$(x)",
@@ -50,9 +53,6 @@ export function activate(ctx: vscode.ExtensionContext, bufCtx: BufContext) {
   ctx.subscriptions.push(
     bufCtx.onDidChangeContext(() => {
       updateStatusBar(bufCtx);
-    }),
-    vscode.window.onDidChangeActiveTextEditor(() => {
-      updateModule(bufCtx);
     })
   );
 }
@@ -68,8 +68,6 @@ const updateStatusBar = (bufCtx: BufContext) => {
     statusBarItem.show();
   }
 
-  updateModule(bufCtx);
-
   const config = bufCtx.busy ? busyStatusBarConfig : icons[bufCtx.status];
 
   statusBarItem.text = `${config.icon} Buf${bufCtx.buf?.version ? ` (${bufCtx.buf.version})` : ""}`;
@@ -80,20 +78,6 @@ const updateStatusBar = (bufCtx: BufContext) => {
 
   if (config.tooltip) {
     statusBarItem.tooltip.appendMarkdown(`${config.tooltip}\n\n`);
-  } else if (bufCtx.module) {
-    statusBarItem.tooltip.appendMarkdown(
-      `$(file-submodule) ${bufCtx.module}\n\n`
-    );
-  }
-};
-
-const updateModule = (bufCtx: BufContext) => {
-  if (vscode.window.activeTextEditor) {
-    const filePath = vscode.window.activeTextEditor.document.uri.fsPath;
-    const relPath = vscode.workspace.asRelativePath(filePath);
-    bufCtx.module = bufCtx.bufFiles.get(relPath)?.module || "";
-  } else {
-    bufCtx.module = "";
   }
 };
 

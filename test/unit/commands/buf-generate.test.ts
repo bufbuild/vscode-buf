@@ -8,6 +8,7 @@ import * as util from "../../../src/util";
 
 import { bufGenerate } from "../../../src/commands/buf-generate";
 import { BufContext } from "../../../src/context";
+import { log } from "../../../src/log";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
 
@@ -31,8 +32,8 @@ suite("commands.bufGenerate", () => {
     sandbox = sinon.createSandbox();
 
     execFileStub = sandbox.stub(util, "execFile");
-    logErrorStub = sandbox.stub(util.log, "error");
-    logInfoStub = sandbox.stub(util.log, "info");
+    logErrorStub = sandbox.stub(log, "error");
+    logInfoStub = sandbox.stub(log, "info");
 
     serverOutputChannelStub = sandbox
       .stub(vscode.window, "createOutputChannel")

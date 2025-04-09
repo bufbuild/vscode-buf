@@ -69,7 +69,7 @@ suite("status", function () {
   });
 
   test("activate sets up subscriptions", function () {
-    assert.strictEqual(ctx.subscriptions.length, 2);
+    assert.strictEqual(ctx.subscriptions.length, 1);
     assert.strictEqual(bufCtxonDidChangeContextSpy.get.calledOnce, true);
   });
 

@@ -3,11 +3,12 @@ import * as assert from "assert";
 import * as semver from "semver";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
+import * as lsp from "vscode-languageclient/node";
 import * as cmds from "../../../src/commands";
 import * as util from "../../../src/util";
-import * as lsp from "vscode-languageclient/node";
 
 import { BufContext, ServerStatus } from "../../../src/context";
+import { log } from "../../../src/log";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
 
@@ -32,9 +33,9 @@ suite("commands.restartBuf", () => {
     sandbox = sinon.createSandbox();
 
     execFileStub = sandbox.stub(util, "execFile");
-    logErrorStub = sandbox.stub(util.log, "error");
-    logWarnStub = sandbox.stub(util.log, "warn");
-    logInfoStub = sandbox.stub(util.log, "info");
+    logErrorStub = sandbox.stub(log, "error");
+    logWarnStub = sandbox.stub(log, "warn");
+    logInfoStub = sandbox.stub(log, "info");
 
     serverOutputChannelStub = sandbox
       .stub(vscode.window, "createOutputChannel")

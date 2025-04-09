@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 
 import { Command, CommandType } from ".";
 import { unwrapError } from "../errors";
-import { execFile, log } from "../util";
+import { log } from "../log";
+import { execFile } from "../util";
 
 export const bufGenerate = new Command(
   "buf.generate",

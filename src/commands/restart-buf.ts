@@ -5,8 +5,8 @@ import * as config from "../config";
 
 import { Command, CommandType } from ".";
 import { protoDocumentSelector } from "../const";
-import { log } from "../util";
 import { BufContext, ServerStatus } from "../context";
+import { log } from "../log";
 
 export const restartBuf = new Command(
   "buf.restart",
@@ -61,10 +61,6 @@ export const restartBuf = new Command(
       const clientOptions: lsp.LanguageClientOptions = {
         documentSelector: protoDocumentSelector,
         diagnosticCollectionName: "bufc",
-        initializationOptions: {
-          bufFileStatus: true,
-          fallbackFlags: config.get<string[]>("fallbackFlags"),
-        },
         outputChannel: bufCtx.serverOutputChannel,
         revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
         middleware: {
@@ -107,15 +103,10 @@ export const restartBuf = new Command(
 );
 
 const getBufArgs = () => {
-  const bufArgs = config.get<string[]>("arguments");
+  const bufArgs = [];
 
   if (config.get<string>("debug")) {
     bufArgs.push("--debug");
-  }
-
-  const timeout = config.get<number | null>("timeout");
-  if (timeout) {
-    bufArgs.push("--timeout", String(timeout));
   }
 
   const logFormat = config.get<string | null>("log-format");

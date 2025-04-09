@@ -2,9 +2,9 @@ import * as vscode from "vscode";
 import * as config from "../config";
 import * as github from "../github";
 
-import { Command, CommandType, loadBufModules, restartBuf } from ".";
+import { Command, CommandType, restartBuf } from ".";
 import { install } from "./install-buf";
-import { log } from "../util";
+import { log } from "../log";
 import { BufVersion, Upgrade } from "../version";
 
 export const updateBuf = new Command(
@@ -12,8 +12,24 @@ export const updateBuf = new Command(
   CommandType.COMMAND_SETUP,
   (ctx, bufCtx) => {
     return async () => {
+      // If 'buf.commandLine.path' is set explicitly, we don't want to do anything.
+      if (config.get<string>("commandLine.path")) {
+        vscode.window.showErrorMessage(
+          "'buf.commandLine.path' is explicitly set. Please remove it to allow the extension to manage Buf."
+        );
+        return;
+      }
+
       if (!bufCtx.buf) {
         log.error("Buf is not installed. Please install Buf.");
+        return;
+      }
+
+      const version = config.get<string>("commandLine.version");
+      if (bufCtx.buf?.version.raw === version) {
+        log.info(
+          `Buf is already at the requested version (${version}). No update needed.`
+        );
         return;
       }
 
@@ -24,7 +40,7 @@ export const updateBuf = new Command(
       // Gather all the version information to see if there's an upgrade.
       try {
         log.info("Checking for buf update...");
-        release = await github.latestRelease();
+        release = await github.getRelease();
         asset = await github.findAsset(release); // Ensure a binary for this platform.
         upgrade = await bufCtx.buf?.hasUpgrade(release);
       } catch (e) {
@@ -67,7 +83,6 @@ export const updateBuf = new Command(
 
         bufCtx.buf = await BufVersion.fromPath(bufPath);
         await restartBuf.execute();
-        loadBufModules.execute();
       } else if (response === dontCheck) {
         config.update("checkUpdates", false, vscode.ConfigurationTarget.Global);
       }

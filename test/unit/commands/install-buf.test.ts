@@ -12,6 +12,7 @@ import * as github from "../../../src/github";
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
+import { log } from "../../../src/log";
 
 suite("commands.installBuf", () => {
   vscode.window.showInformationMessage("Start all installBuf tests.");
@@ -33,8 +34,8 @@ suite("commands.installBuf", () => {
     sandbox = sinon.createSandbox();
 
     execFileStub = sandbox.stub(util, "execFile");
-    logErrorStub = sandbox.stub(util.log, "error");
-    logInfoStub = sandbox.stub(util.log, "info");
+    logErrorStub = sandbox.stub(log, "error");
+    logInfoStub = sandbox.stub(log, "info");
 
     serverOutputChannelStub = sandbox
       .stub(vscode.window, "createOutputChannel")
@@ -71,15 +72,14 @@ suite("commands.installBuf", () => {
     bufCtx.dispose();
   });
 
-  test("shows error message and does nothing if 'buf.path' is set in config", async () => {
+  test("shows error message and does nothing if 'buf.commandLine.path' is set in config", async () => {
     const bufPath = "/usr/local/bin/buf";
-    bufCtx.buf = new BufVersion(bufPath, new semver.Range("1.34.15"));
 
     const getConfigurationStub = sandbox
       .stub(vscode.workspace, "getConfiguration")
       .returns({
         get: function (key: string) {
-          if (key === "path") {
+          if (key === "commandLine.path") {
             return bufPath;
           }
 
@@ -94,8 +94,16 @@ suite("commands.installBuf", () => {
 
     await cmdCallback();
 
-    assert.strictEqual(showErrorMessageStub.calledOnce, true);
-    assert.strictEqual(getConfigurationStub.calledOnce, true);
+    assert.strictEqual(
+      showErrorMessageStub.calledOnce,
+      true,
+      "Error message shown once"
+    );
+    assert.strictEqual(
+      getConfigurationStub.calledOnce,
+      true,
+      "Configuration accessed once"
+    );
   });
 
   test("updates buf if its already installed", async () => {
@@ -130,7 +138,7 @@ suite("commands.installBuf", () => {
       browser_download_url: "http://dummy",
     };
 
-    sandbox.stub(github, "latestRelease").resolves(dummyRelease);
+    sandbox.stub(github, "getRelease").resolves(dummyRelease);
     sandbox.stub(github, "findAsset").resolves(dummyAsset);
 
     const storagePath = "/path/to/storage";

@@ -4,10 +4,11 @@ import * as vscode from "vscode";
 import * as config from "../config";
 import * as github from "../github";
 
-import { Command, CommandType, loadBufModules, restartBuf, updateBuf } from ".";
+import { Command, CommandType, restartBuf, updateBuf } from ".";
 import { bufFilename, installURL } from "../const";
+import { log } from "../log";
 import { showHelp } from "../ui";
-import { download, log } from "../util";
+import { download } from "../util";
 import { BufVersion } from "../version";
 
 export const installBuf = new Command(
@@ -15,15 +16,15 @@ export const installBuf = new Command(
   CommandType.COMMAND_SETUP,
   (ctx, bufCtx) => {
     return async () => {
-      if (bufCtx.buf) {
-        // If 'buf.path' is set explicitly, we don't want to do anything.
-        if (config.get<string>("path")) {
-          vscode.window.showErrorMessage(
-            "'buf.path' is explicitly set. Please remove it to use the extension's bundled version."
-          );
-          return;
-        }
+      // If 'buf.commandLine.path' is set explicitly, we don't want to do anything.
+      if (config.get<string>("commandLine.path")) {
+        vscode.window.showErrorMessage(
+          "'buf.commandLine.path' is explicitly set. Please remove it to allow the extension to manage Buf."
+        );
+        return;
+      }
 
+      if (bufCtx.buf) {
         // Assume the user wants to attempt an upgrade...
         await updateBuf.execute();
         return;
@@ -31,8 +32,9 @@ export const installBuf = new Command(
 
       const abort = new AbortController();
       try {
-        log.info("Checking github releases for latest release...");
-        const release = await github.latestRelease();
+        const version = config.get<string>("commandLine.version");
+        log.info(`Checking github releases for '${version}' release...`);
+        const release = await github.getRelease(version);
         const asset = await github.findAsset(release);
 
         const bufPath = await install(ctx, release, asset, abort);
@@ -43,7 +45,6 @@ export const installBuf = new Command(
         );
 
         await restartBuf.execute();
-        loadBufModules.execute();
       } catch (e) {
         if (!abort.signal.aborted) {
           log.info(`Failed to install buf: ${e}`);

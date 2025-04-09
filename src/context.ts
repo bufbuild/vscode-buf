@@ -16,7 +16,6 @@ export enum ServerStatus {
 }
 
 export class BufContext implements vscode.Disposable {
-  public module: string = "";
   public client?: lsp.LanguageClient;
   public serverOutputChannel: vscode.OutputChannel =
     vscode.window.createOutputChannel("Buf (server)");

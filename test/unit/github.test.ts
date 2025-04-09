@@ -1,16 +1,17 @@
 import * as assert from "assert";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
+import type * as githubType from "../../src/github";
 
 import proxyquire from "proxyquire";
+import { githubReleaseURL } from "../../src/const";
 
 suite("github", () => {
   vscode.window.showInformationMessage("Start all github tests.");
 
   let sandbox: sinon.SinonSandbox;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let github: any;
+  let github: typeof githubType;
   let osPlatformStub: sinon.SinonStub;
   let osArchStub: sinon.SinonStub;
 
@@ -32,7 +33,7 @@ suite("github", () => {
     sandbox.restore();
   });
 
-  suite("latestRelease", () => {
+  suite("getRelease", () => {
     test("finds the latest release", async () => {
       const dummyRelease = {
         name: "v1.0.0",
@@ -52,10 +53,42 @@ suite("github", () => {
         .stub(global, "fetch")
         .resolves(dummyResponse as Response);
 
-      const release = await github.latestRelease();
+      const release = await github.getRelease();
       assert.deepStrictEqual(release, dummyRelease);
 
-      assert.strictEqual(fetchStub.calledOnce, true);
+      assert.strictEqual(
+        fetchStub.calledOnceWith(githubReleaseURL + "latest"),
+        true
+      );
+      fetchStub.restore();
+    });
+
+    test("finds a specific release", async () => {
+      const dummyRelease = {
+        name: "v1.0.0",
+        tag_name: "v1.0.0",
+        assets: [],
+      };
+
+      // Stub the global fetch to simulate a successful response.
+      const dummyResponse = {
+        ok: true,
+        json: async () => dummyRelease,
+        url: "http://dummy",
+        status: 200,
+        statusText: "OK",
+      };
+      const fetchStub = sandbox
+        .stub(global, "fetch")
+        .resolves(dummyResponse as Response);
+
+      const release = await github.getRelease("v1.0.0");
+      assert.deepStrictEqual(release, dummyRelease);
+
+      assert.strictEqual(
+        fetchStub.calledOnceWith(githubReleaseURL + "tag/v1.0.0"),
+        true
+      );
       fetchStub.restore();
     });
   });

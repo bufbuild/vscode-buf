@@ -10,14 +10,16 @@ export type CommandFactory<T = any> = (
   bufCtx: BufContext
 ) => CommandCallback<T>;
 
+// Various command types that can be registered with the command palette. Types
+// control grouping in the command palette.
 export enum CommandType {
-  // Commands to run buf commands e.g. generate
+  // Group of commands that run buf e.g. `buf generate`.
   COMMAND_BUF,
 
-  // Extension commands
+  // Group of commands that interact with the extension.
   COMMAND_EXTENSION,
 
-  // Commands to setup the extension e.g. install buf
+  // Group of commands that relate to setting buf cli up e.g. install / update.
   COMMAND_SETUP,
 
   // Internal commands. Note: these are not registered in the command palette
@@ -73,8 +75,6 @@ export class Command<T = any> {
 export { bufGenerate } from "./buf-generate";
 export { findBuf } from "./find-buf";
 export { installBuf } from "./install-buf";
-export { loadBufModules } from "./load-buf-modules";
-export { openBufYaml } from "./open-buf-yaml";
 export { registerAllCommands } from "./register-all-commands";
 export { restartBuf } from "./restart-buf";
 export { showCommands } from "./show-commands";
