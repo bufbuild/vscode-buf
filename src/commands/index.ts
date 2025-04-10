@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 
 import { BufContext } from "../context";
 
-type CommandCallback<T = any> = (...args: any) => Promise<T> | T;
+export type CommandCallback<T = any> = (...args: any) => Promise<T> | T;
 
 export type CommandFactory<T = any> = (
   ctx: vscode.ExtensionContext,
@@ -30,7 +30,7 @@ export class Command<T = any> {
   constructor(
     public readonly command: string,
     public readonly type: CommandType,
-    private readonly factory: CommandFactory<T>
+    public readonly factory: CommandFactory<T>
   ) {}
 
   register(ctx: vscode.ExtensionContext, bufCtx: BufContext) {

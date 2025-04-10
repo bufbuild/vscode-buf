@@ -5,147 +5,81 @@ import * as sinon from "sinon";
 import * as vscode from "vscode";
 import * as lsp from "vscode-languageclient/node";
 import * as cmds from "../../../src/commands";
+import * as config from "../../../src/config";
 import * as util from "../../../src/util";
 
 import { BufContext, ServerStatus } from "../../../src/context";
-import { log } from "../../../src/log";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
+import { createStubLog, StubLog } from "../../stubs/stub-log";
+import { createStubVscode, StubVscode } from "../../stubs/stub-vscode";
 
 suite("commands.restartBuf", () => {
   vscode.window.showInformationMessage("Start all restartBuf tests.");
 
   let sandbox: sinon.SinonSandbox;
   let execFileStub: sinon.SinonStub;
-  let logErrorStub: sinon.SinonStub;
-  let logWarnStub: sinon.SinonStub;
-  let logInfoStub: sinon.SinonStub;
 
+  let stubVscode: StubVscode;
+  let logStub: StubLog;
   let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
-
-  let serverOutputChannelStub: sinon.SinonStub;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let cmdCallback: (...args: any[]) => any;
+  let callback: cmds.CommandCallback;
 
   setup(() => {
     sandbox = sinon.createSandbox();
 
     execFileStub = sandbox.stub(util, "execFile");
-    logErrorStub = sandbox.stub(log, "error");
-    logWarnStub = sandbox.stub(log, "warn");
-    logInfoStub = sandbox.stub(log, "info");
 
-    serverOutputChannelStub = sandbox
-      .stub(vscode.window, "createOutputChannel")
-      .returns({
-        name: "Buf (server)",
-        dispose: () => {},
-        logLevel: vscode.LogLevel.Info,
-        onDidChangeLogLevel: { event: () => () => {} },
-        trace: () => {},
-        debug: () => {},
-        info: () => {},
-        warn: () => {},
-        error: () => {},
-      } as unknown as vscode.LogOutputChannel);
-
+    stubVscode = createStubVscode(sandbox);
+    logStub = createStubLog(sandbox);
     ctx = MockExtensionContext.new();
     bufCtx = new BufContext();
 
-    sandbox
-      .stub(vscode.commands, "registerCommand")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .callsFake((_: string, callback: (...args: any[]) => any) => {
-        cmdCallback = callback;
-        return {
-          dispose: () => {},
-        } as unknown as vscode.Disposable;
-      });
-
-    cmds.restartBuf.register(ctx, bufCtx);
+    callback = cmds.restartBuf.factory(ctx, bufCtx);
   });
 
   teardown(() => {
     sandbox.restore();
-    bufCtx.dispose();
   });
 
   test("if server is running, stops the server", async () => {
-    const stopStub = sandbox.stub().resolves();
-    bufCtx.client = {
-      stop: stopStub,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any;
+    bufCtx.client = {} as unknown as lsp.LanguageClient;
+    const stopBufExec = sandbox.stub(cmds.stopBuf, "execute");
 
-    sandbox.stub(vscode.workspace, "getConfiguration").returns({
-      get: function (key: string) {
-        if (key === "enable") {
-          return false;
-        }
-
-        return undefined;
-      },
-    } as unknown as vscode.WorkspaceConfiguration);
-
-    await cmdCallback();
+    await callback();
 
     assert.strictEqual(
-      stopStub.calledOnce,
+      stopBufExec.calledOnce,
       true,
       "stop() should be called once"
     );
-    assert.strictEqual(
-      bufCtx.client,
-      undefined,
-      "client should be undefined after stopping"
-    );
+  });
+
+  test("if buf not enabled, logs warning and does nothing", async () => {
+    const configStub = sandbox.stub(config, "get").returns(false);
+
+    await callback();
+
     assert.strictEqual(
       bufCtx.status,
       ServerStatus.SERVER_DISABLED,
       "status should be SERVER_DISABLED"
     );
-  });
-
-  test("if buf not enabled, logs warning and does nothing", async () => {
-    sandbox.stub(vscode.workspace, "getConfiguration").returns({
-      get: function (key: string) {
-        if (key === "enable") {
-          return false;
-        }
-
-        return undefined;
-      },
-    } as unknown as vscode.WorkspaceConfiguration);
-
-    await cmdCallback();
-
-    assert.strictEqual(bufCtx.client, undefined);
-    assert.strictEqual(bufCtx.status, ServerStatus.SERVER_DISABLED);
-    assert.strictEqual(logWarnStub.called, true);
+    assert.strictEqual(logStub.warn.called, true, "warn should be logged");
   });
 
   test("if buf is enabled but not installed, logs error and does nothing", async () => {
-    sandbox.stub(vscode.workspace, "getConfiguration").returns({
-      get: function (key: string) {
-        if (key === "enable") {
-          return true;
-        }
+    const configStub = sandbox.stub(config, "get").returns(true);
 
-        return undefined;
-      },
-    } as unknown as vscode.WorkspaceConfiguration);
+    await callback();
 
-    await cmdCallback();
-
-    assert.strictEqual(bufCtx.client, undefined, "client should be undefined");
     assert.strictEqual(
       bufCtx.status,
-      ServerStatus.SERVER_STOPPED,
-      "status should be SERVER_STOPPED"
+      ServerStatus.SERVER_NOT_INSTALLED,
+      "status should be SERVER_NOT_INSTALLED"
     );
-    assert.strictEqual(logErrorStub.called, true, "error should be logged");
+    assert.strictEqual(logStub.error.called, true, "error should be logged");
   });
 
   test("if buf is enabled and installed, starts the server", async () => {
@@ -163,20 +97,18 @@ suite("commands.restartBuf", () => {
       clientOptions: {},
     });
 
-    sandbox.stub(vscode.workspace, "getConfiguration").returns({
-      get: function (key: string) {
-        if (key === "enable") {
-          return true;
-        }
-        if (key === "arguments") {
-          return [];
-        }
+    const configStub = sandbox.stub(config, "get").callsFake((key: string) => {
+      if (key === "enable") {
+        return true;
+      }
+      if (key === "arguments") {
+        return [];
+      }
 
-        return undefined;
-      },
-    } as unknown as vscode.WorkspaceConfiguration);
+      return undefined;
+    });
 
-    await cmdCallback();
+    await callback();
 
     assert.strictEqual(
       startStub.calledOnce,
@@ -189,7 +121,7 @@ suite("commands.restartBuf", () => {
       "status should be SERVER_RUNNING"
     );
     assert.strictEqual(
-      logInfoStub.calledWith("Buf Language Server started."),
+      logStub.info.calledWith("Buf Language Server started."),
       true,
       "info should be logged"
     );

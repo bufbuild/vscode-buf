@@ -23,8 +23,6 @@ suite("status", function () {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let bufCtxonDidChangeContextSpy: any;
 
-  let createOutputChannelStub: sinon.SinonStub;
-
   setup(() => {
     sandbox = sinon.createSandbox();
 
@@ -35,20 +33,6 @@ suite("status", function () {
 
     ctx = MockExtensionContext.new();
 
-    createOutputChannelStub = sandbox
-      .stub(vscode.window, "createOutputChannel")
-      .returns({
-        name: "Buf (server)",
-        dispose: () => {},
-        logLevel: vscode.LogLevel.Info,
-        onDidChangeLogLevel: { event: () => () => {} },
-        trace: () => {},
-        debug: () => {},
-        info: () => {},
-        warn: () => {},
-        error: () => {},
-      } as unknown as vscode.LogOutputChannel);
-
     bufCtx = new BufContext();
     bufCtxonDidChangeContextSpy = sandbox.spy(bufCtx, "onDidChangeContext", [
       "get",
@@ -58,14 +42,9 @@ suite("status", function () {
   });
 
   teardown(() => {
-    bufCtx.dispose();
     ctx.teardown();
     sandbox.restore();
     status.disposeStatusBar();
-  });
-
-  test("activate creates an output channel", function () {
-    assert.strictEqual(createOutputChannelStub.callCount, 1);
   });
 
   test("activate sets up subscriptions", function () {

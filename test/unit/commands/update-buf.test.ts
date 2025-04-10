@@ -10,74 +10,46 @@ import * as github from "../../../src/github";
 import * as util from "../../../src/util";
 
 import { BufContext } from "../../../src/context";
-import { log } from "../../../src/log";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
+import { createStubVscode, StubVscode } from "../../stubs/stub-vscode";
+import { createStubLog, StubLog } from "../../stubs/stub-log";
 
 suite("commands.updateBuf", () => {
   vscode.window.showInformationMessage("Start all updateBuf tests.");
 
   let sandbox: sinon.SinonSandbox;
   let execFileStub: sinon.SinonStub;
-  let logErrorStub: sinon.SinonStub;
-  let logInfoStub: sinon.SinonStub;
 
+  let stubVscode: StubVscode;
+  let logStub: StubLog;
   let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
-
-  let serverOutputChannelStub: sinon.SinonStub;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let cmdCallback: (...args: any[]) => any;
+  let callback: cmds.CommandCallback;
 
   setup(() => {
     sandbox = sinon.createSandbox();
 
     execFileStub = sandbox.stub(util, "execFile");
-    logErrorStub = sandbox.stub(log, "error");
-    logInfoStub = sandbox.stub(log, "info");
 
-    serverOutputChannelStub = sandbox
-      .stub(vscode.window, "createOutputChannel")
-      .returns({
-        name: "Buf (server)",
-        dispose: () => {},
-        logLevel: vscode.LogLevel.Info,
-        onDidChangeLogLevel: { event: () => () => {} },
-        trace: () => {},
-        debug: () => {},
-        info: () => {},
-        warn: () => {},
-        error: () => {},
-      } as unknown as vscode.LogOutputChannel);
-
+    stubVscode = createStubVscode(sandbox);
+    logStub = createStubLog(sandbox);
     ctx = MockExtensionContext.new();
     bufCtx = new BufContext();
 
-    sandbox
-      .stub(vscode.commands, "registerCommand")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .callsFake((_: string, callback: (...args: any[]) => any) => {
-        cmdCallback = callback;
-        return {
-          dispose: () => {},
-        } as unknown as vscode.Disposable;
-      });
-
-    cmds.updateBuf.register(ctx, bufCtx);
+    callback = cmds.updateBuf.factory(ctx, bufCtx);
   });
 
   teardown(() => {
     sandbox.restore();
-    bufCtx.dispose();
   });
 
   test("if buf isn't installed, log error and do nothing", async () => {
     bufCtx.buf = undefined;
 
-    await cmdCallback();
+    await callback();
 
-    assert.strictEqual(logErrorStub.calledOnce, true);
+    assert.strictEqual(logStub.error.calledOnce, true);
   });
 
   test("if current version installed, does nothing", async () => {
@@ -98,16 +70,14 @@ suite("commands.updateBuf", () => {
     sandbox.stub(github, "getRelease").resolves(dummyRelease);
     sandbox.stub(github, "findAsset").resolves(dummyAsset);
 
-    const showInfoMessageStub = sandbox.spy(
-      vscode.window,
-      "showInformationMessage"
-    );
-
     const installBufSpy = sandbox.spy(installBuf, "install");
 
-    await cmdCallback();
+    await callback();
 
-    assert.strictEqual(showInfoMessageStub.calledOnce, true);
+    assert.strictEqual(
+      stubVscode.window.showInformationMessage.calledOnce,
+      true
+    );
     assert.strictEqual(installBufSpy.notCalled, true);
   });
 
@@ -129,10 +99,6 @@ suite("commands.updateBuf", () => {
     sandbox.stub(github, "getRelease").resolves(dummyRelease);
     sandbox.stub(github, "findAsset").resolves(dummyAsset);
 
-    const showInfoMessageStub = sandbox
-      .stub(vscode.window, "showInformationMessage")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .resolves("Install cli v1.34.15" as any);
     const installBufStub = sandbox
       .stub(installBuf, "install")
       .resolves(bufPath);
@@ -142,14 +108,24 @@ suite("commands.updateBuf", () => {
       .resolves(new BufVersion(bufPath, new semver.Range("1.34.14")));
     const restartBufStub = sandbox.stub(cmds.restartBuf, "execute").resolves();
 
-    await cmdCallback();
+    stubVscode.window.showInformationMessage.resolves("Install cli v1.34.15");
 
-    assert.strictEqual(showInfoMessageStub.callCount, 2);
-    assert.strictEqual(installBufStub.calledOnce, true);
+    await callback();
+
+    assert.strictEqual(
+      installBufStub.calledOnce,
+      true,
+      "installBuf called once"
+    );
     assert.strictEqual(
       installBufStub.calledWith(ctx, dummyRelease, dummyAsset),
-      true
+      true,
+      "installBuf called with correct arguments"
     );
-    assert.strictEqual(restartBufStub.calledOnce, true);
+    assert.strictEqual(
+      restartBufStub.calledOnce,
+      true,
+      "restartBuf called once"
+    );
   });
 });

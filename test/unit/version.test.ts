@@ -109,7 +109,7 @@ suite("version", () => {
       sandbox.stub(ctx, "globalStorageUri").value({
         fsPath: storagePath,
       });
-      
+
       sandbox
         .stub(util, "execFile")
         .resolves({ stdout: "1.34.15\n", stderr: "" });

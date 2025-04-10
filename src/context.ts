@@ -16,10 +16,8 @@ export enum ServerStatus {
   SERVER_NOT_INSTALLED,
 }
 
-export class BufContext implements vscode.Disposable {
+export class BufContext {
   public client?: lsp.LanguageClient;
-  public serverOutputChannel: vscode.OutputChannel =
-    vscode.window.createOutputChannel("Buf (server)");
   public bufFiles: Map<string, BufFile> = new Map<string, BufFile>();
 
   private _busy: boolean = false;
@@ -64,9 +62,5 @@ export class BufContext implements vscode.Disposable {
 
   public get onDidChangeContext(): vscode.Event<void> {
     return this.onDidChangeContextEmitter.event;
-  }
-
-  dispose() {
-    this.serverOutputChannel.dispose();
   }
 }

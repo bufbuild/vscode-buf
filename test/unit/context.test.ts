@@ -8,24 +8,9 @@ suite("context", () => {
   vscode.window.showInformationMessage("Start all context tests.");
 
   let sandbox: sinon.SinonSandbox;
-  let serverOutputChannelStub: sinon.SinonStub;
 
   setup(() => {
     sandbox = sinon.createSandbox();
-
-    serverOutputChannelStub = sandbox
-      .stub(vscode.window, "createOutputChannel")
-      .returns({
-        name: "Buf (server)",
-        dispose: () => {},
-        logLevel: vscode.LogLevel.Info,
-        onDidChangeLogLevel: { event: () => () => {} },
-        trace: () => {},
-        debug: () => {},
-        info: () => {},
-        warn: () => {},
-        error: () => {},
-      } as unknown as vscode.LogOutputChannel);
   });
 
   teardown(() => {
@@ -33,20 +18,6 @@ suite("context", () => {
   });
 
   suite("BufContext", () => {
-    test("constructs a new output channel", () => {
-      const context = new BufContext();
-      assert.strictEqual(
-        serverOutputChannelStub.calledOnceWith("Buf (server)"),
-        true
-      );
-      // Optionally verify the name if needed:
-      assert.strictEqual(
-        context.serverOutputChannel.name,
-        "Buf (server)",
-        "The output channel name should be 'Buf (server)'."
-      );
-    });
-
     test("status is SERVER_STOPPED by default", () => {
       const context = new BufContext();
       assert.strictEqual(
@@ -68,7 +39,6 @@ suite("context", () => {
           ServerStatus.SERVER_RUNNING,
           "The status should change to SERVER_RUNNING."
         );
-        context.dispose();
         done();
       });
       // Change status
@@ -77,7 +47,6 @@ suite("context", () => {
       setTimeout(() => {
         if (!eventFired) {
           subscription.dispose();
-          context.dispose();
           done(new Error("Event was not fired for status change."));
         }
       }, 2000);
@@ -95,7 +64,6 @@ suite("context", () => {
           true,
           "Busy should be true after setting."
         );
-        context.dispose();
         done();
       });
       // Change busy property
@@ -104,7 +72,6 @@ suite("context", () => {
       setTimeout(() => {
         if (!eventFired) {
           subscription.dispose();
-          context.dispose();
           done(new Error("Event was not fired for busy change."));
         }
       }, 2000);

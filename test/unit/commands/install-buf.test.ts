@@ -5,102 +5,57 @@ import * as semver from "semver";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
 import * as cmds from "../../../src/commands";
+import * as config from "../../../src/config";
+import * as github from "../../../src/github";
 import * as util from "../../../src/util";
 import * as version from "../../../src/version";
-import * as github from "../../../src/github";
 
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
-import { log } from "../../../src/log";
+import { createStubLog, StubLog } from "../../stubs/stub-log";
+import { createStubVscode, StubVscode } from "../../stubs/stub-vscode";
 
 suite("commands.installBuf", () => {
   vscode.window.showInformationMessage("Start all installBuf tests.");
 
   let sandbox: sinon.SinonSandbox;
-  let execFileStub: sinon.SinonStub;
-  let logErrorStub: sinon.SinonStub;
-  let logInfoStub: sinon.SinonStub;
 
+  let stubVscode: StubVscode;
+  let logStub: StubLog;
   let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
-
-  let serverOutputChannelStub: sinon.SinonStub;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let cmdCallback: (...args: any[]) => any;
+  let callback: cmds.CommandCallback;
 
   setup(() => {
     sandbox = sinon.createSandbox();
 
-    execFileStub = sandbox.stub(util, "execFile");
-    logErrorStub = sandbox.stub(log, "error");
-    logInfoStub = sandbox.stub(log, "info");
-
-    serverOutputChannelStub = sandbox
-      .stub(vscode.window, "createOutputChannel")
-      .returns({
-        name: "Buf (server)",
-        dispose: () => {},
-        logLevel: vscode.LogLevel.Info,
-        onDidChangeLogLevel: { event: () => () => {} },
-        trace: () => {},
-        debug: () => {},
-        info: () => {},
-        warn: () => {},
-        error: () => {},
-      } as unknown as vscode.LogOutputChannel);
-
+    stubVscode = createStubVscode(sandbox);
+    logStub = createStubLog(sandbox);
     ctx = MockExtensionContext.new();
     bufCtx = new BufContext();
 
-    sandbox
-      .stub(vscode.commands, "registerCommand")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .callsFake((_: string, callback: (...args: any[]) => any) => {
-        cmdCallback = callback;
-        return {
-          dispose: () => {},
-        } as unknown as vscode.Disposable;
-      });
-
-    cmds.installBuf.register(ctx, bufCtx);
+    callback = cmds.installBuf.factory(ctx, bufCtx);
   });
 
   teardown(() => {
     sandbox.restore();
-    bufCtx.dispose();
   });
 
   test("shows error message and does nothing if 'buf.commandLine.path' is set in config", async () => {
     const bufPath = "/usr/local/bin/buf";
 
-    const getConfigurationStub = sandbox
-      .stub(vscode.workspace, "getConfiguration")
-      .returns({
-        get: function (key: string) {
-          if (key === "commandLine.path") {
-            return bufPath;
-          }
+    const configStub = sandbox.stub(config, "get").returns(bufPath);
 
-          return undefined;
-        },
-      } as unknown as vscode.WorkspaceConfiguration);
-
-    const showErrorMessageStub = sandbox.stub(
-      vscode.window,
-      "showErrorMessage"
-    );
-
-    await cmdCallback();
+    await callback();
 
     assert.strictEqual(
-      showErrorMessageStub.calledOnce,
+      stubVscode.window.showErrorMessage.calledOnce,
       true,
       "Error message shown once"
     );
     assert.strictEqual(
-      getConfigurationStub.calledOnce,
+      configStub.calledOnce,
       true,
       "Configuration accessed once"
     );
@@ -114,7 +69,7 @@ suite("commands.installBuf", () => {
       .stub(vscode.commands, "executeCommand")
       .resolves();
 
-    await cmdCallback();
+    await callback();
     assert.strictEqual(
       execCmdStub.calledOnceWith(cmds.updateBuf.command),
       true
@@ -153,7 +108,7 @@ suite("commands.installBuf", () => {
 
     const restartBufStub = sandbox.stub(cmds.restartBuf, "execute").resolves();
 
-    await cmdCallback();
+    await callback();
 
     assert.strictEqual(downloadStub.calledOnce, true);
     assert.strictEqual(bufCtx.buf?.path, bufPath);

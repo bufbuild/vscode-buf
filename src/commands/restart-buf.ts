@@ -11,7 +11,10 @@ import { log } from "../log";
 export const restartBuf = new Command(
   "buf.restart",
   CommandType.COMMAND_EXTENSION,
-  (_, bufCtx) => {
+  (ctx, bufCtx) => {
+    const outputChannel = vscode.window.createOutputChannel("Buf (server)");
+    ctx.subscriptions.push(outputChannel);
+
     const callback = async () => {
       if (bufCtx.client) {
         await stopBuf.execute();
@@ -50,7 +53,7 @@ export const restartBuf = new Command(
       const clientOptions: lsp.LanguageClientOptions = {
         documentSelector: protoDocumentSelector,
         diagnosticCollectionName: "bufc",
-        outputChannel: bufCtx.serverOutputChannel,
+        outputChannel: outputChannel,
         revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
         middleware: {
           provideHover: async (document, position, token, next) => {

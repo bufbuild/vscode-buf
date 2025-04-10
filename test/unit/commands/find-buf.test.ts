@@ -6,13 +6,16 @@ import proxyquire from "proxyquire";
 import * as semver from "semver";
 import * as sinon from "sinon";
 import * as vscode from "vscode";
+import type * as findBufType from "../../../src/commands/find-buf";
+import * as config from "../../../src/config";
 import * as version from "../../../src/version";
 
+import { CommandCallback } from "../../../src/commands";
 import { bufFilename } from "../../../src/const";
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
-import type * as findBufType from "../../../src/commands/find-buf";
+import { createStubVscode, StubVscode } from "../../stubs/stub-vscode";
 
 suite("commands.findBuf", () => {
   vscode.window.showInformationMessage("Start all findBuf tests.");
@@ -22,43 +25,20 @@ suite("commands.findBuf", () => {
   let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
 
-  let serverOutputChannelStub: sinon.SinonStub;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let cmdCallback: (...args: any[]) => any;
+  let stubVscode: StubVscode;
 
   let findBufMod: typeof findBufType;
   let whichStub: sinon.SinonStub;
 
+  let callback: CommandCallback;
+
   setup(() => {
     sandbox = sinon.createSandbox();
 
-    serverOutputChannelStub = sandbox
-      .stub(vscode.window, "createOutputChannel")
-      .returns({
-        name: "Buf (server)",
-        dispose: () => {},
-        logLevel: vscode.LogLevel.Info,
-        onDidChangeLogLevel: { event: () => () => {} },
-        trace: () => {},
-        debug: () => {},
-        info: () => {},
-        warn: () => {},
-        error: () => {},
-      } as unknown as vscode.LogOutputChannel);
+    stubVscode = createStubVscode(sandbox);
 
     ctx = MockExtensionContext.new();
     bufCtx = new BufContext();
-
-    sandbox
-      .stub(vscode.commands, "registerCommand")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .callsFake((_: string, callback: (...args: any[]) => any) => {
-        cmdCallback = callback;
-        return {
-          dispose: () => {},
-        } as unknown as vscode.Disposable;
-      });
 
     whichStub = sandbox.stub();
 
@@ -66,34 +46,23 @@ suite("commands.findBuf", () => {
       which: whichStub,
     });
 
-    findBufMod.findBuf.register(ctx, bufCtx);
+    callback = findBufMod.findBuf.factory(ctx, bufCtx);
   });
 
   teardown(() => {
     sandbox.restore();
-    bufCtx.dispose();
   });
 
   test("when buf.path set in config, uses buf from config", async () => {
     const bufPath = "/usr/local/bin/buf";
 
-    const getConfigurationStub = sandbox
-      .stub(vscode.workspace, "getConfiguration")
-      .returns({
-        get: function (key: string) {
-          if (key === "commandLine.path") {
-            return bufPath;
-          }
-
-          return undefined;
-        },
-      } as unknown as vscode.WorkspaceConfiguration);
+    const configStub = sandbox.stub(config, "get").returns(bufPath);
 
     const versionFromPathStub = sandbox
       .stub(version.BufVersion, "fromPath")
       .resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
 
-    await cmdCallback();
+    await callback();
 
     assert.strictEqual(bufCtx.buf?.path, bufPath, "Paths should match");
     assert.strictEqual(
@@ -102,7 +71,7 @@ suite("commands.findBuf", () => {
       "fromPath should be called once"
     );
     assert.strictEqual(
-      getConfigurationStub.calledOnce,
+      configStub.calledOnce,
       true,
       "getConfiguration should be called once"
     );
@@ -115,28 +84,19 @@ suite("commands.findBuf", () => {
     sandbox.stub(ctx, "globalStorageUri").value({
       fsPath: storagePath,
     });
+
     sandbox
       .stub(fs.promises, "readdir")
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .resolves(["v2" as any, "v1" as any, "v3" as any]);
 
-    const getConfigurationStub = sandbox
-      .stub(vscode.workspace, "getConfiguration")
-      .returns({
-        get: function (key: string) {
-          if (key === "commandLine.version") {
-            return "v1";
-          }
-
-          return undefined;
-        },
-      } as unknown as vscode.WorkspaceConfiguration);
+    const configStub = sandbox.stub(config, "get").returns("v1");
 
     sandbox
       .stub(version.BufVersion, "fromPath")
       .resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
 
-    await cmdCallback();
+    await callback();
 
     assert.strictEqual(bufCtx.buf?.path, bufPath, "buf path should match");
   });
@@ -148,6 +108,7 @@ suite("commands.findBuf", () => {
     sandbox.stub(ctx, "globalStorageUri").value({
       fsPath: storagePath,
     });
+
     sandbox
       .stub(fs.promises, "readdir")
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -157,7 +118,7 @@ suite("commands.findBuf", () => {
       .stub(version.BufVersion, "fromPath")
       .resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
 
-    await cmdCallback();
+    await callback();
 
     assert.strictEqual(bufCtx.buf?.path, bufPath, "buf path should match");
   });
@@ -175,7 +136,7 @@ suite("commands.findBuf", () => {
       .stub(version.BufVersion, "fromPath")
       .resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
 
-    await cmdCallback();
+    await callback();
 
     assert.strictEqual(bufCtx.buf !== null, true, "bufCtx.buf should be set");
     assert.strictEqual(bufCtx.buf?.path, bufPath, "buf path should match");
