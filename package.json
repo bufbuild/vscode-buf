@@ -44,8 +44,7 @@
     "workspaceContains:**/buf.work",
     "workspaceContains:**/buf.gen",
     "workspaceContains:**/buf.gen.yaml",
-    "workspaceContains:**/buf.work.yaml",
-    "onLangauge:proto"
+    "workspaceContains:**/buf.work.yaml"
   ],
   "contributes": {
     "configuration": {
@@ -53,16 +52,16 @@
       "properties": {
         "buf.commandLine.path": {
           "type": "string",
-          "description": "Path to the buf binary"
+          "description": "Path to the Buf binary."
         },
         "buf.commandLine.version": {
           "type": "string",
-          "description": "Specific version (git tag) of buf release to download and install."
+          "description": "Specific version (git tag) of Buf release to download and install."
         },
         "buf.restartAfterCrash": {
           "type": "boolean",
           "default": true,
-          "description": "Auto restart buf (up to 4 times) if it crashes."
+          "description": "Automatically restart Buf (up to 4 times) if it crashes."
         },
         "buf.checkUpdates": {
           "type": "boolean",
@@ -72,12 +71,12 @@
         "buf.enableHover": {
           "type": "boolean",
           "default": true,
-          "description": "Enable hovers provided by the language server"
+          "description": "Enable hover features provided by the language server."
         },
         "buf.enable": {
           "type": "boolean",
           "default": true,
-          "description": "Enable buf language server features"
+          "description": "Enable Buf language server features."
         },
         "buf.debug": {
           "type": "boolean",
@@ -109,7 +108,7 @@
         "buf.checks.breaking.againstGitRef": {
           "type": "string",
           "default": "refs/remotes/origin/HEAD",
-          "description": "The git reference to check breaking changes against."
+          "description": "The Git reference to check breaking changes against."
         }
       }
     },
@@ -152,7 +151,7 @@
         "command": "buf.generate",
         "category": "Buf",
         "title": "$(run) Generate",
-        "description": "Run Buf to generate code with protoc plugins"
+        "description": "Run Buf to generate code with protoc plugins."
       },
       {
         "command": "buf.showOutput",
@@ -162,25 +161,25 @@
       {
         "command": "buf.install",
         "category": "Buf",
-        "title": "$(cloud-download) Install cli",
-        "description": "Install the Buf cli from github releases"
+        "title": "$(cloud-download) Install CLI",
+        "description": "Install the Buf CLI from GitHub releases."
       },
       {
         "command": "buf.update",
         "category": "Buf",
-        "title": "$(arrow-swap) Update cli",
-        "description": "Check for updates and install the latest version of the buf cli"
+        "title": "$(arrow-swap) Update CLI",
+        "description": "Check for updates and install the latest version of the Buf CLI."
       },
       {
         "command": "buf.restart",
         "category": "Buf",
-        "title": "$(debug-restart) Restart Buf language server"
+        "title": "$(debug-restart) Restart Buf Language Server"
       },
       {
         "command": "buf.remove",
         "category": "Buf",
-        "title": "$(remove-close) Remove Buf cli",
-        "description": "Remove buf cli installed locally by the extension"
+        "title": "$(remove-close) Remove CLI",
+        "description": "Remove Buf CLI installed locally by the extension."
       }
     ]
   },
