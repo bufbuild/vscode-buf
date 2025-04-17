@@ -1,4 +1,4 @@
-import { test, expect } from './base-test';
+import { test, expect } from "./base-test";
 
 const baseBufYaml = `version: v2
 
@@ -195,30 +195,41 @@ test.beforeEach(async ({ workbox: { page, createFile } }) => {
   await createFile("buf.yaml", baseBufYaml);
   await createFile("example.proto", exampleUserProto);
   // Highlight the proto file in explorer
-  await page.getByRole('treeitem', { name: 'example.proto' }).locator('a').click();
+  await page
+    .getByRole("treeitem", { name: "example.proto" })
+    .locator("a")
+    .click();
 });
 
-test('toolbar displays successful running lsp', async ({ workbox: { page } }) => {
-  // Validate that buf lsp is displaying success in the 
-  await expect(page.getByRole('button', { name: 'check Buf' })).toBeVisible();
+test("toolbar displays successful running lsp", async ({
+  workbox: { page },
+}) => {
+  // Validate that buf lsp is displaying success in the
+  await expect(page.getByRole("button", { name: "check Buf" })).toBeVisible();
 });
 
-test('toolbar status button can run generate', async ({ workbox: { page } }) => {
-  await expect(page.getByRole("treeitem", { name: "gen-es" })).not.toBeVisible();
+test("toolbar status button can run generate", async ({
+  workbox: { page },
+}) => {
+  await expect(
+    page.getByRole("treeitem", { name: "gen-es" })
+  ).not.toBeVisible();
 
-  await page.getByRole('button', { name: 'check Buf' }).click();
+  await page.getByRole("button", { name: "check Buf" }).click();
   // Note the double space is necessayr to match
-  await page.getByRole('option', { name: 'run  Generate' }).click();
+  await page.getByRole("option", { name: "run  Generate" }).click();
   // Generate should be successful and a new directory should be created
   await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
 });
 
-test('command palette can run generate', async ({ workbox: { page } }) => {
-  await expect(page.getByRole("treeitem", { name: "gen-es" })).not.toBeVisible();
-  await page.keyboard.press('ControlOrMeta+P');
-  await page.keyboard.type('>Buf:');
+test("command palette can run generate", async ({ workbox: { page } }) => {
+  await expect(
+    page.getByRole("treeitem", { name: "gen-es" })
+  ).not.toBeVisible();
+  await page.keyboard.press("ControlOrMeta+P");
+  await page.keyboard.type(">Buf:");
   // Note the double space is necessayr to match
-  await page.getByRole("option", { name: "Buf: Generate" }) .click();
+  await page.getByRole("option", { name: "Buf: Generate" }).click();
   // Generate should be successful and a new directory should be created
   await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
 });
