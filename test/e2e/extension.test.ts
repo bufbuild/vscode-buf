@@ -203,10 +203,22 @@ test('toolbar displays successful running lsp', async ({ workbox: { page } }) =>
   await expect(page.getByRole('button', { name: 'check Buf' })).toBeVisible();
 });
 
-test('open command palette and run generate', async ({ workbox: { page } }) => {
+test('toolbar status button can run generate', async ({ workbox: { page } }) => {
+  await expect(page.getByRole("treeitem", { name: "gen-es" })).not.toBeVisible();
+
   await page.getByRole('button', { name: 'check Buf' }).click();
   // Note the double space is necessayr to match
   await page.getByRole('option', { name: 'run  Generate' }).click();
+  // Generate should be successful and a new directory should be created
+  await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
+});
+
+test('command palette can run generate', async ({ workbox: { page } }) => {
+  await expect(page.getByRole("treeitem", { name: "gen-es" })).not.toBeVisible();
+  await page.keyboard.press('ControlOrMeta+P');
+  await page.keyboard.type('>Buf:');
+  // Note the double space is necessayr to match
+  await page.getByRole("option", { name: "Buf: Generate" }) .click();
   // Generate should be successful and a new directory should be created
   await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
 });
