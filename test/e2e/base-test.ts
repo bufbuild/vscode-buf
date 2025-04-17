@@ -4,15 +4,27 @@ import {
   resolveCliArgsFromVSCodeExecutablePath,
 } from "@vscode/test-electron";
 export { expect } from "@playwright/test";
-import path from "path";
-import fs from "fs";
+import path from "node:path";
+import fs from "node:fs";
+import os from "node:os";
 
 export type TestOptions = {
   vsCodeVersion: string;
 };
 
+async function createFile(filePath: string, content: string): Promise<void> {
+  // ensure the full path up to the file exists
+  const dir = path.dirname(filePath);
+  await fs.promises.mkdir(dir, { recursive: true });
+  return fs.promises.writeFile(filePath, content);
+}
+
 type TestFixtures = TestOptions & {
-  workbox: Page;
+  workbox: {
+    projectPath: string;
+    createFile: typeof createFile;
+    page: Page;
+  };
   createProject: () => Promise<string>;
   createTempDir: () => Promise<string>;
 };
@@ -47,15 +59,21 @@ export const test = baseTest.extend<TestFixtures>({
       ],
     });
 
-    const workbox = await electronApp.firstWindow();
-    await workbox.context().tracing.start({
+    const page = await electronApp.firstWindow();
+    await page.context().tracing.start({
       screenshots: true,
       snapshots: true,
       title: test.info().title,
     });
-    await use(workbox);
+    await use({
+      page,
+      projectPath,
+      createFile: (filePath, content) => {
+        return createFile(path.join(projectPath, filePath), content);
+      },
+    });
     const tracePath = test.info().outputPath("trace.zip");
-    await workbox.context().tracing.stop({ path: tracePath });
+    await page.context().tracing.stop({ path: tracePath });
     test.info().attachments.push({
       name: "trace",
       path: tracePath,
@@ -94,9 +112,7 @@ export const test = baseTest.extend<TestFixtures>({
     const tempDirs: string[] = [];
     await use(async () => {
       const tempDir = await fs.promises.realpath(
-        await fs.promises.mkdtemp(
-          path.join(process.cwd(), "test-workspaces", "pwtest-")
-        )
+        await fs.promises.mkdtemp(path.join(os.tmpdir(), "pwtest-"))
       );
       tempDirs.push(tempDir);
       return tempDir;
