@@ -190,12 +190,23 @@ message UserEvent {
 }
 `;
 
-test('toolbar displays successful running lsp', async ({ workbox: { page, createFile } }) => {
+test.beforeEach(async ({ workbox: { page, createFile } }) => {
   await createFile("buf.gen.yaml", baseBufGenYaml);
   await createFile("buf.yaml", baseBufYaml);
   await createFile("example.proto", exampleUserProto);
   // Highlight the proto file in explorer
   await page.getByRole('treeitem', { name: 'example.proto' }).locator('a').click();
+});
+
+test('toolbar displays successful running lsp', async ({ workbox: { page } }) => {
   // Validate that buf lsp is displaying success in the 
   await expect(page.getByRole('button', { name: 'check Buf' })).toBeVisible();
+});
+
+test('open command palette and run generate', async ({ workbox: { page } }) => {
+  await page.getByRole('button', { name: 'check Buf' }).click();
+  // Note the double space is necessayr to match
+  await page.getByRole('option', { name: 'run  Generate' }).click();
+  // Generate should be successful and a new directory should be created
+  await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
 });
