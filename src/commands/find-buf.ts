@@ -24,6 +24,8 @@ export const findBuf = new Command(
     return async () => {
       const configPath = config.get<string>("commandLine.path");
       if (configPath) {
+        const relativeFileInfo = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(configPath));
+        log.info({ relativeFileInfo, file: vscode.Uri.file(configPath) });
         bufCtx.buf = await BufVersion.fromPath(configPath);
 
         if (bufCtx.buf) {

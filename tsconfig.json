@@ -4,6 +4,7 @@
     "target": "ES2022",
     "outDir": "out",
     "lib": ["ES2022"],
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true /* enable all strict type-checking options */,
     "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
