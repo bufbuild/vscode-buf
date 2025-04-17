@@ -233,3 +233,13 @@ test("command palette can run generate", async ({ workbox: { page } }) => {
   // Generate should be successful and a new directory should be created
   await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
 });
+
+test('command palette can run generate', async ({ workbox: { page } }) => {
+  await expect(page.getByRole("treeitem", { name: "gen-es" })).not.toBeVisible();
+  await page.keyboard.press('ControlOrMeta+P');
+  await page.keyboard.type('>Buf:');
+  // Note the double space is necessayr to match
+  await page.getByRole("option", { name: "Buf: Generate" }) .click();
+  // Generate should be successful and a new directory should be created
+  await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
+});
