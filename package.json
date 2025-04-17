@@ -193,10 +193,8 @@
     "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
     "lint": "eslint --max-warnings 0 .",
     "test": "vscode-test",
-    "test:e2e": "cross-env VSCODE_VERSION=stable PWDEBUG=0 playwright test --timeout=120000 --headless",
-    "test:e2e:ui": "cross-env VSCODE_VERSION=stable playwright test --ui",
-    "test:e2e:debug": "cross-env VSCODE_VERSION=stable PWDEBUG=console DEBUG=vscode-* playwright test --timeout=180000 --workers=1 --retries=0 --reporter=list",
-    "test:e2e:slow": "cross-env VSCODE_VERSION=stable PWDEBUG=1 playwright test --debug --timeout=300000 --workers=1",
+    "test:e2e": "playwright test",
+    "test:e2e:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
     "package": "vsce package",
     "format": "prettier --write '**/*.{json,js,jsx,ts,tsx,css,yaml,yml,mjs,mts,md}' --log-level error"
   },

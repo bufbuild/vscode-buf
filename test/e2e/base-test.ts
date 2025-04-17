@@ -30,7 +30,7 @@ type TestFixtures = TestOptions & {
 };
 
 export const test = baseTest.extend<TestFixtures>({
-  vsCodeVersion: ["insiders", { option: true }],
+  vsCodeVersion: [process.env.VSCODE_VERSION ?? "insiders", { option: true }],
   workbox: async ({ vsCodeVersion, createProject, createTempDir }, use) => {
     const defaultCachePath = await createTempDir();
     const vscodeExecutablePath = await downloadAndUnzipVSCode(vsCodeVersion);
