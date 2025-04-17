@@ -186,7 +186,10 @@
     "pretest": "npm run compile && npm run prepworkspaces",
     "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
     "lint": "eslint --max-warnings 0 .",
-    "test": "vscode-test",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vscode-test",
+    "test:e2e": "playwright test",
+    "test:e2e:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
     "package": "vsce package",
     "format": "prettier --write '**/*.{json,js,jsx,ts,tsx,css,yaml,yml,mjs,mts,md}' --log-level error"
   },
