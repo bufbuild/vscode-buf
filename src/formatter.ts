@@ -52,10 +52,7 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
                     let stdout = '';
                     let stderr = '';
 
-                    const p = cp.spawn(this.binaryPath, ['format', backupFile], { 
-                        cwd, 
-                        shell: process.platform === "win32",
-                    });
+                    const p = cp.spawn(this.binaryPath, ['format', backupFile], { cwd, shell: true });
                     token.onCancellationRequested(() => !p.killed && p.kill());
 
                     p.stdout.setEncoding('utf8');
