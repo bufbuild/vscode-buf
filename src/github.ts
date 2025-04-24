@@ -1,4 +1,5 @@
 import * as os from "os";
+import * as vscode from "vscode";
 
 import { githubReleaseURL } from "./const";
 
@@ -21,8 +22,16 @@ export const getRelease = async (tag?: string): Promise<Release> => {
     timeoutController.abort();
   }, 5000);
   try {
+    const authToken = await getAuthToken();
+    const headers = new Headers();
+
+    if (authToken) {
+      headers.set("Authorization", `Bearer ${authToken}`);
+    }
+
     const response = await fetch(releaseUrl, {
       signal: timeoutController.signal,
+      headers: headers,
     });
     if (!response.ok) {
       console.error(response.url, response.status, response.statusText);
@@ -68,4 +77,18 @@ export const findAsset = async (release: Release): Promise<Asset> => {
   throw new Error(
     `No buf ${release.name} binary available, looking for '${platformKey}'`
   );
+};
+
+const getAuthToken = async (): Promise<string | undefined> => {
+  try {
+    const session = await vscode.authentication.getSession("github", [], {
+      createIfNone: false,
+    });
+    if (session) {
+      return session.accessToken;
+    }
+  } catch {
+    // Ignore errors, extension may be disabled.
+  }
+  return undefined;
 };
