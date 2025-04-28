@@ -1,5 +1,4 @@
 export { bufGenerate } from "./buf-generate";
-export { Command, CommandCallback, CommandType } from "./command";
 export { findBuf } from "./find-buf";
 export { installBuf } from "./install-buf";
 export { registerAllCommands } from "./register-all-commands";

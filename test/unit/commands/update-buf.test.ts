@@ -9,11 +9,12 @@ import * as installBuf from "../../../src/commands/install-buf";
 import * as github from "../../../src/github";
 import * as util from "../../../src/util";
 
+import { CommandCallback } from "../../../src/commands/command";
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
-import { createStubVscode, StubVscode } from "../../stubs/stub-vscode";
 import { createStubLog, StubLog } from "../../stubs/stub-log";
+import { createStubVscode, StubVscode } from "../../stubs/stub-vscode";
 
 suite("commands.updateBuf", () => {
   vscode.window.showInformationMessage("Start all updateBuf tests.");
@@ -25,7 +26,7 @@ suite("commands.updateBuf", () => {
   let logStub: StubLog;
   let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
-  let callback: cmds.CommandCallback;
+  let callback: CommandCallback;
 
   setup(() => {
     sandbox = sinon.createSandbox();

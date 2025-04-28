@@ -1,9 +1,10 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
 
-import { Command, CommandType, findBuf, restartBuf } from ".";
-import { log } from "../log";
+import { findBuf, restartBuf } from ".";
 import { unwrapError } from "../errors";
+import { log } from "../log";
+import { Command, CommandType } from "./command";
 
 export const removeBuf = new Command(
   "buf.remove",

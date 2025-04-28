@@ -6,12 +6,13 @@ import * as sinon from "sinon";
 import * as vscode from "vscode";
 import * as util from "../../../src/util";
 
-import { bufGenerate, CommandCallback } from "../../../src/commands/index";
+import { bufGenerate } from "../../../src/commands/index";
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
 import { createStubLog, StubLog } from "../../stubs/stub-log";
 import { createStubVscode, StubVscode } from "../../stubs/stub-vscode";
+import { CommandCallback } from "../../../src/commands/command";
 
 suite("commands.bufGenerate", () => {
   vscode.window.showInformationMessage("Start all bufGenerate tests.");

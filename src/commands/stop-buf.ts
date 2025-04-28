@@ -1,8 +1,8 @@
 import * as config from "../config";
 
-import { Command, CommandType } from ".";
-import { log } from "../log";
 import { ServerStatus } from "../context";
+import { log } from "../log";
+import { Command, CommandType } from "./command";
 
 export const stopBuf = new Command(
   "buf.stop",

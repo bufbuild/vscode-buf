@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import * as config from "../config";
 
-import { Command, CommandType } from ".";
 import { extensionId } from "../const";
+import { Command, CommandType } from "./command";
 import { findCommand } from "./register-all-commands";
 
 type BufQuickPickItem = vscode.QuickPickItem & { command?: Command };

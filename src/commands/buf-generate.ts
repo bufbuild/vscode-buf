@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { Command, CommandType } from ".";
+import { Command, CommandType } from "./command";
 import { unwrapError } from "../errors";
 import { log } from "../log";
 import { execFile } from "../util";

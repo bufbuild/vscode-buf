@@ -3,10 +3,11 @@ import * as vscode from "vscode";
 import * as lsp from "vscode-languageclient/node";
 import * as config from "../config";
 
-import { Command, CommandType, stopBuf } from ".";
+import { stopBuf } from ".";
 import { protoDocumentSelector } from "../const";
 import { BufContext, ServerStatus } from "../context";
 import { log } from "../log";
+import { Command, CommandType } from "./command";
 
 export const restartBuf = new Command(
   "buf.restart",

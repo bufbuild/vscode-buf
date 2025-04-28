@@ -2,11 +2,12 @@ import * as vscode from "vscode";
 import * as config from "../config";
 import * as github from "../github";
 
-import { Command, CommandType, restartBuf } from ".";
-import { install } from "./install-buf";
+import { restartBuf } from ".";
+import { ServerStatus } from "../context";
 import { log } from "../log";
 import { BufVersion, Upgrade } from "../version";
-import { ServerStatus } from "../context";
+import { Command, CommandType } from "./command";
+import { install } from "./install-buf";
 
 export const updateBuf = new Command(
   "buf.update",

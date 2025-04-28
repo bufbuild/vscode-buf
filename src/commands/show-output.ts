@@ -1,5 +1,5 @@
-import { Command, CommandType } from ".";
 import { log } from "../log";
+import { Command, CommandType } from "./command";
 
 export const showOutput = new Command(
   "buf.showOutput",

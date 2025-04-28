@@ -10,6 +10,7 @@ import * as github from "../../../src/github";
 import * as util from "../../../src/util";
 import * as version from "../../../src/version";
 
+import { CommandCallback } from "../../../src/commands/command";
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
@@ -25,7 +26,7 @@ suite("commands.installBuf", () => {
   let logStub: StubLog;
   let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
-  let callback: cmds.CommandCallback;
+  let callback: CommandCallback;
 
   setup(() => {
     sandbox = sinon.createSandbox();

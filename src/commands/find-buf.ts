@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 import * as config from "../config";
 
 import which from "which";
-import { Command, CommandType } from ".";
+import { Command, CommandType } from "./command";
 import { bufFilename } from "../const";
 import { unwrapError } from "../errors";
 import { log } from "../log";

@@ -4,12 +4,13 @@ import * as vscode from "vscode";
 import * as config from "../config";
 import * as github from "../github";
 
-import { Command, CommandType, restartBuf, updateBuf } from ".";
+import { restartBuf, updateBuf } from ".";
 import { bufFilename, installURL } from "../const";
 import { log } from "../log";
 import { showHelp } from "../ui";
 import { download } from "../util";
 import { BufVersion } from "../version";
+import { Command, CommandType } from "./command";
 
 export const installBuf = new Command(
   "buf.install",

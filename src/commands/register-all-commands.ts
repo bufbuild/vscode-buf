@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import { BufContext } from "../context";
-import { Command } from ".";
+import { Command } from "./command";
 
 import { bufGenerate } from "./buf-generate";
 import { findBuf } from "./find-buf";

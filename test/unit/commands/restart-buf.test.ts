@@ -8,6 +8,7 @@ import * as cmds from "../../../src/commands";
 import * as config from "../../../src/config";
 import * as util from "../../../src/util";
 
+import { CommandCallback } from "../../../src/commands/command";
 import { BufContext, ServerStatus } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
 import { MockExtensionContext } from "../../mocks/mock-context";
@@ -24,7 +25,7 @@ suite("commands.restartBuf", () => {
   let logStub: StubLog;
   let ctx: vscode.ExtensionContext;
   let bufCtx: BufContext;
-  let callback: cmds.CommandCallback;
+  let callback: CommandCallback;
 
   setup(() => {
     sandbox = sinon.createSandbox();

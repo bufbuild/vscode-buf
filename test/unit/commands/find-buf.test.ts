@@ -10,7 +10,7 @@ import type * as findBufType from "../../../src/commands/find-buf";
 import * as config from "../../../src/config";
 import * as version from "../../../src/version";
 
-import { CommandCallback } from "../../../src/commands";
+import { CommandCallback } from "../../../src/commands/command";
 import { bufFilename } from "../../../src/const";
 import { BufContext } from "../../../src/context";
 import { BufVersion } from "../../../src/version";
