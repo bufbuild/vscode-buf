@@ -21,7 +21,15 @@ export const findBuf = new Command(
   (ctx, bufCtx) => {
     return async () => {
       const configPath = config.get<string>("commandLine.path");
+      const configVersion = config.get<string>("commandLine.version");
+
       if (configPath) {
+        if (configVersion) {
+          log.warn(
+            "Both 'buf.commandLine.path' and 'buf.commandLine.version' are set. Using 'buf.commandLine.path'."
+          );
+        }
+
         try {
           log.info(`Buf path set to '${configPath}'.`);
           bufCtx.buf = await BufVersion.fromPath(configPath);
@@ -41,7 +49,6 @@ export const findBuf = new Command(
         return;
       }
 
-      const configVersion = config.get<string>("commandLine.version");
       if (configVersion) {
         try {
           log.info(
