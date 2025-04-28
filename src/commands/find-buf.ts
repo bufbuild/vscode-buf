@@ -12,11 +12,9 @@ import { BufVersion } from "../version";
 
 // This command is used to find the buf binary and set it in the context.
 // Order of precedence:
-//   1. If the user has set the buf.commandLine.path in the settings, use that.
-//   2. If the user has set buf.commandLine.version, look for it in the extension storage.
-//   3. Search for an installed buf binary in the extension storage.
-//   4. Search for an installed buf binary in the PATH.
-//   5. Finally, fallout with an error, the user can decide what they want to do.
+//   1. Allow the user to set the buf path in the config e.g. 'buf.commandLine.path: /usr/local/bin/buf'
+//   2. Allow the extension to manage the buf version for the user and always update to the latest e.g. 'buf.commandLine.version: latest'
+//   3. If the user has not set a path or version, we will look for buf in the OS path.
 export const findBuf = new Command(
   "buf.findBinary",
   CommandType.COMMAND_INTERNAL,
@@ -24,39 +22,48 @@ export const findBuf = new Command(
     return async () => {
       const configPath = config.get<string>("commandLine.path");
       if (configPath) {
-        bufCtx.buf = await BufVersion.fromPath(configPath);
+        try {
+          log.info(`Buf path set to '${configPath}'.`);
+          bufCtx.buf = await BufVersion.fromPath(configPath);
 
-        if (bufCtx.buf) {
-          log.info(
-            `Using '${bufCtx.buf.path}', version: ${bufCtx.buf.version}.`
+          if (bufCtx.buf) {
+            log.info(
+              `Using '${bufCtx.buf.path}', version: ${bufCtx.buf.version}.`
+            );
+          }
+        } catch (e) {
+          log.error(
+            `Error loading buf from path '${configPath}': ${unwrapError(e)}`
           );
-        } else {
-          vscode.window.showErrorMessage(
-            `Buf path is set to ${configPath}, but it is not a valid binary.`
-          );
+          bufCtx.buf = undefined;
         }
+
+        return;
+      }
+
+      const configVersion = config.get<string>("commandLine.version");
+      if (configVersion) {
+        try {
+          log.info(
+            `Buf version set to '${configVersion}'. Looking for it in the extension storage...`
+          );
+          bufCtx.buf = await findBufInStorage(ctx, configVersion);
+
+          if (bufCtx.buf) {
+            log.info(
+              `Using '${bufCtx.buf.path}', version: ${bufCtx.buf.version}.`
+            );
+          }
+        } catch (e) {
+          log.error(`Error finding an installed buf: ${unwrapError(e)}`);
+          bufCtx.buf = undefined;
+        }
+
         return;
       }
 
       // If we didn't get a valid buf binary from config...
-      log.info("Looking for an already installed buf...");
-
-      try {
-        bufCtx.buf = await findBufInStorage(ctx);
-
-        if (bufCtx.buf) {
-          log.info(
-            `Using '${bufCtx.buf.path}', version: ${bufCtx.buf.version}.`
-          );
-          return;
-        }
-      } catch (e) {
-        log.error(`Error finding an installed buf: ${unwrapError(e)}`);
-      }
-
-      if (!bufCtx.buf && config.get<string>("commandLine.version")) {
-        return;
-      }
+      log.info("Looking for buf on the path...");
 
       // If we didn't find it in storage...
       try {
@@ -91,20 +98,25 @@ const findBufInPath = async (): Promise<BufVersion | undefined> => {
 };
 
 const findBufInStorage = async (
-  ctx: vscode.ExtensionContext
+  ctx: vscode.ExtensionContext,
+  version: string
 ): Promise<BufVersion | undefined> => {
   const files = await fs.promises.readdir(ctx.globalStorageUri.fsPath);
-  const version = config.get<string>("commandLine.version");
+
+  // If the user has not set a specific version, we do nothing.
+  if (!version) {
+    return undefined;
+  }
 
   let found: string | undefined;
 
-  if (version) {
-    found = files.find((f) => f.localeCompare(version) === 0);
-  } else {
+  if (version === "latest") {
     found = files
       .filter((f) => f.startsWith("v"))
       .sort()
       .at(-1);
+  } else {
+    found = files.find((f) => f.localeCompare(version) === 0);
   }
 
   if (found) {

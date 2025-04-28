@@ -34,7 +34,9 @@ export const installBuf = new Command(
       try {
         const version = config.get<string>("commandLine.version");
         log.info(`Checking github releases for '${version}' release...`);
-        const release = await github.getRelease(version);
+        const release = await github.getRelease(
+          version === "latest" ? undefined : version
+        );
         const asset = await github.findAsset(release);
 
         const bufPath = await install(ctx, release, asset, abort);

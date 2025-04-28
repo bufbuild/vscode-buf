@@ -56,7 +56,7 @@
         },
         "buf.commandLine.version": {
           "type": "string",
-          "description": "Specific version (git tag) of Buf release to download and install."
+          "description": "Specific version (git tag e.g. 'v1.53.0') of Buf release to download and install."
         },
         "buf.restartAfterCrash": {
           "type": "boolean",

@@ -53,7 +53,7 @@ suite("commands.findBuf", () => {
     sandbox.restore();
   });
 
-  test("when buf.path set in config, uses buf from config", async () => {
+  test("when buf.commandLine.path set in config, uses buf from config", async () => {
     const bufPath = "/usr/local/bin/buf";
 
     const configStub = sandbox.stub(config, "get").returns(bufPath);
@@ -90,7 +90,7 @@ suite("commands.findBuf", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .resolves(["v2" as any, "v1" as any, "v3" as any]);
 
-    const configStub = sandbox.stub(config, "get").returns("v1");
+    sandbox.stub(config, "get").returns("v1");
 
     sandbox
       .stub(version.BufVersion, "fromPath")
@@ -101,9 +101,9 @@ suite("commands.findBuf", () => {
     assert.strictEqual(bufCtx.buf?.path, bufPath, "buf path should match");
   });
 
-  test("when buf installed by extension, finds buf in the extension storage", async () => {
+  test("when buf.commandLine.version set to 'latest', finds latest buf version in the extension storage", async () => {
     const storagePath = "/path/to/storage";
-    const bufPath = path.join(storagePath, "v1", bufFilename);
+    const bufPath = path.join(storagePath, "v3", bufFilename);
 
     sandbox.stub(ctx, "globalStorageUri").value({
       fsPath: storagePath,
@@ -114,6 +114,8 @@ suite("commands.findBuf", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .resolves(["v2" as any, "v1" as any, "v3" as any]);
 
+    sandbox.stub(config, "get").returns("latest");
+
     sandbox
       .stub(version.BufVersion, "fromPath")
       .resolves(new BufVersion(bufPath, new semver.Range("1.44.15")));
@@ -123,7 +125,7 @@ suite("commands.findBuf", () => {
     assert.strictEqual(bufCtx.buf?.path, bufPath, "buf path should match");
   });
 
-  test("when no buf installed in extension, finds buf in the os path", async () => {
+  test("when no path or version set in config, finds buf in the os path", async () => {
     const bufPath = "/usr/local/bin/buf";
     whichStub.returns(bufPath);
 

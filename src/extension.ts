@@ -56,6 +56,12 @@ const handleOnDidConfigChange = async (e: vscode.ConfigurationChangeEvent) => {
     e.affectsConfiguration("buf.commandLine.version")
   ) {
     await commands.findBuf.execute();
+
+    // If we don't have a buf cli after attempting a find, try to install one.
+    if (!bufCtx.buf) {
+      log.warn("No buf cli found. Installing buf...");
+      await commands.installBuf.execute();
+    }
   }
 
   commands.restartBuf.execute();

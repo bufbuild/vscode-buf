@@ -28,7 +28,7 @@ export const updateBuf = new Command(
       }
 
       const version = config.get<string>("commandLine.version");
-      if (version) {
+      if (version && version !== "latest") {
         log.info(`Buf set to version '${version}'. Skipping update.`);
         return;
       }
