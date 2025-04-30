@@ -20,10 +20,17 @@ export const findBuf = new Command(
   CommandType.COMMAND_INTERNAL,
   (ctx, bufCtx) => {
     return async () => {
-      const configPath = config.get<string>("commandLine.path");
+      let configPath = config.get<string>("commandLine.path");
       const configVersion = config.get<string>("commandLine.version");
 
       if (configPath) {
+        if (!path.isAbsolute(configPath)) {
+          configPath = path.join(
+            vscode.workspace.rootPath || process.cwd(), //todo: fix me in the future when we want to support multi-root workspaces
+            configPath
+          );
+        }
+
         if (configVersion) {
           log.warn(
             "Both 'buf.commandLine.path' and 'buf.commandLine.version' are set. Using 'buf.commandLine.path'."

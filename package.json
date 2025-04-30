@@ -52,7 +52,7 @@
       "properties": {
         "buf.commandLine.path": {
           "type": "string",
-          "description": "Path to the Buf binary."
+          "description": "Path to the Buf binary. Relative paths are supported and are relative to the workspace root."
         },
         "buf.commandLine.version": {
           "type": "string",
