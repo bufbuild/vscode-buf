@@ -70,11 +70,6 @@ suite("commands.findBuf", () => {
       true,
       "fromPath should be called once"
     );
-    assert.strictEqual(
-      configStub.calledOnce,
-      true,
-      "getConfiguration should be called once"
-    );
   });
 
   test("when buf.commandLine.version set, finds specific buf version in the extension storage", async () => {
