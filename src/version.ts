@@ -1,6 +1,6 @@
 import { Error } from "./errors";
 
-const versionRegexp = /^(\d+)\.(\d+).(\d+)(?:\-dev|\-rc)?(\d*)?$/;
+const versionRegexp = /^(\d+)\.(\d+).(\d+)(?:-dev|-rc)?(\d*)?$/;
 
 export interface Version {
   major: number;
@@ -19,7 +19,11 @@ export const less = (first: Version, second: Version): boolean => {
   if (first.major === second.major && first.minor < second.minor) {
     return true;
   }
-  if (first.major === second.major && first.minor === second.minor && first.patch < second.patch) {
+  if (
+    first.major === second.major &&
+    first.minor === second.minor &&
+    first.patch < second.patch
+  ) {
     return true;
   }
   return (
@@ -75,12 +79,15 @@ export const parse = (versionString: string): Version | Error => {
   };
 };
 
-export const checkReleaseCandidate = (firstReleaseCandidate: number | null, secondReleaseCandidate: number | null): boolean => {
+export const checkReleaseCandidate = (
+  firstReleaseCandidate: number | null,
+  secondReleaseCandidate: number | null
+): boolean => {
   if (firstReleaseCandidate === null) {
     return false;
   }
   if (secondReleaseCandidate === null) {
     return true;
   }
-  return (firstReleaseCandidate < secondReleaseCandidate);
+  return firstReleaseCandidate < secondReleaseCandidate;
 };

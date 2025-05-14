@@ -30,7 +30,11 @@ export const lint = (
 ): string[] | Error => {
   const output = child_process.spawnSync(
     binaryPath,
-    ["lint", `"${filePath}"` + "#include_package_files=true", "--error-format=json"],
+    [
+      "lint",
+      `"${filePath}"` + "#include_package_files=true",
+      "--error-format=json",
+    ],
     {
       encoding: "utf-8",
       cwd: cwd,
@@ -38,11 +42,14 @@ export const lint = (
     }
   );
   // If the command fails to run, such as a failed module/workspace build, return the error.
-  if (output.status === 1)  {
+  if (output.status === 1) {
     return output.stderr.trim().split("\n");
   }
   // If the command succeeds with no lint failures and an empty output will be returned.
-  return output.stdout.trim().split("\n").filter((s) => s.trim().length > 0);
+  return output.stdout
+    .trim()
+    .split("\n")
+    .filter((s) => s.trim().length > 0);
 };
 
 export const version = (binaryPath: string): Version | Error => {

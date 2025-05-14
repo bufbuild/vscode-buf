@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import * as assert from "assert";
 import * as vscode from "vscode";
 import * as buf from "../buf";
@@ -8,7 +6,10 @@ import path from "path";
 
 suite("Buf CLI tests", () => {
   vscode.window.showInformationMessage("Start all tests.");
-  const outputChannel = vscode.window.createOutputChannel("Buf-test", "console");
+  const outputChannel = vscode.window.createOutputChannel(
+    "Buf-test",
+    "console"
+  );
 
   test("Default path succeeds when buf is installed", async () => {
     const version = buf.version("buf");
