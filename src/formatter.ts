@@ -67,7 +67,7 @@ export class Formatter implements vscode.DocumentFormattingEditProvider {
 
             const p = cp.spawn(this.binaryPath, ["format", backupFile], {
               cwd,
-              shell: true
+              shell: true,
             });
             token.onCancellationRequested(() => !p.killed && p.kill());
 
