@@ -32,13 +32,13 @@ export const lint = (
     binaryPath,
     [
       "lint",
-      `"${filePath}"` + "#include_package_files=true",
+      `'${filePath}'` + "#include_package_files=true",
       "--error-format=json",
     ],
     {
       encoding: "utf-8",
       cwd: cwd,
-      shell: process.platform === "win32",
+      shell: true,
     }
   );
   // If the command fails to run, such as a failed module/workspace build, return the error.
@@ -55,7 +55,7 @@ export const lint = (
 export const version = (binaryPath: string): Version | Error => {
   const output = child_process.spawnSync(binaryPath, ["--version"], {
     encoding: "utf-8",
-    shell: process.platform === "win32",
+    shell: true,
   });
   if (output.error !== undefined) {
     return { errorMessage: output.error.message };
