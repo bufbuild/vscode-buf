@@ -32,7 +32,7 @@ export const lint = (
     binaryPath,
     [
       "lint",
-      `"${filePath}"` + "#include_package_files=true",
+      `'${filePath}'` + "#include_package_files=true",
       "--error-format=json",
     ],
     {
