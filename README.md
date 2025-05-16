@@ -29,6 +29,8 @@ This extension contributes the following settings:
 
 ## Changelog
 
+- v0.7.2
+  - Fix issue with `buf` commands returning an unexpected error on exec.
 - v0.7.1
   - Fix "undefined" error when running `buf` on the extension.
 - v0.7.0
