@@ -2,7 +2,6 @@ export { bufGenerate } from "./buf-generate";
 export { findBuf } from "./find-buf";
 export { installBuf } from "./install-buf";
 export { registerAllCommands } from "./register-all-commands";
-export { removeBuf } from "./remove-buf";
 export { restartBuf } from "./restart-buf";
 export { showCommands } from "./show-commands";
 export { showOutput } from "./show-output";

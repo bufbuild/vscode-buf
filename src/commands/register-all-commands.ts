@@ -6,7 +6,6 @@ import { Command } from "./command";
 import { bufGenerate } from "./buf-generate";
 import { findBuf } from "./find-buf";
 import { installBuf } from "./install-buf";
-import { removeBuf } from "./remove-buf";
 import { restartBuf } from "./restart-buf";
 import { showCommands } from "./show-commands";
 import { showOutput } from "./show-output";
@@ -17,7 +16,6 @@ const commands = [
   bufGenerate,
   findBuf,
   installBuf,
-  removeBuf,
   restartBuf,
   showCommands,
   showOutput,

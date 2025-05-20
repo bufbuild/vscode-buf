@@ -174,12 +174,6 @@
         "command": "buf.restart",
         "category": "Buf",
         "title": "$(debug-restart) Restart Buf Language Server"
-      },
-      {
-        "command": "buf.remove",
-        "category": "Buf",
-        "title": "$(remove-close) Remove CLI",
-        "description": "Remove Buf CLI installed locally by the extension."
       }
     ]
   },
