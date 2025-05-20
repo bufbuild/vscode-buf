@@ -33,7 +33,7 @@ export const installBuf = new Command(
 
       const abort = new AbortController();
       try {
-        const version = config.get<string>("commandLine.version");
+        const version = config.get<string>("commandLine.version") || "latest";
         log.info(`Checking github releases for '${version}' release...`);
         const release = await github.getRelease(
           version === "latest" ? undefined : version

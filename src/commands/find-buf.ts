@@ -1,7 +1,7 @@
-import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import * as config from "../config";
+import * as github from "../github";
 
 import which from "which";
 import { Command, CommandType } from "./command";
@@ -57,11 +57,19 @@ export const findBuf = new Command(
       }
 
       if (configVersion) {
+        let version = configVersion;
+
+        // Get the latest version from GitHub if the user has set it to "latest".
+        if (configVersion === "latest") {
+          const latestRelease = await github.getRelease();
+          version = latestRelease.tag_name;
+        }
+
         try {
           log.info(
-            `Buf version set to '${configVersion}'. Looking for it in the extension storage...`
+            `Buf version set to '${configVersion}'. Looking for '${version}' in extension storage...`
           );
-          bufCtx.buf = await findBufInStorage(ctx, configVersion);
+          bufCtx.buf = await getBufInStorage(ctx, version);
 
           if (bufCtx.buf) {
             log.info(
@@ -111,33 +119,18 @@ const findBufInPath = async (): Promise<BufVersion | undefined> => {
   return undefined;
 };
 
-const findBufInStorage = async (
+const getBufInStorage = async (
   ctx: vscode.ExtensionContext,
   version: string
 ): Promise<BufVersion | undefined> => {
-  const files = await fs.promises.readdir(ctx.globalStorageUri.fsPath);
+  const bufPath = path.join(ctx.globalStorageUri.fsPath, version, bufFilename);
 
-  // If the user has not set a specific version, we do nothing.
-  if (!version) {
+  // Check if the buf binary exists in the storage path.
+  try {
+    await vscode.workspace.fs.stat(vscode.Uri.file(bufPath));
+  } catch {
     return undefined;
   }
 
-  let found: string | undefined;
-
-  if (version === "latest") {
-    found = files
-      .filter((f) => f.startsWith("v"))
-      .sort()
-      .at(-1);
-  } else {
-    found = files.find((f) => f.localeCompare(version) === 0);
-  }
-
-  if (found) {
-    return BufVersion.fromPath(
-      path.join(ctx.globalStorageUri.fsPath, found, bufFilename)
-    );
-  }
-
-  return undefined;
+  return await BufVersion.fromPath(bufPath);
 };
