@@ -2,7 +2,7 @@
   "name": "vscode-buf",
   "displayName": "Buf",
   "description": "Visual Studio Code support for Buf",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "icon": "logo.png",
   "publisher": "bufbuild",
   "repository": {
@@ -52,7 +52,7 @@
       "properties": {
         "buf.commandLine.path": {
           "type": "string",
-          "description": "Path to the Buf binary. Relative paths are supported and are relative to the workspace root."
+          "description": "The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root."
         },
         "buf.commandLine.version": {
           "type": "string",
