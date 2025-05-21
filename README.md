@@ -4,8 +4,8 @@ The [VS Code Buf extension](https://marketplace.visualstudio.com/items?itemName=
 
 ## Requirements
 
-* Visual Studio Code
-* A [Buf](https://buf.build/) configuration environment.
+- Visual Studio Code
+- A [Buf](https://buf.build/) configuration environment.
 
 ## Getting Started
 
