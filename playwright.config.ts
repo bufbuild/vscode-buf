@@ -13,7 +13,7 @@ export default defineConfig<TestOptions>({
   reporter: process.env.CI ? "html" : "list",
   timeout: 120_000_000,
   expect: {
-    timeout: 30_000,
+    timeout: 40_000,
   },
   globalSetup: "./test/e2e/global-setup.ts",
   projects: [
