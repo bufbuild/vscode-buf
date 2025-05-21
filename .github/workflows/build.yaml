@@ -23,6 +23,8 @@ jobs:
           setup_only: true
       - name: install-deps
         run: make install
+      - name: build
+        run: npm run compile
       - name: lint
         run: npm run lint
       - name: format
