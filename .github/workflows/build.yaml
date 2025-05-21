@@ -37,8 +37,8 @@ jobs:
         if: runner.os != 'Linux'
       - name: e2e-test
         run: npm run test:e2e
-        # E2E tests are skipped for linux since it should be close enough with macos
-        if: runner.os != 'Linux'
+        # Limiting to macOS for now due to issues with xvfb on Linux and timeouts on windows
+        if: runner.os == 'macOS'
       - name: check diff
         run: node scripts/gh-diffcheck.mjs
       - name: upload-e2e-test-results
