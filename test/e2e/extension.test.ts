@@ -204,6 +204,9 @@ test.beforeEach(async ({ workbox: { page, createFile } }) => {
 test("toolbar displays successful running lsp", async ({
   workbox: { page },
 }) => {
+  const statusBarItem = page.locator('[id="bufbuild\\.vscode-buf\\.Buf"]');
+  console.log(await statusBarItem.textContent());
+  expect((await statusBarItem.all()).length).toBe(1)
   // Validate that buf lsp is displaying success in the
   await expect(page.getByRole("button", { name: "check Buf" })).toBeVisible();
 });
