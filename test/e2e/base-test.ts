@@ -80,6 +80,10 @@ export const test = baseTest.extend<TestFixtures>({
       contentType: "application/zip",
     });
     await electronApp.close();
+    // Add a small delay on Windows to ensure processes are fully released
+    if (process.platform === 'win32') {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
     const logPath = path.join(defaultCachePath, "user-data");
     if (fs.existsSync(logPath)) {
       const logOutputPath = test.info().outputPath("vscode-logs");
@@ -90,8 +94,9 @@ export const test = baseTest.extend<TestFixtures>({
     await use(async () => {
       // We want to be outside of the project directory to avoid already installed dependencies.
       const projectPath = await createTempDir();
-      if (fs.existsSync(projectPath))
+      if (fs.existsSync(projectPath)) {
         await fs.promises.rm(projectPath, { recursive: true });
+      }
       await fs.promises.mkdir(path.join(projectPath, ".vscode"), {
         recursive: true,
       });
@@ -117,7 +122,32 @@ export const test = baseTest.extend<TestFixtures>({
       tempDirs.push(tempDir);
       return tempDir;
     });
-    for (const tempDir of tempDirs)
-      await fs.promises.rm(tempDir, { recursive: true });
+    
+    // Process each temp directory
+    for (const tempDir of tempDirs) {
+      if (process.platform === 'win32') {
+        // Windows-specific cleanup with retry logic
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (attempts < maxAttempts) {
+          try {
+            await fs.promises.rm(tempDir, { recursive: true });
+            break; // Success, exit the retry loop
+          } catch (_error) {
+            attempts++;
+            if (attempts >= maxAttempts) {
+              console.warn(`Failed to remove directory after ${maxAttempts} attempts: ${tempDir}`);
+              break;
+            }
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+      } else {
+        // Standard cleanup for non-Windows platforms
+        await fs.promises.rm(tempDir, { recursive: true });
+      }
+    }
   },
 });
