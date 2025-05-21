@@ -2,7 +2,6 @@ import * as semver from "semver";
 import * as github from "./github";
 
 import { execFile } from "./util";
-import { log } from "./log";
 
 const loose: semver.Options = {
   loose: true,
@@ -36,10 +35,7 @@ export class BufVersion {
 }
 
 export const getBufVersion = async (bufPath: string): Promise<semver.Range> => {
-  log.info(`Running ${bufPath} in '${process.cwd()}'...`);
-  const { stdout, stderr } = await execFile(bufPath, ["--version"], {
-    cwd: process.cwd(),
-  });
+  const { stdout, stderr } = await execFile(bufPath, ["--version"]);
 
   if (stderr) {
     throw new Error(`Error getting version of '${bufPath}'! ${stderr}`);
