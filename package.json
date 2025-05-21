@@ -2,7 +2,7 @@
   "name": "vscode-buf",
   "displayName": "Buf",
   "description": "Visual Studio Code support for Buf",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "icon": "logo.png",
   "publisher": "bufbuild",
   "repository": {
@@ -47,20 +47,68 @@
     "workspaceContains:**/buf.work.yaml"
   ],
   "contributes": {
-    "commands": [
-      {
-        "category": "Linters",
-        "command": "vscode-buf.lint",
-        "title": "Lint protobuf files using Buf"
-      }
-    ],
     "configuration": {
       "title": "Buf",
       "properties": {
-        "buf.binaryPath": {
+        "buf.commandLine.path": {
           "type": "string",
-          "default": "buf",
-          "description": "Path to the buf binary"
+          "description": "The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root."
+        },
+        "buf.commandLine.version": {
+          "type": "string",
+          "description": "Specific version (git tag e.g. 'v1.53.0') of Buf release to download and install."
+        },
+        "buf.restartAfterCrash": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically restart Buf (up to 4 times) if it crashes."
+        },
+        "buf.checkUpdates": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check for language server updates on startup."
+        },
+        "buf.enableHover": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hover features provided by the language server."
+        },
+        "buf.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Buf language server features."
+        },
+        "buf.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable debug mode."
+        },
+        "buf.log-format": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "text",
+            "color",
+            "json"
+          ],
+          "default": "text",
+          "description": "Buf language server log format."
+        },
+        "buf.checks.breaking.againstStrategy": {
+          "type": "string",
+          "enum": [
+            "disk",
+            "git"
+          ],
+          "default": "git",
+          "description": "The strategy to use when checking breaking changes against a specific reference."
+        },
+        "buf.checks.breaking.againstGitRef": {
+          "type": "string",
+          "default": "refs/remotes/origin/HEAD",
+          "description": "The Git reference to check breaking changes against."
         }
       }
     },
@@ -97,11 +145,42 @@
         "scopeName": "source.proto",
         "path": "./syntaxes/proto.tmLanguage.json"
       }
+    ],
+    "commands": [
+      {
+        "command": "buf.generate",
+        "category": "Buf",
+        "title": "$(run) Generate",
+        "description": "Run Buf to generate code with protoc plugins."
+      },
+      {
+        "command": "buf.showOutput",
+        "category": "Buf",
+        "title": "$(output) Show Buf Output"
+      },
+      {
+        "command": "buf.install",
+        "category": "Buf",
+        "title": "$(cloud-download) Install CLI",
+        "description": "Install the Buf CLI from GitHub releases."
+      },
+      {
+        "command": "buf.update",
+        "category": "Buf",
+        "title": "$(arrow-swap) Update CLI",
+        "description": "Check for updates and install the latest version of the Buf CLI."
+      },
+      {
+        "command": "buf.restart",
+        "category": "Buf",
+        "title": "$(debug-restart) Restart Buf Language Server"
+      }
     ]
   },
-  "main": "./out/extension.js",
+  "main": "./out/src/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",
+    "clean": "rm -rf ./dist/* && rm -rf ./out/* && rm -rf ./bin/* && rm *.vsix",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run prepworkspaces",
@@ -115,18 +194,30 @@
     "@eslint/js": "^9.23.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.x",
+    "@types/proxyquire": "^1.3.31",
+    "@types/semver": "^7.7.0",
+    "@types/sinon": "^17.0.4",
     "@types/vscode": "^1.83.1",
+    "@types/which": "^3.0.4",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
     "@vscode/test-cli": "0.0.4",
-    "@vscode/test-electron": "^2.3.9",
+    "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^2.15.0",
     "eslint": "^9.23.0",
     "eslint-plugin-unicorn": "^58.0.0",
     "globals": "^16.0.0",
     "mocha": "^10.2.0",
     "prettier": "^3.5.3",
+    "proxyquire": "^2.1.3",
+    "sinon": "^19.0.4",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.29.0"
+  },
+  "dependencies": {
+    "rimraf": "^6.0.1",
+    "semver": "^7.7.1",
+    "vscode-languageclient": "^9.0.1",
+    "which": "^5.0.0"
   }
 }
