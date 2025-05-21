@@ -34,7 +34,10 @@ jobs:
         run: npm run test:unit
         if: runner.os != 'Linux'
       - name: e2e-test
-        run: npm run test:e2e
+        run: xvfb-run -a npm run test:e2e
         if: runner.os == 'Linux'
+      - name: e2e-test
+        run: npm run test:e2e
+        if: runner.os != 'Linux'
       - name: check diff
         run: node scripts/gh-diffcheck.mjs
