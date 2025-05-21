@@ -27,11 +27,14 @@ jobs:
         run: npm run lint
       - name: format
         run: npm run format
-      - name: test-with-xvfb
-        run: xvfb-run -a npm test
+      - name: unit-tests-with-xvfb
+        run: xvfb-run -a npm run test:unit
         if: runner.os == 'Linux'
-      - name: test
-        run: npm test
+      - name: unit-test
+        run: npm run test:unit
         if: runner.os != 'Linux'
+      - name: e2e-test
+        run: npm run test:e2e
+        if: runner.os == 'Linux'
       - name: check diff
         run: node scripts/gh-diffcheck.mjs
