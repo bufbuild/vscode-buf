@@ -37,7 +37,6 @@ jobs:
         if: runner.os != 'Linux'
       - name: e2e-test
         run: npm run test:e2e
-        if: runner.os != 'Linux'
       - name: check diff
         run: node scripts/gh-diffcheck.mjs
       - name: upload-e2e-test-results
