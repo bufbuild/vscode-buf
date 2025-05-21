@@ -81,8 +81,8 @@ export const test = baseTest.extend<TestFixtures>({
     });
     await electronApp.close();
     // Add a small delay on Windows to ensure processes are fully released
-    if (process.platform === 'win32') {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    if (process.platform === "win32") {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
     const logPath = path.join(defaultCachePath, "user-data");
     if (fs.existsSync(logPath)) {
@@ -122,14 +122,14 @@ export const test = baseTest.extend<TestFixtures>({
       tempDirs.push(tempDir);
       return tempDir;
     });
-    
+
     // Process each temp directory
     for (const tempDir of tempDirs) {
-      if (process.platform === 'win32') {
+      if (process.platform === "win32") {
         // Windows-specific cleanup with retry logic
         let attempts = 0;
         const maxAttempts = 3;
-        
+
         while (attempts < maxAttempts) {
           try {
             await fs.promises.rm(tempDir, { recursive: true });
@@ -137,11 +137,13 @@ export const test = baseTest.extend<TestFixtures>({
           } catch (_error) {
             attempts++;
             if (attempts >= maxAttempts) {
-              console.warn(`Failed to remove directory after ${maxAttempts} attempts: ${tempDir}`);
+              console.warn(
+                `Failed to remove directory after ${maxAttempts} attempts: ${tempDir}`
+              );
               break;
             }
             // Wait before retrying
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
           }
         }
       } else {
