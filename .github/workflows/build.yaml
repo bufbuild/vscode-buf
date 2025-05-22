@@ -23,15 +23,29 @@ jobs:
           setup_only: true
       - name: install-deps
         run: make install
+      - name: build
+        run: npm run compile
       - name: lint
         run: npm run lint
       - name: format
         run: npm run format
-      - name: test-with-xvfb
-        run: xvfb-run -a npm test
+      - name: unit-tests-with-xvfb
+        run: xvfb-run -a npm run test:unit
         if: runner.os == 'Linux'
-      - name: test
-        run: npm test
+      - name: unit-test
+        run: npm run test:unit
         if: runner.os != 'Linux'
+      - name: e2e-test
+        run: npm run test:e2e
+        # Limiting to macOS for now due to issues with xvfb on Linux and timeouts on windows
+        if: runner.os == 'macOS'
       - name: check diff
         run: node scripts/gh-diffcheck.mjs
+      - name: upload-e2e-test-results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 5
+          if-no-files-found: ignore
