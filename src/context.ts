@@ -1,5 +1,5 @@
-import * as vscode from "vscode";
 import * as lsp from "vscode-languageclient/node";
+import { signal, computed } from "@preact/signals-core";
 import * as version from "./version";
 
 export type BufFile = {
@@ -20,47 +20,58 @@ export class BufContext {
   public client?: lsp.LanguageClient;
   public bufFiles: Map<string, BufFile> = new Map<string, BufFile>();
 
-  private _busy: boolean = false;
-  private _buf?: version.BufVersion;
-  private _status: ServerStatus = ServerStatus.SERVER_STOPPED;
+  // Signals for reactive state
+  private _status = signal<ServerStatus>(ServerStatus.SERVER_STOPPED);
+  private _busy = signal<boolean>(false);
+  private _buf = signal<version.BufVersion | undefined>(undefined);
 
-  private onDidChangeContextEmitter = new vscode.EventEmitter<void>();
 
   public set status(value: ServerStatus) {
-    if (this._status !== value) {
-      this._status = value;
-      this.onDidChangeContextEmitter.fire();
-    }
+    this._status.value = value;
   }
 
   public get status(): ServerStatus {
-    return this._status;
+    return this._status.value;
   }
 
   public set busy(value: boolean) {
-    this._busy = value;
-    this.onDidChangeContextEmitter.fire();
+    this._busy.value = value;
   }
 
   public get busy(): boolean {
-    return this._busy;
+    return this._busy.value;
   }
 
   public set buf(value: version.BufVersion | undefined) {
-    if (this._buf !== value) {
-      this._buf = value;
+    if (this._buf.value !== value) {
+      this._buf.value = value;
       if (!value) {
-        this._status = ServerStatus.SERVER_NOT_INSTALLED;
+        this._status.value = ServerStatus.SERVER_NOT_INSTALLED;
       }
-      this.onDidChangeContextEmitter.fire();
     }
   }
 
   public get buf(): version.BufVersion | undefined {
-    return this._buf;
+    return this._buf.value;
   }
 
-  public get onDidChangeContext(): vscode.Event<void> {
-    return this.onDidChangeContextEmitter.event;
+  // Computed properties for derived state
+
+  public readonly displayText = computed(() => {
+    const bufVersion = this._buf.value?.version;
+    return bufVersion ? ` (${bufVersion})` : "";
+  });
+
+  // Access to signals for direct subscription in effects
+  public get statusSignal() {
+    return this._status;
+  }
+
+  public get busySignal() {
+    return this._busy;
+  }
+
+  public get bufSignal() {
+    return this._buf;
   }
 }

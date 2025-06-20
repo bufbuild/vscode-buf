@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as commands from "./commands";
 
 import { BufContext, ServerStatus } from "./context";
+import { effect } from "@preact/signals-core";
 
 export let statusBarItem: vscode.StatusBarItem | undefined;
 
@@ -53,39 +54,32 @@ const busyStatusBarConfig: StatusBarConfig = {
   icon: "$(loading~spin)",
 };
 
-export function activate(ctx: vscode.ExtensionContext, bufCtx: BufContext) {
-  updateStatusBar(bufCtx);
+export function activate(bufCtx: BufContext) {
+  effect(() => {
+    if (!statusBarItem) {
+      statusBarItem = vscode.window.createStatusBarItem(
+        StatusBarItemName,
+        vscode.StatusBarAlignment.Right,
+        100
+      );
+      statusBarItem.name = StatusBarItemName;
+      statusBarItem.show();
+    }
 
-  ctx.subscriptions.push(
-    bufCtx.onDidChangeContext(() => {
-      updateStatusBar(bufCtx);
-    })
-  );
+    const config = bufCtx.busySignal.value ? busyStatusBarConfig : icons[bufCtx.statusSignal.value];
+
+    statusBarItem.text = `${config.icon} Buf${bufCtx.displayText.value}`;
+    statusBarItem.color = config.colour;
+    statusBarItem.command = config.command || commands.showOutput.command;
+    statusBarItem.tooltip = new vscode.MarkdownString("", true);
+    statusBarItem.tooltip.supportHtml = true;
+
+    if (config.tooltip) {
+      statusBarItem.tooltip.appendMarkdown(`${config.tooltip}\n\n`);
+    }
+  });
 }
 
-const updateStatusBar = (bufCtx: BufContext) => {
-  if (!statusBarItem) {
-    statusBarItem = vscode.window.createStatusBarItem(
-      StatusBarItemName,
-      vscode.StatusBarAlignment.Right,
-      100
-    );
-    statusBarItem.name = StatusBarItemName;
-    statusBarItem.show();
-  }
-
-  const config = bufCtx.busy ? busyStatusBarConfig : icons[bufCtx.status];
-
-  statusBarItem.text = `${config.icon} Buf${bufCtx.buf?.version ? ` (${bufCtx.buf.version})` : ""}`;
-  statusBarItem.color = config.colour;
-  statusBarItem.command = config.command || commands.showOutput.command;
-  statusBarItem.tooltip = new vscode.MarkdownString("", true);
-  statusBarItem.tooltip.supportHtml = true;
-
-  if (config.tooltip) {
-    statusBarItem.tooltip.appendMarkdown(`${config.tooltip}\n\n`);
-  }
-};
 
 export const disposeStatusBar = () => {
   if (statusBarItem) {

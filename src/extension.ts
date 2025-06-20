@@ -9,7 +9,7 @@ import { log } from "./log";
 const bufCtx = new BufContext();
 
 export async function activate(ctx: vscode.ExtensionContext) {
-  status.activate(ctx, bufCtx);
+  status.activate(bufCtx);
 
   commands.registerAllCommands(ctx, bufCtx);
 
