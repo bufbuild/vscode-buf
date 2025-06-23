@@ -3,12 +3,23 @@ import * as vscode from "vscode";
 
 import { homedir } from "os";
 
-// Gets the config value `buf.<key>`. Applies ${variable} substitutions.
+/**
+ * @file Provides utilities for interacting with the VSCode extension configuration.
+ *
+ * Extension configurations are defined in package.json.
+ */
+
+/**
+ * Gets the config value `buf.<key>`.
+ * Applies ${variable} substitutions {@link substitute}.
+ */
 export function get<T>(key: string): T {
   return substitute(vscode.workspace.getConfiguration("buf").get<T>(key)!);
 }
 
-// Sets the config value `buf.<key>`. Does not apply substitutions.
+/**
+ * Sets the config value `buf.<key>`. Does not apply substitutions {@link substitute}.
+ */
 export function update<T>(
   key: string,
   value: T,
@@ -17,12 +28,23 @@ export function update<T>(
   return vscode.workspace.getConfiguration("buf").update(key, value, target);
 }
 
-// Traverse a JSON value, replacing placeholders in all strings.
+/**
+ * Traverse configuration values and replace useful variable references supported in VSCode.
+ * https://code.visualstudio.com/docs/editor/variables-reference
+ *
+ * Supported references:
+ * ${userHome}
+ * ${cwd}
+ * ${workspaceFolder}
+ * ${workspaceFolderBasename}
+ * ${env:VAR} https://code.visualstudio.com/docs/reference/variables-reference#_environment-variables
+ * ${config:KEY} https://code.visualstudio.com/docs/reference/variables-reference#_configuration-variables
+ */
 function substitute<T>(val: T): T {
   if (typeof val === "string") {
-    val = val.replace(/\$\{(.*?)\}/g, (match, name) => {
+    val = val.replace(/\$\{(.*?)\}/g, (match, directive) => {
       // If there's no replacement available, keep the placeholder.
-      return replacement(name) ?? match;
+      return replacement(directive) ?? match;
     }) as unknown as T;
   } else if (Array.isArray(val)) {
     val = val.map((x) => substitute(x)) as unknown as T;
@@ -38,42 +60,46 @@ function substitute<T>(val: T): T {
   return val;
 }
 
-// Subset of substitution variables that are most likely to be useful.
-// https://code.visualstudio.com/docs/editor/variables-reference
-function replacement(name: string): string | undefined {
-  if (name === "userHome") {
+/**
+ * Subset of substitution variables that are most likely to be useful.
+ * https://code.visualstudio.com/docs/editor/variables-reference
+ */
+function replacement(directive: string): string | undefined {
+  if (directive === "userHome") {
     return homedir();
   }
-  if (
-    name === "workspaceRoot" ||
-    name === "workspaceFolder" ||
-    name === "cwd"
-  ) {
-    if (vscode.workspace.rootPath !== undefined) {
-      return vscode.workspace.rootPath;
-    }
-    if (vscode.window.activeTextEditor !== undefined) {
-      return path.dirname(vscode.window.activeTextEditor.document.uri.fsPath);
-    }
+  if (directive === "cwd") {
     return process.cwd();
   }
-  if (
-    name === "workspaceFolderBasename" &&
-    vscode.workspace.rootPath !== undefined
-  ) {
-    return path.basename(vscode.workspace.rootPath);
+  if (directive === "workspaceFolder" || directive === "workspaceFolderBasename") {
+    const workspaceFolder = replaceWorkspaceFolder();
+    if (directive === "workspaceFolderBasename" && workspaceFolder) {
+      return path.basename(workspaceFolder);
+    }
+    return workspaceFolder
   }
   const envPrefix = "env:";
-  if (name.startsWith(envPrefix)) {
-    return process.env[name.substr(envPrefix.length)] ?? "";
+  if (directive.startsWith(envPrefix)) {
+    return process.env[directive.substring(envPrefix.length)] ?? undefined;
   }
   const configPrefix = "config:";
-  if (name.startsWith(configPrefix)) {
+  if (directive.startsWith(configPrefix)) {
     const config = vscode.workspace
       .getConfiguration()
-      .get(name.substr(configPrefix.length));
+      .get(directive.substring(configPrefix.length));
     return typeof config === "string" ? config : undefined;
   }
-
   return undefined;
+}
+
+/**
+ * A helper function for ${workspaceFolder} variable replacements.
+ * It checks the workspace folder of the current file, if there is one. Otherwise, it
+ * fallsback to the first workspace folder.
+ */
+function replaceWorkspaceFolder(): string | undefined {
+  if (vscode.workspace.workspaceFile) {
+    return vscode.workspace.getWorkspaceFolder(vscode.workspace.workspaceFile)?.toString()
+  }
+  return vscode.workspace.workspaceFolders?.[0]?.toString();
 }

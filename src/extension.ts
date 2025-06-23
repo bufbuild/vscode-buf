@@ -1,68 +1,47 @@
 import * as vscode from "vscode";
 import * as commands from "./commands";
-import * as config from "./config";
-import * as status from "./status";
 
-import { BufContext, ServerStatus } from "./context";
+import { activateStatusBar, deactivateStatusBar } from "./status-bar";
+import { bufState } from "./state";
 import { log } from "./log";
 
-const bufCtx = new BufContext();
-
+/**
+ * activate is the entrypoint for activating the extension.
+ */
 export async function activate(ctx: vscode.ExtensionContext) {
-  status.activate(ctx, bufCtx);
-
-  commands.registerAllCommands(ctx, bufCtx);
-
+  activateStatusBar(ctx);
+  commands.registerAllCommands(ctx);
   ctx.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange)
   );
 
-  await commands.findBuf.execute();
-
-  if (!bufCtx.buf) {
+  if (!bufState.buf) {
     log.warn("No buf cli found. Installing buf...");
     await commands.installBuf.execute();
   }
-
-  if (config.get<boolean>("checkUpdates")) {
-    // Check asynchronously for updates.
-    commands.updateBuf.execute();
-  }
-
-  // We may have already started running if we had to install buf, so don't try
-  // and start if we're already running.
-  if (bufCtx.buf && bufCtx.status !== ServerStatus.SERVER_RUNNING) {
-    // Start the language server
-    await commands.restartBuf.execute();
-  }
 }
 
-// Nothing to do for now
+/**
+ * deactivate runs when the extension is deactivated.
+ */
 export async function deactivate() {
   log.info("Deactivating extension.");
 
   await commands.stopBuf.execute();
-
-  status.disposeStatusBar();
+  deactivateStatusBar();
 }
 
+/**
+ * handleOnDidConfigChange checks if there are changes to the extension configuration.
+ */
 const handleOnDidConfigChange = async (e: vscode.ConfigurationChangeEvent) => {
   if (!e.affectsConfiguration("buf")) {
     return;
   }
-
   if (
     e.affectsConfiguration("buf.commandLine.path") ||
     e.affectsConfiguration("buf.commandLine.version")
   ) {
-    await commands.findBuf.execute();
-
-    // If we don't have a buf cli after attempting a find, try to install one.
-    if (!bufCtx.buf) {
-      log.warn("No buf cli found. Installing buf...");
-      await commands.installBuf.execute();
-    }
+    await commands.installBuf.execute();
   }
-
-  commands.restartBuf.execute();
 };

@@ -150,30 +150,41 @@
       {
         "command": "buf.generate",
         "category": "Buf",
-        "title": "$(run) Generate",
+        "icon": "$(run)",
+        "title": "Generate",
         "description": "Run Buf to generate code with protoc plugins."
       },
       {
         "command": "buf.showOutput",
         "category": "Buf",
-        "title": "$(output) Show Buf Output"
+        "icon": "$(output)",
+        "title": "Show Buf Output"
       },
       {
         "command": "buf.install",
         "category": "Buf",
-        "title": "$(cloud-download) Install CLI",
+        "icon": "$(cloud-download)",
+        "title": "Install CLI",
         "description": "Install the Buf CLI from GitHub releases."
       },
       {
         "command": "buf.update",
         "category": "Buf",
-        "title": "$(arrow-swap) Update CLI",
+        "icon": "$(arrow-swap)",
+        "title": "Update CLI",
         "description": "Check for updates and install the latest version of the Buf CLI."
       },
       {
-        "command": "buf.restart",
+        "command": "buf.start",
         "category": "Buf",
-        "title": "$(debug-restart) Restart Buf Language Server"
+        "icon": "$(debug-start)",
+        "title": "Start Buf Language Server"
+      },
+      {
+        "command": "buf.stop",
+        "category": "Buf",
+        "icon": "$(debug-stop)",
+        "title": "Stop Buf Language Server"
       }
     ]
   },

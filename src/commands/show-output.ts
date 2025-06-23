@@ -1,12 +1,14 @@
 import { log } from "../log";
-import { Command, CommandType } from "./command";
+import { Command } from "./command";
 
+/**
+ * showOutput shows the extension log output channel. The Buf extension output channel will
+ * take focus.
+ */
 export const showOutput = new Command(
   "buf.showOutput",
-  CommandType.COMMAND_EXTENSION,
-  () => {
-    return () => {
-      log.show();
-    };
+  "COMMAND_TYPE_EXTENSION",
+  async () => {
+    log.show();
   }
 );

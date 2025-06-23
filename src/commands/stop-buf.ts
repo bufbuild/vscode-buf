@@ -1,22 +1,19 @@
-import * as config from "../config";
-
-import { ServerStatus } from "../context";
 import { log } from "../log";
-import { Command, CommandType } from "./command";
+import { bufState } from "../state";
+import { Command } from "./command";
 
+/**
+ * stopBuf stops the LSP server and client.
+ */
 export const stopBuf = new Command(
   "buf.stop",
-  CommandType.COMMAND_EXTENSION,
-  (_, bufCtx) => {
-    return async () => {
-      if (bufCtx.client) {
-        log.info(
-          `Request to stop language server (enabled: ${config.get<boolean>("enable")})`
-        );
-        await bufCtx.client.stop();
-        bufCtx.client = undefined;
-        bufCtx.status = ServerStatus.SERVER_STOPPED;
-      }
-    };
+  "COMMAND_TYPE_SERVER",
+  async () => {
+    if (bufState.client) {
+      log.info(`Stopping Buf Language Server...`);
+      await bufState.client.stop();
+      bufState.languageServerStatus = "LANGUAGE_SERVER_STOPPED";
+      return;
+    }
   }
 );

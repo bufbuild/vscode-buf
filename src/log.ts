@@ -1,6 +1,13 @@
 import * as vscode from "vscode";
 import { inspect } from "util";
 
+/**
+ * @file Provides a global logger to the Buf extension output channel.
+ */
+
+/**
+ * Log is a global logger for the Buf extension output channel.
+ */
 class Log {
   private readonly output = vscode.window.createOutputChannel("Buf", {
     log: true,
@@ -28,7 +35,7 @@ class Log {
   }
 
   show(): void {
-    this.output.show(true);
+    this.output.show();
   }
 
   private stringify(messages: unknown[]): string {
@@ -46,4 +53,7 @@ class Log {
   }
 }
 
+/**
+ * The global logger as defined by {@link Log}.
+ */
 export const log = new Log();

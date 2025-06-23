@@ -1,20 +1,12 @@
 import * as vscode from "vscode";
 
-export const showHelp = async (message: string, url: string) => {
-  if (await vscode.window.showInformationMessage(message, "Open website")) {
-    vscode.env.openExternal(vscode.Uri.parse(url));
-  }
-};
+/**
+ * @file Provides a progress tracker for processes that expose progress to the user.
+ */
 
-export const slow = <T>(title: string, result: Promise<T>) => {
-  const opts = {
-    location: vscode.ProgressLocation.Notification,
-    title: title,
-    cancellable: false,
-  };
-  return Promise.resolve(vscode.window.withProgress(opts, () => result));
-};
-
+/**
+ * A progress tracker that takes a specified name, {@link AbortController}, and async callback.
+ */
 export const progress = <T>(
   title: string,
   cancel: AbortController | null,
