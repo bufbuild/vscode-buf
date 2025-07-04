@@ -12,8 +12,6 @@ import { log } from "../log";
 import { bufState } from "../state";
 import { BufVersion } from "../version";
 
-const installURL = "https://buf.build/docs/cli/installation/";
-
 /**
  * updateBuf updates the Buf CLI for the extension based on the extension configuration.
  *
@@ -46,7 +44,7 @@ export const updateBuf = new Command(
       return;
     }
     const configVersion = config.get<string>("commandLine.version");
-    if (configVersion === "") {
+    if (!configVersion) {
       vscode.window.showErrorMessage(
         "'buf.commandLine.version' is not set, no updates will be made."
       );
@@ -86,7 +84,7 @@ export const updateBuf = new Command(
         bufState.languageServerStatus = "LANGUAGE_SERVER_NOT_INSTALLED";
         showPopup(
           `Failed to install Buf CLI. You may want to install it manually.`,
-          installURL
+          "https://buf.build/docs/cli/installation/"
         );
       }
     }

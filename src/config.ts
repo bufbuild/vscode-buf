@@ -1,4 +1,3 @@
-import * as path from "path";
 import * as vscode from "vscode";
 
 import { homedir } from "os";
@@ -13,8 +12,8 @@ import { homedir } from "os";
  * Gets the config value `buf.<key>`.
  * Applies ${variable} substitutions {@link substitute}.
  */
-export function get<T>(key: string): T {
-  return substitute(vscode.workspace.getConfiguration("buf").get<T>(key)!);
+export function get<T>(key: string): T | undefined {
+  return substitute(vscode.workspace.getConfiguration("buf").get<T>(key));
 }
 
 /**
@@ -35,8 +34,6 @@ export function update<T>(
  * Supported references:
  * ${userHome}
  * ${cwd}
- * ${workspaceFolder}
- * ${workspaceFolderBasename}
  * ${env:VAR} https://code.visualstudio.com/docs/reference/variables-reference#_environment-variables
  * ${config:KEY} https://code.visualstudio.com/docs/reference/variables-reference#_configuration-variables
  */
@@ -71,13 +68,6 @@ function replacement(directive: string): string | undefined {
   if (directive === "cwd") {
     return process.cwd();
   }
-  if (directive === "workspaceFolder" || directive === "workspaceFolderBasename") {
-    const workspaceFolder = replaceWorkspaceFolder();
-    if (directive === "workspaceFolderBasename" && workspaceFolder) {
-      return path.basename(workspaceFolder);
-    }
-    return workspaceFolder
-  }
   const envPrefix = "env:";
   if (directive.startsWith(envPrefix)) {
     return process.env[directive.substring(envPrefix.length)] ?? undefined;
@@ -90,16 +80,4 @@ function replacement(directive: string): string | undefined {
     return typeof config === "string" ? config : undefined;
   }
   return undefined;
-}
-
-/**
- * A helper function for ${workspaceFolder} variable replacements.
- * It checks the workspace folder of the current file, if there is one. Otherwise, it
- * fallsback to the first workspace folder.
- */
-function replaceWorkspaceFolder(): string | undefined {
-  if (vscode.workspace.workspaceFile) {
-    return vscode.workspace.getWorkspaceFolder(vscode.workspace.workspaceFile)?.toString()
-  }
-  return vscode.workspace.workspaceFolders?.[0]?.toString();
 }

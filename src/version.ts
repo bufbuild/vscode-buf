@@ -29,7 +29,6 @@ export class BufVersion {
  */
 async function getBufVersion(bufPath: string): Promise<semver.SemVer> {
   const { stdout, stderr } = await execFile(bufPath, ["--version"]);
-
   if (stderr) {
     throw new Error(`Error getting version of '${bufPath}'! ${stderr}`);
   }

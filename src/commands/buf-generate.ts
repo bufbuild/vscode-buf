@@ -7,35 +7,42 @@ import { log } from "../log";
 import { execFile } from "../util";
 
 /**
- * bufGenerate runs `buf generate` at the root of the VSCode workspace.
+ * bufGenerate runs `buf generate` at the root of each VSCode workspace folder. If there
+ * are no workspace folders, then `buf generate` executes in the current execution context.
  */
 export const bufGenerate = new Command(
   "buf.generate",
   "COMMAND_TYPE_BUF",
   async () => {
-    if (!bufState.buf) {
-      log.error("Buf is not installed. Please install Buf.");
+    if (!vscode.workspace.workspaceFolders) {
+      await execBufGenerate(process.cwd());
       return;
     }
-
-    try {
-      const { stdout, stderr } = await execFile(
-        bufState.buf?.path,
-        ["generate"],
-        {
-          // TODO: support multi-root workspaces, rootPath is deprecated.
-          cwd: vscode.workspace.rootPath,
-        }
-      );
-
-      if (stderr) {
-        log.error(`Error generating buf: ${stderr}`);
-        return;
-      }
-
-      log.info(stdout);
-    } catch (e) {
-      log.error(`Error generating buf: ${unwrapError(e)}`);
+    for (const workspaceFolder of vscode.workspace.workspaceFolders) {
+      await execBufGenerate(workspaceFolder.uri.toString());
     }
   }
 );
+
+async function execBufGenerate(cwd: string) {
+  if (!bufState.buf) {
+    log.error("Buf is not installed. Please install Buf.");
+    return;
+  }
+  try {
+    const { stdout, stderr } = await execFile(
+      bufState.buf?.path,
+      ["generate"],
+      {
+        cwd: cwd,
+      }
+    );
+    if (stderr) {
+      log.error(`Error generating buf: ${stderr}`);
+      return;
+    }
+    log.info(stdout);
+  } catch (e) {
+    log.error(`Error generating buf: ${unwrapError(e)}`);
+  }
+}

@@ -15,3 +15,5 @@ can be manually installed to an instance of VSCode by running:
 ```sh
 $ code --install-extension <name>.vsix
 ```
+
+## TODO: explain testing

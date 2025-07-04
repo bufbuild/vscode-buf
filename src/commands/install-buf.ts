@@ -47,11 +47,7 @@ export const installBuf = new Command(
 
     if (configPath) {
       if (!path.isAbsolute(configPath)) {
-        // TODO: support multi-root workspaces, rootPath is deprecated.
-        configPath = path.join(
-          vscode.workspace.rootPath || process.cwd(),
-          configPath
-        );
+        configPath = path.join(process.cwd(), configPath);
       }
       if (configVersion) {
         log.warn(

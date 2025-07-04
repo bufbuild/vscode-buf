@@ -11,9 +11,7 @@ import { LanguageServerStatus, ExtensionStatus } from "./status";
 /**
  * BufState handles and tracks the state of the Buf extension:
  *  @param extensionStatus - the current status of the extension
- *  @param _languageServerStatus - the status of the LSP server
- *  This may be empty,
- *  when the state is activated and disposed when the state is deactivated.
+ *  @param languageServerStatus - the status of the LSP server.
  *  @param _buf - the Buf CLI version used by the extension.
  *
  * All commands will set the overall extension status. When commands are done running, the

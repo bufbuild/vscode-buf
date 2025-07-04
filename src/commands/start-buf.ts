@@ -78,10 +78,6 @@ export const startBuf = new Command(
     const serverOptions: lsp.Executable = {
       command: bufState.buf.path,
       args: getBufArgs(),
-      options: {
-        // TODO: support multi-root workspaces, rootPath is deprecated.
-        cwd: vscode.workspace.rootPath || process.cwd(),
-      },
     };
     const clientOptions: lsp.LanguageClientOptions = {
       documentSelector: protoDocumentSelector,
