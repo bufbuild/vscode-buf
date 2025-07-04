@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 import * as config from "../config";
 import * as github from "../github";
 
-import { startBuf } from ".";
+import { startBuf } from "./start-buf";
 import { Command } from "./command";
 import { bufFilename } from "./install-buf";
 import { log } from "../log";

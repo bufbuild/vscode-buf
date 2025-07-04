@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "path": "foo"
+    },
+    {
+      "path": "bar"
+    },
+    {
+      "path": "../single"
+    }
+  ]
+}

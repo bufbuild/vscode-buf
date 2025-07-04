@@ -3,6 +3,7 @@ import * as lsp from "vscode-languageclient/node";
 import * as config from "../config";
 
 import { Command } from "./command";
+import { stopBuf } from "./stop-buf";
 import { log } from "../log";
 import { bufState } from "../state";
 
@@ -40,7 +41,13 @@ export const startBuf = new Command(
       serverOutputChannel = vscode.window.createOutputChannel("Buf (server)");
       ctx.subscriptions.push(serverOutputChannel);
     }
+    // TODO: check min Buf version required to run language server
+    // const minBufVersion = "v1.43.0";
     if (!config.get<boolean>("enable")) {
+      // If the LSP is currently running, we should gracefully stop it when the config is disabled.
+      if (bufState.client) {
+        await stopBuf.execute();
+      }
       bufState.client = undefined;
       bufState.languageServerStatus = "LANGUAGE_SERVER_DISABLED";
       log.warn("Buf is disabled. Enable it by setting 'buf.enable' to true.");

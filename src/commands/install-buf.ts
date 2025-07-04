@@ -1,14 +1,15 @@
 import * as os from "os";
 import * as path from "path";
-import * as vscode from "vscode";
 import * as config from "../config";
 
-import { startBuf, updateBuf } from ".";
-import { Command } from "./command";
 import { unwrapError } from "../errors";
 import { log } from "../log";
-import { bufState } from "../state";
 import { BufVersion } from "../version";
+import { Command } from "./command";
+import { startBuf } from "./start-buf";
+import { stopBuf } from "./stop-buf";
+import { updateBuf } from "./update-buf";
+import { bufState } from "../state";
 import which from "which";
 
 /**
@@ -68,6 +69,11 @@ export const installBuf = new Command(
             `Using '${bufState.buf.path}', version: ${bufState.buf.version}.`
           );
         }
+        if (bufState.client) {
+          // If there is a pre-existing client, we must clear it out. Stop the server first.
+          await stopBuf.execute();
+          bufState.client = undefined;
+        }
         await startBuf.execute();
       } catch (e) {
         log.error(
@@ -92,6 +98,11 @@ export const installBuf = new Command(
         log.info(
           `Using '${bufState.buf.path}', version: ${bufState.buf.version}.`
         );
+        if (bufState.client) {
+          // If there is a pre-existing client, we must clear it out. Stop the server first.
+          await stopBuf.execute();
+          bufState.client = undefined;
+        }
         await startBuf.execute();
       }
     } catch (e) {

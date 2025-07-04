@@ -30,7 +30,7 @@ jobs:
       - name: format
         run: npm run format
       - name: unit-tests-with-xvfb
-        run: xvfb-run -a npm run test:unit
+        run: xvfb-run -a npm run test:integration
         if: runner.os == 'Linux'
       - name: unit-test
         run: npm run test:unit

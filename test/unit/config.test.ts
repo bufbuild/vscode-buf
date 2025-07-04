@@ -108,6 +108,6 @@ suite("config", () => {
     }
   });
 
-  test("update keys", () => {
-  });
+  test("update keys", () => {});
+  // TODO
 });

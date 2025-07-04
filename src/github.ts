@@ -13,8 +13,11 @@ import { pipeline, Transform } from "stream";
 
 /**
  * The GitHub release URL for the Buf CLI.
+ *
+ * Exported for testing.
  */
-const githubReleaseURL = "https://api.github.com/repos/bufbuild/buf/releases/";
+export const githubReleaseURL =
+  "https://api.github.com/repos/bufbuild/buf/releases/";
 
 /**
  * Release is a GitHub release for the Buf CLI.

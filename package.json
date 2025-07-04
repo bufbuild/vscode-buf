@@ -42,7 +42,6 @@
     "workspaceContains:**/buf.lock",
     "workspaceContains:**/buf.mod",
     "workspaceContains:**/buf.work",
-    "workspaceContains:**/buf.gen",
     "workspaceContains:**/buf.gen.yaml",
     "workspaceContains:**/buf.work.yaml"
   ],
@@ -194,7 +193,8 @@
     "clean": "rm -rf ./dist/* && rm -rf ./out/* && rm -rf ./bin/* && rm *.vsix",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile",
+    "pretest": "npm run compile && npm run prepworkspaces",
+    "prepworkspaces": "(cd test/workspaces/single && npm ci)",
     "lint": "eslint --max-warnings 0 .",
     "test": "npm run test:integration",
     "test:integration": "vscode-test",
@@ -232,6 +232,7 @@
     "typescript-eslint": "^8.29.0"
   },
   "dependencies": {
+    "init": "^0.1.2",
     "rimraf": "^6.0.1",
     "semver": "^7.7.1",
     "vscode-languageclient": "^9.0.1",

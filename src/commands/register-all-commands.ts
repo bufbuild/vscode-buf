@@ -24,11 +24,6 @@ const commands = [
   updateBuf,
 ];
 
-const commandMap = new Map<string, Command>();
-commands.forEach((command) => {
-  commandMap.set(command.name, command);
-});
-
 /**
  * Convenience function for registering all commands to the extension.
  */
@@ -41,6 +36,8 @@ export const registerAllCommands = (ctx: vscode.ExtensionContext) => {
 /**
  * A helper for finding the commands from the command list.
  */
-export const findCommand = (command: string): Command | undefined => {
-  return commandMap.get(command);
+export const findCommand = (name: string): Command | undefined => {
+  return commands.find((command) => {
+    return command.name === name;
+  });
 };

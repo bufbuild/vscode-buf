@@ -19,7 +19,7 @@ export const bufGenerate = new Command(
       return;
     }
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      await execBufGenerate(workspaceFolder.uri.toString());
+      execBufGenerate(workspaceFolder.uri.toString());
     }
   }
 );

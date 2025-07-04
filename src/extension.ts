@@ -1,5 +1,8 @@
 import * as vscode from "vscode";
-import * as commands from "./commands";
+import { registerAllCommands } from "./commands/register-all-commands";
+import { installBuf } from "./commands/install-buf";
+import { startBuf } from "./commands/start-buf";
+import { stopBuf } from "./commands/stop-buf";
 
 import { activateStatusBar, deactivateStatusBar } from "./status-bar";
 import { bufState } from "./state";
@@ -10,14 +13,14 @@ import { log } from "./log";
  */
 export async function activate(ctx: vscode.ExtensionContext) {
   activateStatusBar(ctx);
-  commands.registerAllCommands(ctx);
+  registerAllCommands(ctx);
   ctx.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange)
   );
 
   if (!bufState.buf) {
     log.warn("No buf cli found. Installing buf...");
-    await commands.installBuf.execute();
+    await installBuf.execute();
   }
 }
 
@@ -27,7 +30,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
 export async function deactivate() {
   log.info("Deactivating extension.");
 
-  await commands.stopBuf.execute();
+  await stopBuf.execute();
   deactivateStatusBar();
 }
 
@@ -42,6 +45,9 @@ const handleOnDidConfigChange = async (e: vscode.ConfigurationChangeEvent) => {
     e.affectsConfiguration("buf.commandLine.path") ||
     e.affectsConfiguration("buf.commandLine.version")
   ) {
-    await commands.installBuf.execute();
+    await installBuf.execute();
+  }
+  if (e.affectsConfiguration("buf.enable")) {
+    await startBuf.execute();
   }
 };

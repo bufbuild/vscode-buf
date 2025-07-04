@@ -1,6 +1,9 @@
 import * as vscode from "vscode";
-import * as commands from "./commands";
 
+import { showCommands } from "./commands/show-commands";
+import { showOutput } from "./commands/show-output";
+import { startBuf } from "./commands/start-buf";
+import { installBuf } from "./commands/install-buf";
 import { LanguageServerStatus } from "./status";
 import { bufState } from "./state";
 
@@ -32,29 +35,29 @@ const languageServerStatusConfig: Record<
   },
   LANGUAGE_SERVER_STARTING: {
     icon: "$(sync~spin)",
-    command: commands.showOutput.name,
+    command: showOutput.name,
     tooltip: "$(debug-start) Starting language server",
   },
   LANGUAGE_SERVER_RUNNING: {
     icon: "$(check)",
-    command: commands.showCommands.name,
+    command: showCommands.name,
     tooltip: "$(check) Language server running",
   },
   LANGUAGE_SERVER_STOPPED: {
     icon: "$(x)",
-    command: commands.startBuf.name,
+    command: startBuf.name,
     tooltip: "$(debug-restart) Restart language server",
   },
   LANGUAGE_SERVER_ERRORED: {
     icon: "$(error)",
     colour: new vscode.ThemeColor("statusBarItem.errorBackground"),
-    command: commands.startBuf.name,
+    command: startBuf.name,
     tooltip: "$(debug-restart) Restart language server",
   },
   LANGUAGE_SERVER_NOT_INSTALLED: {
     icon: "$(circle-slash)",
     colour: new vscode.ThemeColor("statusBarItem.errorBackground"),
-    command: commands.installBuf.name,
+    command: installBuf.name,
     tooltip: "$(circle-slash) Buf not installed",
   },
 };
