@@ -25,6 +25,8 @@ jobs:
         run: make install
       - name: build
         run: npm run compile
+      - name: prepworkspaces
+        run: npm run prepworkspaces
       - name: lint
         run: npm run lint
       - name: format
@@ -33,6 +35,7 @@ jobs:
         run: xvfb-run -a npm run test:integration
         if: runner.os == 'Linux'
       - name: integration-tests
+        shell: bash
         run: npm run test:integration
         if: runner.os != 'Linux'
       - name: playwright-tests

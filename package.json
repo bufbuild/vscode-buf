@@ -194,7 +194,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run prepworkspaces",
-    "prepworkspaces": "(cd test/workspaces/path-single && npm ci) && (cd test/workspaces/version-single && npm ci) && (cd test/workspaces/empty-single && npm ci)",
+    "prepworkspaces": "npm ci --prefix test/workspaces/path-single && npm ci --prefix test/workspaces/version-single && npm ci --prefix test/workspaces/empty-single",
     "lint": "eslint --max-warnings 0 .",
     "test": "npm run test:integration && npm run test:playwright",
     "test:integration": "vscode-test",
