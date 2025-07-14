@@ -20,7 +20,7 @@ import { execFile } from "../../src/util";
 const assetDownloadURL =
   "https://api.github.com/repos/bufbuild/buf/releases/assets/000000000";
 const downloadBinPath =
-  "test/workspaces/version-single/node_modules/@bufbuild/buf-darwin-arm64/bin/buf";
+  "test/workspaces/version-single/node_modules/@bufbuild/buf/bin/buf";
 
 /**
  * msw stub handlers for GitHub releases API.
