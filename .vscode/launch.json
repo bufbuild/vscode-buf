@@ -25,15 +25,14 @@
         "--disable-extensions",
         "--profile-temp",
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/unit/index",
-        "--user-data-dir=${workspaceFolder}/extension/.user-data-dir-test",
+        "--extensionTestsPath=${workspaceFolder}/out/test/integration",
         "--timeout",
         "999999"
       ],
-      "outFiles": ["${workspaceFolder}/out/test/**/*.js"],
+      "preLaunchTask": "npm: pretest",
+      "outFiles": ["${workspaceFolder}/out/test/integration/**/*.js"],
       "sourceMaps": true,
       "smartStep": true,
-      "preLaunchTask": "npm: watch",
       "cwd": "${workspaceFolder}/extension"
     }
   ]

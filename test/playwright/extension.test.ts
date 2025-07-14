@@ -29,19 +29,19 @@ import "google/protobuf/empty.proto";
 service UserService {
   // GetUser retrieves a user by ID
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
-  
+
   // ListUsers retrieves all users with optional filtering
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {}
-  
+
   // CreateUser creates a new user
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
-  
+
   // UpdateUser updates an existing user
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {}
-  
+
   // DeleteUser removes a user by ID
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {}
-  
+
   // StreamUserUpdates provides a stream of user updates
   rpc StreamUserUpdates(google.protobuf.Empty) returns (stream UserEvent) {}
 }
@@ -55,7 +55,7 @@ message User {
   google.protobuf.Timestamp updated_at = 5;
   UserStatus status = 6;
   UserRole role = 7;
-  
+
   // Address is a nested message type
   message Address {
     string street = 1;
@@ -63,7 +63,7 @@ message User {
     string state = 3;
     string country = 4;
     string postal_code = 5;
-    
+
     // AddressType defines the type of address
     enum AddressType {
       ADDRESS_TYPE_UNSPECIFIED = 0;
@@ -72,13 +72,13 @@ message User {
       ADDRESS_TYPE_BILLING = 3;
       ADDRESS_TYPE_SHIPPING = 4;
     }
-    
+
     AddressType type = 6;
   }
-  
+
   repeated Address addresses = 8;
   map<string, string> metadata = 9;
-  
+
   reserved 10, 11, 12;
   reserved "password", "secret";
 }
@@ -116,12 +116,12 @@ message ListUsersRequest {
   // Pagination parameters
   int32 page_size = 1;
   string page_token = 2;
-  
+
   // Optional filters
   optional UserStatus status = 3;
   optional UserRole role = 4;
   repeated string user_ids = 5;
-  
+
   oneof time_filter {
     google.protobuf.Timestamp created_after = 6;
     google.protobuf.Timestamp created_before = 7;
@@ -182,7 +182,7 @@ message UserEvent {
     EVENT_TYPE_DELETED = 3;
     EVENT_TYPE_STATUS_CHANGED = 4;
   }
-  
+
   EventType event_type = 1;
   string user_id = 2;
   google.protobuf.Timestamp timestamp = 3;
@@ -211,7 +211,7 @@ test("toolbar displays successful running lsp", async ({
 test("open command palette and run generate", async ({ workbox: { page } }) => {
   await page.getByRole("button", { name: "check Buf" }).click();
   // Note the double space is necessayr to match
-  await page.getByRole("option", { name: "run  Generate" }).click();
+  await page.getByRole("option", { name: "Generate" }).click();
   // Generate should be successful and a new directory should be created
   await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
 });

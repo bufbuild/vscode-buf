@@ -1,12 +1,12 @@
 import { defineConfig } from "@playwright/test";
-import { TestOptions } from "./test/e2e/base-test";
+import { TestOptions } from "./test/playwright/base-test";
 
 /**
  * See https://playwright.dev/docs/test-configuration
  */
 export default defineConfig<TestOptions>({
   // Directory where tests are located
-  testDir: "./test/e2e",
+  testDir: "./test/playwright",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   workers: process.env.CI ? 1 : undefined,
@@ -15,10 +15,10 @@ export default defineConfig<TestOptions>({
   expect: {
     timeout: 40_000,
   },
-  globalSetup: "./test/e2e/global-setup.ts",
+  globalSetup: "./test/playwright/global-setup.ts",
   projects: [
     {
-      name: "VSCode insiders",
+      name: "VS Code insiders",
       use: {
         vsCodeVersion: "insiders",
       },

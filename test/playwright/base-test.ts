@@ -9,29 +9,36 @@ import fs from "node:fs";
 import os from "node:os";
 
 /**
- * @file Provides the basic scaffolding for testing the Buf VSCode extension.
+ * @file Provides the basic scaffolding for testing the Buf VS Code extension.
  */
 
 /**
  * Options for testing.
  *
- * @param vsCodeVersion is the VSCode version we want to test against. Otherwise, default
- *  to local VSCode version set in the environment and falls back to "insiders".
- *  @param extensionSettings is a map of keys and values for the Buf extension settings,
- *  e.g. buf.commandLine.path: /path/to/test/buf/bin
+ * @param vsCodeVersion is the VS Code version we want to test against. Otherwise, default
+ *  to local VS Code version set in the environment and falls back to "insiders".
  *
  */
 export type TestOptions = {
   vsCodeVersion: string;
-  extensionSettings: Record<string, string>;
 };
+
+/**
+ * A helper for creating files within the test suite workspace.
+ */
+async function createFile(filePath: string, content: string): Promise<void> {
+  // ensure the full path up to the file exists
+  const dir = path.dirname(filePath);
+  await fs.promises.mkdir(dir, { recursive: true });
+  return fs.promises.writeFile(filePath, content);
+}
 
 /**
  * Fixtures provided by the Playwright test.
  *
- * @param workbox a container for the VSCode test. It starts up a VSCode process for the
- *  specified VSCode version and runs the specified test.
- * @param createProject creates a VSCode project.
+ * @param workbox a container for the VS Code test. It starts up a VS Code process for the
+ *  specified VS Code version and runs the specified test.
+ * @param createProject creates a VS Code project.
  * @param createTempDir creates a temp dir for testing.
  */
 type TestFixtures = TestOptions & {
@@ -108,7 +115,7 @@ export const test = baseTest.extend<TestFixtures>({
       await fs.promises.cp(logPath, logOutputPath, { recursive: true });
     }
   },
-  createProject: async ({ createTempDir, extensionSettings }, use) => {
+  createProject: async ({ createTempDir }, use) => {
     await use(async () => {
       // We want to be outside of the project directory to avoid already installed dependencies.
       const projectPath = await createTempDir();
@@ -118,16 +125,6 @@ export const test = baseTest.extend<TestFixtures>({
       await fs.promises.mkdir(path.join(projectPath, ".vscode"), {
         recursive: true,
       });
-      await fs.promises.appendFile(
-        path.join(projectPath, ".vscode", "settings.json"),
-        JSON.stringify({
-          // Use these git settings by default
-          git: {
-            openRepositoryInParentFolders: true,
-          },
-          ...extensionSettings,
-        })
-      );
       return projectPath;
     });
   },
@@ -172,13 +169,3 @@ export const test = baseTest.extend<TestFixtures>({
     }
   },
 });
-
-/**
- * A helper for creating files within the test suite workspace.
- */
-async function createFile(filePath: string, content: string): Promise<void> {
-  // ensure the full path up to the file exists
-  const dir = path.dirname(filePath);
-  await fs.promises.mkdir(dir, { recursive: true });
-  return fs.promises.writeFile(filePath, content);
-}

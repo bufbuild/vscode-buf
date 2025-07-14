@@ -7,7 +7,7 @@ import { log } from "../log";
 import { execFile } from "../util";
 
 /**
- * bufGenerate runs `buf generate` at the root of each VSCode workspace folder. If there
+ * bufGenerate runs `buf generate` at the root of each VS Code workspace folder. If there
  * are no workspace folders, then `buf generate` executes in the current execution context.
  */
 export const bufGenerate = new Command(
@@ -19,7 +19,7 @@ export const bufGenerate = new Command(
       return;
     }
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      execBufGenerate(workspaceFolder.uri.toString());
+      execBufGenerate(workspaceFolder.uri.path);
     }
   }
 );

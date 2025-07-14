@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { homedir } from "os";
 
 /**
- * @file Provides utilities for interacting with the VSCode extension configuration.
+ * @file Provides utilities for interacting with the VS Code extension configuration.
  *
  * Extension configurations are defined in package.json.
  */
@@ -17,18 +17,7 @@ export function get<T>(key: string): T | undefined {
 }
 
 /**
- * Sets the config value `buf.<key>`. Does not apply substitutions {@link substitute}.
- */
-export function update<T>(
-  key: string,
-  value: T,
-  target?: vscode.ConfigurationTarget
-) {
-  return vscode.workspace.getConfiguration("buf").update(key, value, target);
-}
-
-/**
- * Traverse configuration values and replace useful variable references supported in VSCode.
+ * Traverse configuration values and replace useful variable references supported in VS Code.
  * https://code.visualstudio.com/docs/editor/variables-reference
  *
  * Supported references:

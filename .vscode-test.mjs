@@ -4,7 +4,7 @@ import { defineConfig } from "@vscode/test-cli";
 
 export default defineConfig([
   {
-    labels: "unit tests",
+    labels: "unit",
     files: "out/test/unit/**.test.js",
     workspaceFolder: "test/workspaces/unit",
     launchArgs: ["--disable-extensions"],
@@ -17,19 +17,25 @@ export default defineConfig([
     ),
   },
   {
-    labels: "integration tests - empty, single root workspace",
+    labels: "integrationEmptySingleRootWorkspace",
     files: "out/test/integration/*.test.js",
     workspaceFolder: "test/workspaces/empty-single",
     launchArgs: ["--disable-extensions"],
   },
   {
-    labels: "integration tests - activated, single root workspace",
+    labels: "integrationSingleRootWorkspaceWithCommandLinePath",
     files: "out/test/integration/*.test.js",
-    workspaceFolder: "test/workspaces/single",
+    workspaceFolder: "test/workspaces/path-single",
     launchArgs: ["--disable-extensions"],
   },
   {
-    labels: "integration tests - mixed multi-root workspace",
+    labels: "integrationSingleRootWorkspaceWithCommandLineVersion",
+    files: "out/test/integration/*.test.js",
+    workspaceFolder: "test/workspaces/version-single",
+    launchArgs: ["--disable-extensions"],
+  },
+  {
+    labels: "integrationMixedMultiRootWorkspace",
     files: "out/test/integration/*.test.js",
     workspaceFolder: "test/workspaces/multi/multi.code-workspace",
     launchArgs: ["--disable-extensions"],

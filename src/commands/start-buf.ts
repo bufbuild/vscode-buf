@@ -20,6 +20,11 @@ let serverOutputChannel: vscode.OutputChannel | undefined;
 const protoDocumentSelector = [{ scheme: "file", language: "proto" }];
 
 /**
+ * Minimum Buf version required to use LSP.
+ */
+const minBufVersion = "v1.43.0";
+
+/**
  * startBuf starts the LSP server and client.
  *
  * If the LSP is disabled through configuration, then startBuf will display a warning, set
@@ -32,6 +37,8 @@ const protoDocumentSelector = [{ scheme: "file", language: "proto" }];
  * and sets the LSP client, then attempts to start the LSP server and client.
  * If there is no installed version of Buf, then startBuf will log a warning, set the appropriate
  * status and be a no-op.
+ * If the installed version of Buf does not meet the minimum version requirements to use the
+ * LSP, then startBuf will log a warning and be a no-op.
  */
 export const startBuf = new Command(
   "buf.start",
@@ -41,9 +48,7 @@ export const startBuf = new Command(
       serverOutputChannel = vscode.window.createOutputChannel("Buf (server)");
       ctx.subscriptions.push(serverOutputChannel);
     }
-    // TODO: check min Buf version required to run language server
-    // const minBufVersion = "v1.43.0";
-    if (!config.get<boolean>("enable")) {
+    if (!config.get("enable")) {
       // If the LSP is currently running, we should gracefully stop it when the config is disabled.
       if (bufState.client) {
         await stopBuf.execute();
@@ -51,6 +56,14 @@ export const startBuf = new Command(
       bufState.client = undefined;
       bufState.languageServerStatus = "LANGUAGE_SERVER_DISABLED";
       log.warn("Buf is disabled. Enable it by setting 'buf.enable' to true.");
+      return;
+    }
+    if (bufState.buf?.version.compare(minBufVersion) === -1) {
+      bufState.client = undefined;
+      bufState.languageServerStatus = "LANGUAGE_SERVER_NOT_INSTALLED";
+      log.warn(
+        `Buf version does not meet minimum required version ${minBufVersion} for Language Server features.`
+      );
       return;
     }
     if (bufState.client) {

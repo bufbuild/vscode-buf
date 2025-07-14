@@ -107,7 +107,4 @@ suite("config", () => {
       assert.deepStrictEqual(value, expected);
     }
   });
-
-  test("update keys", () => {});
-  // TODO
 });

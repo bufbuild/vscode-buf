@@ -14,7 +14,7 @@ import { pipeline, Transform } from "stream";
 /**
  * The GitHub release URL for the Buf CLI.
  *
- * Exported for testing.
+ * Exported for tests.
  */
 export const githubReleaseURL =
   "https://api.github.com/repos/bufbuild/buf/releases/";
@@ -33,7 +33,7 @@ export interface Release {
  */
 export interface Asset {
   name: string;
-  browser_download_url: string;
+  url: string;
 }
 
 /**
@@ -121,13 +121,14 @@ export const download = async (
     `Downloading ${path.basename(dest)}`,
     abort,
     async (progress) => {
-      const response = await fetch(asset.browser_download_url, {
+      const response = await fetch(asset.url, {
         signal: abort.signal,
+        headers: {
+          Accept: "application/octet-stream",
+        },
       });
       if (!response.ok || response.body === null) {
-        throw new Error(
-          `Can't fetch ${asset.browser_download_url}: ${response.statusText}`
-        );
+        throw new Error(`Can't fetch ${asset.url}: ${response.statusText}`);
       }
 
       const size = Number(response.headers.get("content-length")) || 0;
