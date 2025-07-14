@@ -12,7 +12,7 @@ suite("extension state", () => {
       try {
         assert.strictEqual(bufState.languageServerStatus, languageServerStatus);
         pass = true;
-      } catch (e) {
+      } catch (_e) {
         // no actions, pass continues to be false
       }
     });
@@ -31,7 +31,7 @@ suite("extension state", () => {
       try {
         assert.strictEqual(bufState.getExtensionStatus(), busy);
         pass = true;
-      } catch (e) {
+      } catch (_e) {
         // no actions, pass continues to be false
       }
     });

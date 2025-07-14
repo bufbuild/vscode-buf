@@ -6,7 +6,7 @@ import { bufState } from "../state";
  * @file Provides the framework for defining extension Commands.
  */
 
-const commandType = [
+const _commandType = [
   "COMMAND_TYPE_EXTENSION",
   "COMMAND_TYPE_SETUP",
   "COMMAND_TYPE_SERVER",
@@ -27,14 +27,14 @@ const commandType = [
  *
  * COMMAND_TYPE_BUF commands are used to execute non-LSP server Buf CLI commands, e.g. `buf lint`.
  */
-type CommandType = (typeof commandType)[number];
+type CommandType = (typeof _commandType)[number];
 
 /**
  * CommandCallback defines the type for the callback containing command logic.
  */
-export type CommandCallback<T = any> = (
+export type CommandCallback<T = unknown> = (
   ctx: vscode.ExtensionContext,
-  ...args: any
+  ...args: unknown[]
 ) => Promise<T> | T;
 
 /**
@@ -42,7 +42,7 @@ export type CommandCallback<T = any> = (
  *
  * This provides handling for the extension state when the command is executing.
  */
-export class Command<T = any> {
+export class Command<T = unknown> {
   /**
    * @param {string} name - the name of the command
    * @param {CommandType} type - the type of the command
@@ -74,7 +74,7 @@ export class Command<T = any> {
    * Wrap the command callback to handle the extension state.
    */
   private wrapCommand(ctx: vscode.ExtensionContext): CommandCallback<T> {
-    return async (...args: any[]) => {
+    return async (...args: unknown[]) => {
       let result: Promise<T> | T;
       using _ = bufState.handleExtensionStatus("EXTENSION_PROCESSING");
       result = this.callback(ctx, ...args);

@@ -196,9 +196,9 @@
     "pretest": "npm run compile && npm run prepworkspaces",
     "prepworkspaces": "(cd test/workspaces/path-single && npm ci) && (cd test/workspaces/version-single && npm ci) && (cd test/workspaces/empty-single && npm ci)",
     "lint": "eslint --max-warnings 0 .",
-    "test": "npm run test:integration",
+    "test": "npm run test:integration && npm run test:playwright",
     "test:integration": "vscode-test",
-    "test:playwright": "npm run compile && playwright test",
+    "test:playwright": "playwright test",
     "test:playwright:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
     "package": "vsce package",
     "format": "prettier --write '**/*.{json,js,jsx,ts,tsx,css,yaml,yml,mjs,mts,md}' --log-level error"

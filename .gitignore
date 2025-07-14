@@ -1,6 +1,5 @@
 .env
 .vscode-test
-.vscode-test-workspaces
 dist
 node_modules
 out
