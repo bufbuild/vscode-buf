@@ -33,6 +33,9 @@ const handlers = [
     ]);
   }),
   http.get(`${githubReleaseURL}tags/:tag`, ({ params }) => {
+    console.log("AAAAAAAAAAAAAA");
+    console.log(process.cwd());
+    console.log("AAAAAAAAAAAAAA");
     if (typeof params.tag !== "string") {
       return HttpResponse.json({ error: params.tag }, { status: 404 });
     }
