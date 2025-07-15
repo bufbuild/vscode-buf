@@ -57,6 +57,14 @@ const handlers = [
           name: "buf-Linux-aarch64",
           url: `${assetDownloadURL}buf-linux-aarch64`,
         },
+        {
+          name: "buf-Windows-x86_64",
+          url: `${assetDownloadURL}buf-win32-x64`,
+        },
+        {
+          name: "buf-Windows-arm64",
+          url: `${assetDownloadURL}buf-win32-arm64`,
+        },
       ],
     } satisfies Release);
   }),
