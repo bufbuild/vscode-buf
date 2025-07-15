@@ -69,6 +69,11 @@ const handlers = [
     } satisfies Release);
   }),
   http.get(`${assetDownloadURL}:platformKey`, ({ params }) => {
+    console.log("AAAAAAAAAAAA");
+    console.log(`${params.platformKey}`);
+    console.log(`${fs.readdirSync(downloadBinPath)}`);
+    console.log(`${fs.readdirSync("test/workspaces/version-single")}`);
+    console.log("AAAAAAAAAAAA");
     try {
       const bin = fs.readFileSync(
         os.platform() === "win32"
