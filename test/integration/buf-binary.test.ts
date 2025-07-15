@@ -58,20 +58,17 @@ const handlers = [
           url: `${assetDownloadURL}buf-linux-aarch64`,
         },
         {
-          name: "buf-Windows-x86_64",
+          name: "buf-Windows-x86_64.exe",
           url: `${assetDownloadURL}buf-win32-x64`,
         },
         {
-          name: "buf-Windows-arm64",
+          name: "buf-Windows-arm64.exe",
           url: `${assetDownloadURL}buf-win32-arm64`,
         },
       ],
     } satisfies Release);
   }),
   http.get(`${assetDownloadURL}:platformKey`, ({ params }) => {
-    console.log("AAAAAAAAAAAAAAA");
-    console.log(`${params.platformKey}`);
-    console.log("AAAAAAAAAAAAAAA");
     try {
       const bin = fs.readFileSync(
         os.platform() === "win32"
