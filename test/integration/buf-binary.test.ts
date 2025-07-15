@@ -1,6 +1,7 @@
 import * as cp from "child_process";
 import * as fs from "fs";
 import * as os from "os";
+import * as path from "path";
 import * as vscode from "vscode";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -69,15 +70,13 @@ const handlers = [
     } satisfies Release);
   }),
   http.get(`${assetDownloadURL}:platformKey`, ({ params }) => {
-    console.log("AAAAAAAAAAAA");
-    console.log(`${params.platformKey}`);
-    console.log(`${fs.readdirSync(downloadBinPath)}`);
-    console.log(`${fs.readdirSync("test/workspaces/version-single")}`);
-    console.log("AAAAAAAAAAAA");
     try {
       const bin = fs.readFileSync(
         os.platform() === "win32"
-          ? `${downloadBinPath}${params.platformKey}/bin/buf.exe`
+          ? path.resolve(
+              __dirname,
+              `../../../${downloadBinPath}${params.platformKey}/bin/buf.exe`
+            )
           : `${downloadBinPath}${params.platformKey}/bin/buf`
       );
       const stream = new ReadableStream({
