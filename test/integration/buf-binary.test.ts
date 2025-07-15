@@ -1,6 +1,8 @@
 import * as cp from "child_process";
 import * as fs from "fs";
 import * as os from "os";
+import * as path from "path";
+import * as vscode from "vscode";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import assert from "assert";
@@ -18,9 +20,9 @@ import { execFile } from "../../src/util";
  * tests are consistent across platforms.
  */
 const assetDownloadURL =
-  "https://api.github.com/repos/bufbuild/buf/releases/assets/000000000";
+  "https://api.github.com/repos/bufbuild/buf/releases/assets/";
 const downloadBinPath =
-  "test/workspaces/version-single/node_modules/@bufbuild/buf/bin/buf";
+  "test/workspaces/version-single/node_modules/@bufbuild/";
 
 /**
  * msw stub handlers for GitHub releases API.
@@ -33,9 +35,6 @@ const handlers = [
     ]);
   }),
   http.get(`${githubReleaseURL}tags/:tag`, ({ params }) => {
-    console.log("AAAAAAAAAAAAAA");
-    console.log(process.cwd());
-    console.log("AAAAAAAAAAAAAA");
     if (typeof params.tag !== "string") {
       return HttpResponse.json({ error: params.tag }, { status: 404 });
     }
@@ -45,27 +44,29 @@ const handlers = [
       assets: [
         {
           name: "buf-Darwin-arm64",
-          url: assetDownloadURL,
+          url: `${assetDownloadURL}buf-darwin-arm64`,
         },
         {
           name: "buf-Darwin-x86_64",
-          url: assetDownloadURL,
+          url: `${assetDownloadURL}buf-darwin-x64`,
         },
         {
           name: "buf-Linux-x86_64",
-          url: assetDownloadURL,
+          url: `${assetDownloadURL}buf-linux-x64`,
         },
         {
           name: "buf-Linux-aarch64",
-          url: assetDownloadURL,
+          url: `${assetDownloadURL}buf-linux-aarch64`,
         },
       ],
     } satisfies Release);
   }),
-  http.get(assetDownloadURL, () => {
+  http.get(`${assetDownloadURL}:platformKey`, ({ params }) => {
     try {
       const bin = fs.readFileSync(
-        os.platform() === "win32" ? `${downloadBinPath}.exe` : downloadBinPath
+        os.platform() === "win32"
+          ? `${downloadBinPath}${params.platformKey}/bin/buf.exe`
+          : `${downloadBinPath}${params.platformKey}/bin/buf`
       );
       const stream = new ReadableStream({
         start(controller) {
@@ -92,6 +93,9 @@ const server = setupServer(...handlers);
 const exec = promisify(cp.exec);
 
 suite("manage buf binary and LSP", () => {
+  const isVersionSingleWorkspace = vscode.workspace.workspaceFolders?.some(
+    (item) => item.name === "version-single"
+  );
   suiteSetup(async () => {
     server.listen();
   });
@@ -100,11 +104,21 @@ suite("manage buf binary and LSP", () => {
     server.close();
   });
 
-  teardown(() => server.resetHandlers());
+  teardown(() => {
+    server.resetHandlers();
+    if (isVersionSingleWorkspace) {
+      config.update("commandLine.version", undefined);
+    }
+  });
 
   test("no configs, use system buf on $PATH", async () => {
     if (config.get("commandLine.path") || config.get("commandLine.version")) {
       // Only run this test if neither commandLine.path or commandLine.version are set
+      return;
+    }
+    if (isVersionSingleWorkspace) {
+      // Do not run this test for version-single workspace, instead, we will install by
+      // configuring a version in settings.
       return;
     }
     assert.strictEqual(config.get("commandLine.path"), "");
@@ -143,11 +157,12 @@ suite("manage buf binary and LSP", () => {
   });
 
   test("use version config", async () => {
-    const configuredVersion = config.get<string>("commandLine.version");
-    if (!configuredVersion) {
-      // Only run this test if neither commandLine.path or commandLine.version are set.
+    if (!isVersionSingleWorkspace) {
+      // Only run this test for the vesrion-single workspace.
       return;
     }
+    const configuredVersion = "v1.53.0";
+    await config.update("commandLine.version", configuredVersion);
     await installBuf.execute();
     assert.strictEqual(
       bufState.languageServerStatus,

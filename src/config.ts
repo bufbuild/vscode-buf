@@ -17,6 +17,17 @@ export function get<T>(key: string): T | undefined {
 }
 
 /**
+ * Sets the config value `buf.<key>`. Does not apply substitutions.
+ */
+export function update<T>(
+  key: string,
+  value: T,
+  target?: vscode.ConfigurationTarget
+) {
+  return vscode.workspace.getConfiguration("buf").update(key, value, target);
+}
+
+/**
  * Traverse configuration values and replace useful variable references supported in VS Code.
  * https://code.visualstudio.com/docs/editor/variables-reference
  *

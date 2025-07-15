@@ -190,7 +190,7 @@
   "main": "./out/src/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "clean": "rm -rf ./dist/* && rm -rf ./out/* && rm -rf ./bin/* && rm -rf ./test-results/* rm *.vsix",
+    "clean": "rm -rf ./dist/* && rm -rf ./out/* && rm -rf ./bin/* && rm -rf ./test-results/* && rm -rf .vscode-test/* rm *.vsix",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run prepworkspaces",
