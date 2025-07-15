@@ -69,6 +69,9 @@ const handlers = [
     } satisfies Release);
   }),
   http.get(`${assetDownloadURL}:platformKey`, ({ params }) => {
+    console.log("AAAAAAAAAAAAAAA");
+    console.log(`${params.platformKey}`);
+    console.log("AAAAAAAAAAAAAAA");
     try {
       const bin = fs.readFileSync(
         os.platform() === "win32"
