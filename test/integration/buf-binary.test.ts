@@ -194,9 +194,13 @@ suite("manage buf binary and LSP", () => {
       return;
     }
     await startBuf.execute();
-    assert.strictEqual(
-      bufState.languageServerStatus,
-      "LANGUAGE_SERVER_RUNNING"
+    // Due to the async nature of the command, we expect the status to either be LANGUAGE_SERVER_STARTING
+    // or LANGUAGE_SERVER_RUNNING.
+    assert.ok(
+      ["LANGUAGE_SERVER_RUNNING", "LANGUAGE_SERVER_STARTING"].includes(
+        bufState.languageServerStatus
+      ),
+      bufState.languageServerStatus
     );
   });
 });
