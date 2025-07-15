@@ -106,7 +106,6 @@ suite("manage buf binary and LSP", () => {
   teardown(async () => {
     server.resetHandlers();
     if (isVersionSingleWorkspace) {
-      console.log("BBBBBBBBBBB");
       await config.update("commandLine.version", undefined);
     }
   });
