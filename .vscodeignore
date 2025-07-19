@@ -1,6 +1,8 @@
 .vscode/**
 .vscode-test/**
+.github/**
 .gitignore
+.prettierignore
 .yarnrc
 .envrc
 .env

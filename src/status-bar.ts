@@ -2,10 +2,11 @@ import * as vscode from "vscode";
 
 import { showCommands } from "./commands/show-commands";
 import { showOutput } from "./commands/show-output";
-import { startBuf } from "./commands/start-buf";
+import { startLanguageServer } from "./commands/start-lsp";
 import { installBuf } from "./commands/install-buf";
 import { LanguageServerStatus } from "./status";
 import { bufState } from "./state";
+import { effect } from "@preact/signals-core";
 
 /**
  * @file Provides handling for the status bar.
@@ -45,13 +46,13 @@ const languageServerStatusConfig: Record<
   },
   LANGUAGE_SERVER_STOPPED: {
     icon: "$(x)",
-    command: startBuf.name,
+    command: startLanguageServer.name,
     tooltip: "$(debug-restart) Restart language server",
   },
   LANGUAGE_SERVER_ERRORED: {
     icon: "$(error)",
     colour: new vscode.ThemeColor("statusBarItem.errorBackground"),
-    command: startBuf.name,
+    command: startLanguageServer.name,
     tooltip: "$(debug-restart) Restart language server",
   },
   LANGUAGE_SERVER_NOT_INSTALLED: {
@@ -78,8 +79,9 @@ function updateStatusBar() {
   const config =
     bufState.getExtensionStatus() == "EXTENSION_PROCESSING"
       ? busyStatusConfig
-      : languageServerStatusConfig[bufState.languageServerStatus];
-  statusBarItem.text = `${config.icon} Buf${bufState.buf?.version ? ` (${bufState.buf.version})` : ""}`;
+      : languageServerStatusConfig[bufState.getLanguageServerStatus()];
+  const bufBinaryVersion = bufState.getBufBinaryVersion();
+  statusBarItem.text = `${config.icon} Buf${bufBinaryVersion ? ` (${bufBinaryVersion})` : ""}`;
   statusBarItem.color = config.colour;
   statusBarItem.command = config.command;
   statusBarItem.tooltip = new vscode.MarkdownString("", true);
@@ -89,7 +91,7 @@ function updateStatusBar() {
   }
 }
 
-export function activateStatusBar(ctx: vscode.ExtensionContext) {
+export function activateStatusBar(_ctx: vscode.ExtensionContext) {
   if (!statusBarItem) {
     statusBarItem = vscode.window.createStatusBarItem(
       statusBarItemName,
@@ -97,11 +99,9 @@ export function activateStatusBar(ctx: vscode.ExtensionContext) {
     );
     statusBarItem.show();
   }
-  ctx.subscriptions.push(
-    bufState.onDidChangeState(() => {
-      updateStatusBar();
-    })
-  );
+  effect(() => {
+    updateStatusBar();
+  });
 }
 
 export function deactivateStatusBar() {

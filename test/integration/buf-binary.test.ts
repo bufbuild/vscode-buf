@@ -2,7 +2,6 @@ import * as cp from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import * as vscode from "vscode";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import assert from "assert";
@@ -10,10 +9,7 @@ import { promisify } from "util";
 import { githubReleaseURL, Release } from "../../src/github";
 import * as config from "../../src/config";
 import { installBuf } from "../../src/commands/install-buf";
-import { startBuf } from "../../src/commands/start-buf";
-import { stopBuf } from "../../src/commands/stop-buf";
 import { bufState } from "../../src/state";
-import { execFile } from "../../src/util";
 
 /**
  * The test asset download URL. We use a single test download URL for all assets so that
@@ -21,8 +17,7 @@ import { execFile } from "../../src/util";
  */
 const assetDownloadURL =
   "https://api.github.com/repos/bufbuild/buf/releases/assets/";
-const downloadBinPath =
-  "test/workspaces/version-single/node_modules/@bufbuild/";
+const downloadBinPath = "test/workspaces/empty-single/node_modules/@bufbuild/";
 
 /**
  * msw stub handlers for GitHub releases API.
@@ -104,9 +99,6 @@ const server = setupServer(...handlers);
 const exec = promisify(cp.exec);
 
 suite("manage buf binary and LSP", () => {
-  const isVersionSingleWorkspace = vscode.workspace.workspaceFolders?.some(
-    (item) => item.name === "version-single"
-  );
   suiteSetup(async () => {
     server.listen();
   });
@@ -117,102 +109,69 @@ suite("manage buf binary and LSP", () => {
 
   teardown(async () => {
     server.resetHandlers();
-    if (isVersionSingleWorkspace) {
-      await config.update("commandLine.version", undefined);
-    }
+    await config.update("commandLine.path", undefined);
+    await config.update("commandLine.version", undefined);
   });
 
   test("no configs, use system buf on $PATH", async () => {
-    if (config.get("commandLine.path") || config.get("commandLine.version")) {
-      // Only run this test if neither commandLine.path or commandLine.version are set
-      return;
-    }
-    if (isVersionSingleWorkspace) {
-      // Do not run this test for version-single workspace, instead, we will install by
-      // configuring a version in settings.
-      return;
-    }
-    assert.strictEqual(config.get("commandLine.path"), "");
-    assert.strictEqual(config.get("commandLine.version"), "");
-
     await installBuf.execute();
-    assert.strictEqual(
-      bufState.languageServerStatus,
-      "LANGUAGE_SERVER_RUNNING"
-    );
-    const { stdout, stderr } = await exec("buf --version");
-    assert.strictEqual(stderr, "");
-    assert.strictEqual(bufState.buf?.version.compare(stdout), 0);
-    bufState.buf = undefined;
-  });
-
-  test("use path", async () => {
-    if (os.platform() === "win32") {
-      // TODO: skip this test for Windows since the "commandLine.path" does not currently
-      // provide the .exe file extension.
-      return;
-    }
-    const configuredPath = config.get<string>("commandLine.path");
-    if (!configuredPath) {
-      // Only run this test if commandLine.path is set
-      return;
-    }
-    await installBuf.execute();
-    const { stdout, stderr } = await execFile(configuredPath, ["--version"]);
-    assert.ok(!stderr);
-    assert.strictEqual(
-      bufState.languageServerStatus,
-      "LANGUAGE_SERVER_RUNNING"
-    );
-    assert.strictEqual(bufState.buf?.version.compare(stdout.trim()), 0);
-  });
-
-  test("use version config", async () => {
-    if (!isVersionSingleWorkspace) {
-      // Only run this test for the vesrion-single workspace.
-      return;
-    }
-    const configuredVersion = "v1.53.0";
-    await config.update("commandLine.version", configuredVersion);
-    await installBuf.execute();
-    assert.strictEqual(
-      bufState.languageServerStatus,
-      "LANGUAGE_SERVER_RUNNING"
-    );
-    assert.strictEqual(
-      bufState.buf?.version.compare(configuredVersion),
-      0,
-      `${bufState.buf?.version} ${configuredVersion}`
-    );
-  });
-
-  test("stop server", async () => {
-    if (os.platform() === "win32" && config.get("commandLine.path")) {
-      // TODO: since we are skipping the installation test when path is set for windows,
-      // we also need to skip stopping the server here.
-      return;
-    }
-    await stopBuf.execute();
-    assert.strictEqual(
-      bufState.languageServerStatus,
-      "LANGUAGE_SERVER_STOPPED"
-    );
-  });
-
-  test("start server", async () => {
-    if (os.platform() === "win32" && config.get("commandLine.path")) {
-      // TODO: since we are skipping the installation test when path is set for windows,
-      // we also need to skip starting the server here.
-      return;
-    }
-    await startBuf.execute();
     // Due to the async nature of the command, we expect the status to either be LANGUAGE_SERVER_STARTING
     // or LANGUAGE_SERVER_RUNNING.
     assert.ok(
       ["LANGUAGE_SERVER_RUNNING", "LANGUAGE_SERVER_STARTING"].includes(
-        bufState.languageServerStatus
+        bufState.getLanguageServerStatus()
+      )
+    );
+    const { stdout, stderr } = await exec("buf --version");
+    assert.strictEqual(stderr, "");
+    const bufBinaryVersion = bufState.getBufBinaryVersion();
+    assert.ok(bufBinaryVersion);
+    assert.strictEqual(bufBinaryVersion.compare(stdout), 0);
+  });
+
+  test("configure commandLine.path", async () => {
+    let configPath = "node_modules/.bin/buf";
+    if (os.platform() === "win32") {
+      configPath = path.resolve(
+        __dirname,
+        `../../../test/workspaces/empty-single/node_modules/@bufbuild/buf-${os.platform()}-${os.arch()}/bin/buf.exe`
+      );
+    }
+    await config.update("commandLine.path", configPath);
+    await installBuf.execute();
+    // Due to the async nature of the command, we expect the status to either be LANGUAGE_SERVER_STARTING
+    // or LANGUAGE_SERVER_RUNNING.
+    assert.ok(
+      ["LANGUAGE_SERVER_RUNNING", "LANGUAGE_SERVER_STARTING"].includes(
+        bufState.getLanguageServerStatus()
       ),
-      bufState.languageServerStatus
+      `${bufState.getLanguageServerStatus()} ${bufState.getBufBinaryPath()}`
+    );
+    const bufBinaryPath = bufState.getBufBinaryPath();
+    assert.ok(bufBinaryPath);
+    assert.ok(bufBinaryPath.endsWith(configPath), bufBinaryPath);
+  });
+
+  test("configure commandLine.update", async () => {
+    await config.update("commandLine.path", undefined);
+    const configuredVersion = "v1.54.0";
+    await config.update("commandLine.version", configuredVersion);
+    await installBuf.execute();
+    // Due to the async nature of the command, we expect the status to either be LANGUAGE_SERVER_STARTING
+    // or LANGUAGE_SERVER_RUNNING.
+    assert.ok(
+      ["LANGUAGE_SERVER_RUNNING", "LANGUAGE_SERVER_STARTING"].includes(
+        bufState.getLanguageServerStatus()
+      )
+    );
+    const bufBinaryPath = bufState.getBufBinaryPath();
+    assert.ok(bufBinaryPath);
+    assert.ok(
+      path.matchesGlob(
+        bufBinaryPath,
+        `**/.vscode-test/user-data/User/globalStorage/bufbuild.vscode-buf/v1.54.0/buf*`
+      ),
+      bufBinaryPath
     );
   });
 });

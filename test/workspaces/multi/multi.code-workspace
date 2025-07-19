@@ -11,6 +11,5 @@
     }
   ],
   "settings": {
-    "buf.commandLine.path": "test/workspaces/empty-single/node_modules/@bufbuild/buf/bin/buf"
   }
 }

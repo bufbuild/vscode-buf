@@ -5,8 +5,8 @@ import { bufGenerate } from "./buf-generate";
 import { installBuf } from "./install-buf";
 import { showCommands } from "./show-commands";
 import { showOutput } from "./show-output";
-import { startBuf } from "./start-buf";
-import { stopBuf } from "./stop-buf";
+import { startLanguageServer } from "./start-lsp";
+import { stopLanguageServer } from "./stop-lsp";
 import { updateBuf } from "./update-buf";
 
 /**
@@ -19,8 +19,8 @@ const commands = [
   installBuf,
   showCommands,
   showOutput,
-  startBuf,
-  stopBuf,
+  startLanguageServer,
+  stopLanguageServer,
   updateBuf,
 ];
 

@@ -174,13 +174,13 @@
         "description": "Check for updates and install the latest version of the Buf CLI."
       },
       {
-        "command": "buf.start",
+        "command": "buf.startLanguageServer",
         "category": "Buf",
         "icon": "$(debug-start)",
         "title": "Start Buf Language Server"
       },
       {
-        "command": "buf.stop",
+        "command": "buf.stopLanguageServer",
         "category": "Buf",
         "icon": "$(debug-stop)",
         "title": "Stop Buf Language Server"
@@ -194,7 +194,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run prepworkspaces",
-    "prepworkspaces": "npm ci --prefix test/workspaces/path-single && npm ci --prefix test/workspaces/version-single && npm ci --prefix test/workspaces/empty-single",
+    "prepworkspaces": "npm ci --prefix test/workspaces/empty-single",
     "lint": "eslint --max-warnings 0 .",
     "test": "npm run test:integration && npm run test:playwright",
     "test:integration": "vscode-test",
@@ -232,6 +232,7 @@
     "typescript-eslint": "^8.29.0"
   },
   "dependencies": {
+    "@preact/signals-core": "^1.11.0",
     "init": "^0.1.2",
     "rimraf": "^6.0.1",
     "semver": "^7.7.1",

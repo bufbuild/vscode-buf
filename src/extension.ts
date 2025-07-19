@@ -1,11 +1,10 @@
 import * as vscode from "vscode";
 import { registerAllCommands } from "./commands/register-all-commands";
 import { installBuf } from "./commands/install-buf";
-import { startBuf } from "./commands/start-buf";
-import { stopBuf } from "./commands/stop-buf";
+import { startLanguageServer } from "./commands/start-lsp";
+import { stopLanguageServer } from "./commands/stop-lsp";
 
 import { activateStatusBar, deactivateStatusBar } from "./status-bar";
-import { bufState } from "./state";
 import { log } from "./log";
 
 /**
@@ -17,11 +16,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   ctx.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange)
   );
-
-  if (!bufState.buf) {
-    log.warn("No buf cli found. Installing buf...");
-    await installBuf.execute();
-  }
+  await installBuf.execute();
 }
 
 /**
@@ -30,7 +25,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
 export async function deactivate() {
   log.info("Deactivating extension.");
 
-  await stopBuf.execute();
+  await stopLanguageServer.execute();
   deactivateStatusBar();
 }
 
@@ -48,6 +43,6 @@ const handleOnDidConfigChange = async (e: vscode.ConfigurationChangeEvent) => {
     await installBuf.execute();
   }
   if (e.affectsConfiguration("buf.enable")) {
-    await startBuf.execute();
+    await startLanguageServer.execute();
   }
 };
