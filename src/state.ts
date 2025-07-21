@@ -91,10 +91,16 @@ class BufState {
             );
           }
           log.info(`Starting Buf Language Server (${this.bufBinary.version})`);
-          this.lspClient.start().then(() => {
-            this._languageServerStatus.value = "LANGUAGE_SERVER_RUNNING";
-            log.info("Buf Language Server started.");
-          });
+          this.lspClient.start().then(
+            () => {
+              this._languageServerStatus.value = "LANGUAGE_SERVER_RUNNING";
+              log.info("Buf Language Server started.");
+            },
+            (reason) => {
+              // Start failed, we log the error and allow the caller to retry
+              log.error(`Error starting the Buf Language Server: ${reason}`);
+            }
+          );
           break;
         case "LANGUAGE_SERVER_ERRORED":
       }
