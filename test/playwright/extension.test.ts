@@ -190,7 +190,7 @@ message UserEvent {
 }
 `;
 
-test.beforeEach(async ({ workbox: { page, projectPath, createFile } }) => {
+test.beforeEach(async ({ workbox: { page, createFile } }) => {
   await createFile("buf.gen.yaml", baseBufGenYaml);
   await createFile("buf.yaml", baseBufYaml);
   await createFile("example.proto", exampleUserProto);
@@ -220,7 +220,7 @@ test("open command palette and run generate", async ({ workbox: { page } }) => {
   await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
 });
 
-test("go-to definiton", async({ workbox: { page } }) => {
+test("go-to definition", async ({ workbox: { page } }) => {
   await page.getByText("GetUserRequest", { exact: true }).click();
   await page.keyboard.press("F12");
   expect(page.locator(".active-line-number")).toContainText("86");
