@@ -513,12 +513,22 @@ async function installReleaseAsset(
   const downloadDir = path.join(storagePath, release.tag_name);
   await fs.promises.mkdir(downloadDir, { recursive: true });
   const downloadBin = path.join(downloadDir, bufFilename);
-  if (!fs.existsSync(downloadBin)) {
-    log.info(`Downloading ${asset.name} to ${downloadBin}...`);
-    await github.download(asset, downloadBin, abort);
-    await fs.promises.chmod(downloadBin, 0o755);
+  try {
+    // Check to see if the downloadBin already exists and if we have access to the binary.
+    await fs.promises.access(downloadBin);
+    // We await for the bufBinary to be set before returning so we can catch any errors.
+    const bufBinary = await getBufBinaryFromPath(downloadBin);
+    return bufBinary;
+  } catch (e) {
+    // In the case of an error, we log, and then move on to attempt a download.
+    log.error(`Error accessing buf binary, downloading... ${e}`);
   }
-  return getBufBinaryFromPath(downloadBin);
+  log.info(`Downloading ${asset.name} to ${downloadBin}...`);
+  await github.download(asset, downloadBin, abort);
+  await fs.promises.chmod(downloadBin, 0o755);
+  // We await for the bufBinary to be set before returning and mutating the extension state.
+  const bufBinary = await getBufBinaryFromPath(downloadBin);
+  return bufBinary;
 }
 
 /**
