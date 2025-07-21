@@ -162,7 +162,7 @@ class BufState {
       }
       log.info(stdout);
     } catch (e) {
-      log.error(`Error executing args ${args} in ${cwd}`);
+      log.error(`Error executing args ${args} in ${cwd}: ${e}`);
     }
   }
 
@@ -429,7 +429,9 @@ class BufState {
       log.info(`Stopping Buf Language Server...`);
       try {
         await this.lspClient.stop();
-      } catch (e) {}
+      } catch (e) {
+        log.error(`Error stopping language server: ${e}`);
+      }
       this._languageServerStatus.value = "LANGUAGE_SERVER_STOPPED";
     }
   }
