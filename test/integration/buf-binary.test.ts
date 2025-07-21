@@ -8,8 +8,10 @@ import assert from "assert";
 import { promisify } from "util";
 import { githubReleaseURL, Release } from "../../src/github";
 import * as config from "../../src/config";
-import { installBuf } from "../../src/commands/install-buf";
 import { bufState } from "../../src/state";
+import { installBuf } from "../../src/commands/install-buf";
+import { startLanguageServer } from "../../src/commands/start-lsp";
+import { stopLanguageServer } from "../../src/commands/stop-lsp";
 
 /**
  * The test asset download URL. We use a single test download URL for all assets so that
@@ -120,7 +122,8 @@ suite("manage buf binary and LSP", () => {
     assert.ok(
       ["LANGUAGE_SERVER_RUNNING", "LANGUAGE_SERVER_STARTING"].includes(
         bufState.getLanguageServerStatus()
-      )
+      ),
+      bufState.getLanguageServerStatus()
     );
     const { stdout, stderr } = await exec("buf --version");
     assert.strictEqual(stderr, "");
@@ -162,7 +165,8 @@ suite("manage buf binary and LSP", () => {
     assert.ok(
       ["LANGUAGE_SERVER_RUNNING", "LANGUAGE_SERVER_STARTING"].includes(
         bufState.getLanguageServerStatus()
-      )
+      ),
+      bufState.getLanguageServerStatus()
     );
     const bufBinaryPath = bufState.getBufBinaryPath();
     assert.ok(bufBinaryPath);
@@ -172,6 +176,23 @@ suite("manage buf binary and LSP", () => {
         `**/.vscode-test/user-data/User/globalStorage/bufbuild.vscode-buf/v1.54.0/buf*`
       ),
       bufBinaryPath
+    );
+  });
+
+  test("starting and stopping the lsp", async () => {
+    await stopLanguageServer.execute();
+    assert.strictEqual(
+      bufState.getLanguageServerStatus(),
+      "LANGUAGE_SERVER_STOPPED"
+    );
+    await startLanguageServer.execute();
+    // Due to the async nature of the command, we expect the status to either be LANGUAGE_SERVER_STARTING
+    // or LANGUAGE_SERVER_RUNNING.
+    assert.ok(
+      ["LANGUAGE_SERVER_RUNNING", "LANGUAGE_SERVER_STARTING"].includes(
+        bufState.getLanguageServerStatus()
+      ),
+      bufState.getLanguageServerStatus()
     );
   });
 });
