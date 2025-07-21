@@ -190,10 +190,14 @@ message UserEvent {
 }
 `;
 
-test.beforeEach(async ({ workbox: { page, createFile } }) => {
+test.beforeEach(async ({ workbox: { page, projectPath, createFile } }) => {
   await createFile("buf.gen.yaml", baseBufGenYaml);
   await createFile("buf.yaml", baseBufYaml);
   await createFile("example.proto", exampleUserProto);
+
+  // Reload entire window to pick up new files
+  await page.keyboard.press("ControlOrMeta+KeyR");
+
   // Highlight the proto file in explorer
   await page
     .getByRole("treeitem", { name: "example.proto" })
@@ -210,8 +214,14 @@ test("toolbar displays successful running lsp", async ({
 
 test("open command palette and run generate", async ({ workbox: { page } }) => {
   await page.getByRole("button", { name: "check Buf" }).click();
-  // Note the double space is necessayr to match
+  // Note the double space is necessary to match
   await page.getByRole("option", { name: "Generate" }).click();
   // Generate should be successful and a new directory should be created
   await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
+});
+
+test("go-to definiton", async({ workbox: { page } }) => {
+  await page.getByText("GetUserRequest", { exact: true }).click();
+  await page.keyboard.press("F12");
+  expect(page.locator(".active-line-number")).toContainText("86");
 });

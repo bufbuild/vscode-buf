@@ -30,7 +30,7 @@ async function createFile(filePath: string, content: string): Promise<void> {
   // ensure the full path up to the file exists
   const dir = path.dirname(filePath);
   await fs.promises.mkdir(dir, { recursive: true });
-  return fs.promises.writeFile(filePath, content);
+  await fs.promises.writeFile(filePath, content);
 }
 
 /**
