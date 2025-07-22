@@ -537,12 +537,12 @@ extensionTest.describe("lsp", async () => {
       page.locator(".monaco-hover-content").filter({ visible: true })
     ).toContainText("(PACKAGE_DIRECTORY_MATCH)");
 
-    await page.getByText("DeleteUser", { exact: true }).hover();
+    await page.getByText("DeleteUserRequest", { exact: true }).hover();
     await expect(
       page.locator(".monaco-hover-content").filter({ visible: true })
     ).toContainText("(RPC_REQUEST_RESPONSE_UNIQUE)");
 
-    await page.getByText("StreamUserUpdates", { exact: true }).hover();
+    await page.getByText("UserEvent", { exact: true }).hover();
     await expect(
       page.locator(".monaco-hover-content").filter({ visible: true })
     ).toContainText("(RPC_REQUEST_RESPONSE_UNIQUE)");
