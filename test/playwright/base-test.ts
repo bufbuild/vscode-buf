@@ -3,7 +3,7 @@ import {
   downloadAndUnzipVSCode,
   resolveCliArgsFromVSCodeExecutablePath,
 } from "@vscode/test-electron";
-export { expect } from "@playwright/test"; // Use base expect from Playwright
+export { expect, type Page } from "@playwright/test"; // Use base expect and Page from Playwright
 import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
