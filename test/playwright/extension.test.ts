@@ -489,7 +489,7 @@ extensionTest.describe("lsp", async () => {
       await expect(
         page.getByRole("button", { name: "check Buf" })
       ).toBeVisible();
-      
+
       const { promise, resolve, reject } = Promise.withResolvers<string>();
       const watcher = fs.watch(path.join(projectPath, "example.proto"));
       watcher.on("change", () => {
@@ -533,7 +533,7 @@ extensionTest.describe("lsp", async () => {
     // Ensure that the LSP is running
     await expect(page.getByRole("button", { name: "check Buf" })).toBeVisible();
 
-    await page.getByText("example.v1", { exact: true }).hover();
+    await page.getByText("example.v1;", { exact: true }).hover();
     await expect(
       page.locator(".monaco-hover-content").filter({ visible: true })
     ).toContainText("(PACKAGE_DIRECTORY_MATCH)");
