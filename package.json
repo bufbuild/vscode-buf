@@ -136,13 +136,22 @@
           "Protobuf"
         ],
         "configuration": "./protobuf-language-configuration.json"
+      },
+      {
+        "//": "This is a special language used by the 'declaration' part of hover inlays in Markdown.",
+        "id": "proto-decl"
       }
     ],
     "grammars": [
       {
         "language": "proto",
         "scopeName": "source.proto",
-        "path": "./syntaxes/proto.tmLanguage.json"
+        "path": "./syntaxes/proto.json"
+      },
+      {
+        "language": "proto-decl",
+        "scopeName": "source.proto-decl",
+        "path": "./syntaxes/proto-decl.json"
       }
     ],
     "commands": [
