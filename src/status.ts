@@ -1,5 +1,9 @@
 /**
  * @file Provides the status type definitions for BufState.
+ *
+ * Instead of using Typescript enums, we use a type inference on an exported const array
+ * of strings. We use this pattern because the Javascript compiled from Typescript enums
+ * do not provide a developer-friendly API (e.g. they cannot be iterated over safely).
  */
 
 const _languageServerStatus = [

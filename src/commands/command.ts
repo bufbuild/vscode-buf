@@ -4,6 +4,10 @@ import { bufState } from "../state";
 
 /**
  * @file Provides the framework for defining extension Commands.
+ *
+ * Instead of using Typescript enums, we use a type inference on an exported const array
+ * of strings. We use this pattern because the Javascript compiled from Typescript enums
+ * do not provide a developer-friendly API (e.g. they cannot be iterated over safely).
  */
 
 const _commandType = [
