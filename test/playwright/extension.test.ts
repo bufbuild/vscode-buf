@@ -489,8 +489,8 @@ extensionTest.describe("lsp", async () => {
       await expect(
         page.getByRole("button", { name: "check Buf" })
       ).toBeVisible();
+      const watcher = fs.watch(path.join(projectPath, "example.proto"));
       const formattedFileContent = new Promise((resolve, reject) => {
-        const watcher = fs.watch(path.join(projectPath, "example.proto"));
         watcher.on("change", () => {
           watcher.close();
           fs.readFile(
@@ -505,6 +505,7 @@ extensionTest.describe("lsp", async () => {
           );
         });
       });
+
       await page.keyboard.press("ControlOrMeta+KeyS");
       const currentContent = await formattedFileContent;
       expect(currentContent).toBe(exampleUserProto);
