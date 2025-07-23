@@ -489,25 +489,25 @@ extensionTest.describe("lsp", async () => {
       await expect(
         page.getByRole("button", { name: "check Buf" })
       ).toBeVisible();
+      
+      const { promise, resolve, reject } = Promise.withResolvers<string>();
       const watcher = fs.watch(path.join(projectPath, "example.proto"));
-      const formattedFileContent = new Promise((resolve, reject) => {
-        watcher.on("change", () => {
-          watcher.close();
-          fs.readFile(
-            path.join(projectPath, "example.proto"),
-            { encoding: "utf8" },
-            (err, data) => {
-              if (err) {
-                reject(err);
-              }
-              resolve(data.toString());
+      watcher.on("change", () => {
+        watcher.close();
+        fs.readFile(
+          path.join(projectPath, "example.proto"),
+          { encoding: "utf8" },
+          (err, data) => {
+            if (err) {
+              reject(err);
             }
-          );
-        });
+            resolve(data.toString());
+          }
+        );
       });
 
       await page.keyboard.press("ControlOrMeta+KeyS");
-      const currentContent = await formattedFileContent;
+      const currentContent = await promise;
       expect(currentContent).toBe(exampleUserProto);
     });
   });
