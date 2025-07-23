@@ -12,7 +12,6 @@ import * as config from "../../src/config";
 import { bufState } from "../../src/state";
 import { LanguageServerStatus } from "../../src/status";
 import { installBuf } from "../../src/commands/install-buf";
-import { startLanguageServer } from "../../src/commands/start-lsp";
 import { stopLanguageServer } from "../../src/commands/stop-lsp";
 
 /**
@@ -108,25 +107,33 @@ suite("manage buf binary and LSP", () => {
   });
 
   teardown(async () => {
-    // Stop the language server before each test
-    const languageServerStopped = setupLanguageServerListener(
-      "LANGUAGE_SERVER_STOPPED"
-    );
-    await stopLanguageServer.execute();
-    await languageServerStopped;
+    // Reset the state of the extension after each test case
+    await stopLanguageServerForTest();
+    if (config.get("commandLine.path")) {
+      const languageServerRunning = setupLanguageServerListener(
+        "LANGUAGE_SERVER_RUNNING"
+      );
+      await config.update("commandLine.path", undefined);
+      await languageServerRunning;
+      await stopLanguageServerForTest();
+    }
+    if (config.get("commandLine.version")) {
+      const languageServerRunning = setupLanguageServerListener(
+        "LANGUAGE_SERVER_RUNNING"
+      );
+      await config.update("commandLine.version", undefined);
+      await languageServerRunning;
+      await stopLanguageServerForTest();
+    }
     server.resetHandlers();
   });
 
   test("no configs, use system buf on $PATH", async () => {
-    await installBuf.execute();
-    // Due to the async nature of the command, we expect the status to either be LANGUAGE_SERVER_STARTING
-    // or LANGUAGE_SERVER_RUNNING.
-    assert.ok(
-      ["LANGUAGE_SERVER_RUNNING", "LANGUAGE_SERVER_STARTING"].includes(
-        bufState.getLanguageServerStatus()
-      ),
-      bufState.getLanguageServerStatus()
+    const languageServerRunning = setupLanguageServerListener(
+      "LANGUAGE_SERVER_RUNNING"
     );
+    await installBuf.execute();
+    await languageServerRunning;
     const { stdout, stderr } = await exec("buf --version");
     assert.strictEqual(stderr, "");
     const bufBinaryVersion = bufState.getBufBinaryVersion();
@@ -158,22 +165,7 @@ suite("manage buf binary and LSP", () => {
   });
 
   test("configure commandLine.update", async () => {
-    // Remove the path config, which will trigger an installation using the local buf binary
-    // on the $PATH. We setup a listener to check for this config to resolve, then we need
-    // to stop the language server.
-    let languageServerRunning = setupLanguageServerListener(
-      "LANGUAGE_SERVER_RUNNING"
-    );
-    await config.update("commandLine.path", undefined);
-    await languageServerRunning;
-    const languageServerStopped = setupLanguageServerListener(
-      "LANGUAGE_SERVER_STOPPED"
-    );
-    await stopLanguageServer.execute();
-    await languageServerStopped;
-
-    // Reset the listener
-    languageServerRunning = setupLanguageServerListener(
+    const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
     );
     const configuredVersion = "v1.54.0";
@@ -191,15 +183,19 @@ suite("manage buf binary and LSP", () => {
       bufBinaryPath
     );
   });
-
-  test("start the lsp again", async () => {
-    const languageServerRunning = setupLanguageServerListener(
-      "LANGUAGE_SERVER_RUNNING"
-    );
-    await startLanguageServer.execute();
-    await languageServerRunning;
-  });
 });
+
+/**
+ * A helper function for stopping the language server and ensuring the status is stable using
+ * a listener.
+ */
+async function stopLanguageServerForTest() {
+  const languageServerStopped = setupLanguageServerListener(
+    "LANGUAGE_SERVER_STOPPED"
+  );
+  await stopLanguageServer.execute();
+  await languageServerStopped;
+}
 
 /**
  * A helper function that returns a Promise listening for the language server status. Once
