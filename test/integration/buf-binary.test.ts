@@ -205,7 +205,7 @@ suite("manage buf binary and LSP", () => {
  */
 function setupLanguageServerListener(): Promise<void> {
   const { promise, resolve, reject } = Promise.withResolvers<void>();
-    const dispose = effect(() => {
+  const dispose = effect(() => {
     const languageServerStatus = bufState.getLanguageServerStatus();
     if (languageServerStatus === "LANGUAGE_SERVER_RUNNING") {
       resolve();
