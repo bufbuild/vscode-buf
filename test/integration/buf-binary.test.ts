@@ -10,6 +10,7 @@ import { promisify } from "util";
 import { githubReleaseURL, Release } from "../../src/github";
 import * as config from "../../src/config";
 import { bufState } from "../../src/state";
+import { LanguageServerStatus } from "../../src/status";
 import { installBuf } from "../../src/commands/install-buf";
 import { startLanguageServer } from "../../src/commands/start-lsp";
 import { stopLanguageServer } from "../../src/commands/stop-lsp";
@@ -108,7 +109,11 @@ suite("manage buf binary and LSP", () => {
 
   teardown(async () => {
     // Stop the language server before each test
+    const languageServerStopped = setupLanguageServerListener(
+      "LANGUAGE_SERVER_STOPPED"
+    );
     await stopLanguageServer.execute();
+    await languageServerStopped;
     server.resetHandlers();
   });
 
@@ -131,7 +136,9 @@ suite("manage buf binary and LSP", () => {
 
   test("configure commandLine.path", async () => {
     // Setup a listener for the language server status
-    const languageServerRunning = setupLanguageServerListener();
+    const languageServerRunning = setupLanguageServerListener(
+      "LANGUAGE_SERVER_RUNNING"
+    );
     let configPath = "node_modules/.bin/buf";
     if (os.platform() === "win32") {
       configPath = path.resolve(
@@ -154,13 +161,21 @@ suite("manage buf binary and LSP", () => {
     // Remove the path config, which will trigger an installation using the local buf binary
     // on the $PATH. We setup a listener to check for this config to resolve, then we need
     // to stop the language server.
-    let languageServerRunning = setupLanguageServerListener();
+    let languageServerRunning = setupLanguageServerListener(
+      "LANGUAGE_SERVER_RUNNING"
+    );
     await config.update("commandLine.path", undefined);
     await languageServerRunning;
+    const languageServerStopped = setupLanguageServerListener(
+      "LANGUAGE_SERVER_STOPPED"
+    );
     await stopLanguageServer.execute();
+    await languageServerStopped;
 
     // Reset the listener
-    languageServerRunning = setupLanguageServerListener();
+    languageServerRunning = setupLanguageServerListener(
+      "LANGUAGE_SERVER_RUNNING"
+    );
     const configuredVersion = "v1.54.0";
     await config.update("commandLine.version", configuredVersion);
     await languageServerRunning;
@@ -177,37 +192,27 @@ suite("manage buf binary and LSP", () => {
     );
   });
 
-  test("stop the lsp", async () => {
-    await stopLanguageServer.execute();
-    assert.strictEqual(
-      bufState.getLanguageServerStatus(),
-      "LANGUAGE_SERVER_STOPPED"
-    );
-  });
-
   test("start the lsp again", async () => {
-    await startLanguageServer.execute();
-    // Due to the async nature of the command, we expect the status to either be LANGUAGE_SERVER_STARTING
-    // or LANGUAGE_SERVER_RUNNING.
-    assert.ok(
-      ["LANGUAGE_SERVER_RUNNING", "LANGUAGE_SERVER_STARTING"].includes(
-        bufState.getLanguageServerStatus()
-      ),
-      bufState.getLanguageServerStatus()
+    const languageServerRunning = setupLanguageServerListener(
+      "LANGUAGE_SERVER_RUNNING"
     );
+    await startLanguageServer.execute();
+    await languageServerRunning;
   });
 });
 
 /**
  * A helper function that returns a Promise listening for the language server status. Once
- * the language server is running, the promise resolves. If the language server is in an
- * uninstalled or errored state, the Promise rejects.
+ * the language server is the status we want to listen for, the promise resolves. If the
+ * language server is in an uninstalled or errored state, the Promise rejects.
  */
-function setupLanguageServerListener(): Promise<void> {
+function setupLanguageServerListener(
+  listenFor: LanguageServerStatus
+): Promise<void> {
   const { promise, resolve, reject } = Promise.withResolvers<void>();
   const dispose = effect(() => {
     const languageServerStatus = bufState.getLanguageServerStatus();
-    if (languageServerStatus === "LANGUAGE_SERVER_RUNNING") {
+    if (languageServerStatus === listenFor) {
       resolve();
       dispose();
     }
