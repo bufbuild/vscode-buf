@@ -83,7 +83,7 @@ export const findAsset = async (release: Release): Promise<Asset> => {
 
   const platform = platforms[os.platform()];
 
-  let arch = os.arch();
+  let arch: string = os.arch();
 
   if (arch === "x86" || arch === "x64") {
     arch = "x86_64";

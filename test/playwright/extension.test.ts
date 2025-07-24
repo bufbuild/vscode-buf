@@ -538,14 +538,18 @@ extensionTest.describe("lsp", async () => {
       page.locator(".monaco-hover-content").filter({ visible: true })
     ).toContainText("(PACKAGE_DIRECTORY_MATCH)");
 
-    await page.getByText("DeleteUserRequest", { exact: true }).hover();
-    await expect(
-      page.locator(".monaco-hover-content").filter({ visible: true })
-    ).toContainText("(RPC_REQUEST_RESPONSE_UNIQUE)");
+    await expect(async () => {
+      await page.getByText("DeleteUserRequest", { exact: true }).hover();
+      await expect(
+        page.locator(".monaco-hover-content").filter({ visible: true })
+      ).toContainText("(RPC_REQUEST_RESPONSE_UNIQUE)", { timeout: 300 });
+    }).toPass();
 
-    await page.getByText("UserEvent", { exact: true }).hover();
-    await expect(
-      page.locator(".monaco-hover-content").filter({ visible: true })
-    ).toContainText("(RPC_REQUEST_RESPONSE_UNIQUE)");
+    await expect(async () => {
+      await page.getByText("UserEvent", { exact: true }).hover();
+      await expect(
+        page.locator(".monaco-hover-content").filter({ visible: true })
+      ).toContainText("(RPC_REQUEST_RESPONSE_UNIQUE)", { timeout: 300 });
+    }).toPass();
   });
 });
