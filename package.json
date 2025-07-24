@@ -116,6 +116,12 @@
         "editor.formatOnSave": true
       }
     },
+    "yamlValidation": [
+      {
+        "fileMatch": "buf.yaml",
+        "url": "https://www.schemastore.org/buf.json"
+      }
+    ],
     "languages": [
       {
         "id": "yaml",
