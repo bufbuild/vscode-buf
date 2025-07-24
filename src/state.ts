@@ -1,17 +1,16 @@
-import * as fs from "fs";
-import * as os from "os";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { effect, signal } from "@preact/signals-core";
 import * as semver from "semver";
 import * as vscode from "vscode";
 import * as lsp from "vscode-languageclient/node";
+import which from "which";
 import * as config from "./config";
 import * as github from "./github";
-
 import { log } from "./log";
-import { LanguageServerStatus, ExtensionStatus } from "./status";
+import type { ExtensionStatus, LanguageServerStatus } from "./status";
 import { execFile } from "./util";
-import { effect, signal } from "@preact/signals-core";
-import which from "which";
 
 /**
  * @file Provides the global state for the extension.

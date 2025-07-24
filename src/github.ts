@@ -1,11 +1,11 @@
-import * as os from "os";
-import * as fs from "fs";
-import * as path from "path";
-import * as vscode from "vscode";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { pipeline, Transform } from "node:stream";
 
-import { promisify } from "util";
+import { promisify } from "node:util";
+import * as vscode from "vscode";
 import { progress } from "./progress";
-import { pipeline, Transform } from "stream";
 
 /**
  * @file Provides utilities for fetching the Buf CLI release and release metadata from GitHub.

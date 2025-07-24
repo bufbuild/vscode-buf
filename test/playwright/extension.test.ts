@@ -1,6 +1,6 @@
-import * as fs from "fs";
-import * as path from "path";
-import { test, expect } from "./base-test";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { expect, test } from "./base-test";
 
 const baseBufYaml = `version: v2`;
 
@@ -450,12 +450,12 @@ extensionTest.describe("lsp", async () => {
       .click();
     await expect(
       page.getByRole("button", {
-        name: RegExp(`^x Buf ([0-9]+.[0-9]+.[0-9]+)*`),
+        name: /^x Buf ([0-9]+.[0-9]+.[0-9]+)*/,
       })
     ).toBeVisible();
     await page
       .getByRole("button", {
-        name: RegExp(`^x Buf ([0-9]+.[0-9]+.[0-9]+)*`),
+        name: /^x Buf ([0-9]+.[0-9]+.[0-9]+)*/,
       })
       .hover();
     await expect(page.getByText("Restart language server")).toBeVisible();
@@ -463,7 +463,7 @@ extensionTest.describe("lsp", async () => {
     // Start the server back up using the button
     await page
       .getByRole("button", {
-        name: RegExp(`^x Buf ([0-9]+.[0-9]+.[0-9]+)*`),
+        name: /^x Buf ([0-9]+.[0-9]+.[0-9]+)*/,
       })
       .click();
     await expect(page.getByRole("button", { name: "check Buf" })).toBeVisible();

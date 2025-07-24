@@ -1,5 +1,5 @@
+import { inspect } from "node:util";
 import * as vscode from "vscode";
-import { inspect } from "util";
 
 /**
  * @file Provides a global logger to the Buf extension output channel.

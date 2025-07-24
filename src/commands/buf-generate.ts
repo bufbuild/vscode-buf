@@ -1,8 +1,7 @@
 import * as vscode from "vscode";
-
-import { Command } from "./command";
-import { bufState } from "../state";
 import { log } from "../log";
+import { bufState } from "../state";
+import { Command } from "./command";
 
 /**
  * bufGenerate runs `buf generate` at the root of each VS Code workspace folder. If there

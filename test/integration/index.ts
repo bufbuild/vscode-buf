@@ -1,6 +1,6 @@
-import * as path from "path";
-import Mocha from "mocha";
+import * as path from "node:path";
 import { glob } from "glob";
+import Mocha from "mocha";
 
 /**
  * @file Provides a Mocha test suite for running extension tests in VS Code using the extension

@@ -1,8 +1,8 @@
+/** biome-ignore-all lint/suspicious/noTemplateCurlyInString: We use curly braces for testing settings */
+import assert from "node:assert";
+import { homedir } from "node:os";
 import * as vscode from "vscode";
 import * as config from "../../src/config";
-
-import assert from "assert";
-import { homedir } from "os";
 
 suite("config", () => {
   // These buf.* config keys and types are setup in test/workspaces/unit/package.json.
