@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { expect, Page, test } from "./base-test";
+import { expect, type Page, test } from "./base-test";
 
 const baseBufYaml = `version: v2`;
 
