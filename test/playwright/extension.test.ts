@@ -394,7 +394,7 @@ const extensionTest = test.extend<{
   },
   projectPath: ({ workbox: { projectPath } }, use) => {
     use(projectPath);
-  }
+  },
 });
 
 extensionTest.describe("status bar", async () => {
@@ -531,7 +531,11 @@ extensionTest.describe("lsp", async () => {
 
     await expectHover(page, "example.v1;", "(PACKAGE_DIRECTORY_MATCH)");
 
-    await expectHover(page, "DeleteUserRequest", "(RPC_REQUEST_RESPONSE_UNIQUE)");
+    await expectHover(
+      page,
+      "DeleteUserRequest",
+      "(RPC_REQUEST_RESPONSE_UNIQUE)"
+    );
 
     await expectHover(page, "UserEvent", "(RPC_REQUEST_RESPONSE_UNIQUE)");
   });
