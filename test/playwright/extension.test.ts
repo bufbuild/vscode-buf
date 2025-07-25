@@ -555,5 +555,7 @@ async function expectHover(page: Page, text: string, contents: string) {
     await expect(
       page.locator(".monaco-hover-content").filter({ visible: true })
     ).toContainText(contents, { timeout: 300 });
-  }).toPass();
+  }).toPass({
+    timeout: 2000,
+  });
 }
