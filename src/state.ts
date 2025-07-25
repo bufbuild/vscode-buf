@@ -570,13 +570,13 @@ function createConsoleOutputChannel(name: string): vscode.OutputChannel {
   const localChannel = vscode.window.createOutputChannel(name);
   return {
     ...localChannel,
-    append: (...params) => {
-      console.log("OUTPUT CHANNEL APPEND", ...params);
-      return localChannel.append(...params);
+    append: (line: string) => {
+      console.log("---LSP LOG: ", line);
+      return localChannel.append(line);
     },
-    appendLine: (...params) => {
-      console.log("OUTPUT CHANNEL APPEND LINE", ...params);
-      return localChannel.appendLine(...params);
+    appendLine: (line: string) => {
+      console.log("---LSP LOG: ", line);
+      return localChannel.appendLine(line);
     }
   }
 }
