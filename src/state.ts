@@ -106,10 +106,6 @@ class BufState {
     });
   }
 
-  public printLogs() {
-    
-  }
-
   /**
    * handleExtensionStatus sets the extension status on the state to the provided status,
    * and once the work is complete, sets the extension status back to idle.
@@ -565,7 +561,6 @@ function getBufArgs() {
   return bufArgs;
 }
 
-
 function createConsoleOutputChannel(name: string): vscode.OutputChannel {
   const localChannel = vscode.window.createOutputChannel(name);
   return {
@@ -577,6 +572,6 @@ function createConsoleOutputChannel(name: string): vscode.OutputChannel {
     appendLine: (line: string) => {
       console.log("---LSP LOG: ", line);
       return localChannel.appendLine(line);
-    }
-  }
+    },
+  };
 }
