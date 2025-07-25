@@ -106,6 +106,10 @@ class BufState {
     });
   }
 
+  public printLogs() {
+    
+  }
+
   /**
    * handleExtensionStatus sets the extension status on the state to the provided status,
    * and once the work is complete, sets the extension status back to idle.
@@ -335,7 +339,7 @@ class BufState {
    */
   public async startLanguageServer(ctx: vscode.ExtensionContext) {
     if (!serverOutputChannel) {
-      serverOutputChannel = vscode.window.createOutputChannel("Buf (server)");
+      serverOutputChannel = createConsoleOutputChannel("Buf (server)");
       ctx.subscriptions.push(serverOutputChannel);
     }
     if (!config.get("enable")) {
@@ -559,4 +563,20 @@ function getBufArgs() {
   }
   bufArgs.push("beta", "lsp");
   return bufArgs;
+}
+
+
+function createConsoleOutputChannel(name: string): vscode.OutputChannel {
+  const localChannel = vscode.window.createOutputChannel(name);
+  return {
+    ...localChannel,
+    append: (...params) => {
+      console.log("OUTPUT CHANNEL APPEND", ...params);
+      return localChannel.append(...params);
+    },
+    appendLine: (...params) => {
+      console.log("OUTPUT CHANNEL APPEND LINE", ...params);
+      return localChannel.appendLine(...params);
+    }
+  }
 }
