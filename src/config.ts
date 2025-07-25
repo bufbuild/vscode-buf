@@ -1,6 +1,5 @@
+import { homedir } from "node:os";
 import * as vscode from "vscode";
-
-import { homedir } from "os";
 
 /**
  * @file Provides utilities for interacting with the VS Code extension configuration.
@@ -47,7 +46,6 @@ function substitute<T>(val: T): T {
     val = val.map((x) => substitute(x)) as unknown as T;
   } else if (typeof val === "object" && val !== null) {
     // Substitute values but not keys, so we don't deal with collisions.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = {} as { [k: string]: any };
     for (const [k, v] of Object.entries(val)) {
       result[k] = substitute(v);

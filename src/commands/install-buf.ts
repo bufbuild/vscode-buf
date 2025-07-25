@@ -1,5 +1,5 @@
-import { Command } from "./command";
 import { bufState } from "../state";
+import { Command } from "./command";
 
 /**
  * installBuf installs the Buf CLI binary and attempts to start the language server after.

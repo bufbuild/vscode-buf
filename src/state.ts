@@ -1,17 +1,16 @@
-import * as fs from "fs";
-import * as os from "os";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { effect, signal } from "@preact/signals-core";
 import * as semver from "semver";
 import * as vscode from "vscode";
 import * as lsp from "vscode-languageclient/node";
+import which from "which";
 import * as config from "./config";
 import * as github from "./github";
-
 import { log } from "./log";
-import { LanguageServerStatus, ExtensionStatus } from "./status";
+import type { ExtensionStatus, LanguageServerStatus } from "./status";
 import { execFile } from "./util";
-import { effect, signal } from "@preact/signals-core";
-import which from "which";
 
 /**
  * @file Provides the global state for the extension.
@@ -336,7 +335,7 @@ class BufState {
    */
   public async startLanguageServer(ctx: vscode.ExtensionContext) {
     if (!serverOutputChannel) {
-      serverOutputChannel = vscode.window.createOutputChannel("Buf (server)");
+      serverOutputChannel = createConsoleOutputChannel("Buf (server)");
       ctx.subscriptions.push(serverOutputChannel);
     }
     if (!config.get("enable")) {
@@ -560,4 +559,19 @@ function getBufArgs() {
   }
   bufArgs.push("beta", "lsp");
   return bufArgs;
+}
+
+function createConsoleOutputChannel(name: string): vscode.OutputChannel {
+  const localChannel = vscode.window.createOutputChannel(name);
+  return {
+    ...localChannel,
+    append: (line: string) => {
+      console.log("---LSP LOG: ", line);
+      return localChannel.append(line);
+    },
+    appendLine: (line: string) => {
+      console.log("---LSP LOG: ", line);
+      return localChannel.appendLine(line);
+    },
+  };
 }

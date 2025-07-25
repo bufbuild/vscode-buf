@@ -17,7 +17,7 @@ export const showCommands = new Command(
 
     // Use package.json as the source of truth for command palette commands.
     const pkgJSON = vscode.extensions.getExtension(extensionId)?.packageJSON;
-    if (pkgJSON.contributes && pkgJSON.contributes.commands) {
+    if (pkgJSON.contributes?.commands) {
       const commands: {
         command: string;
         title: string;

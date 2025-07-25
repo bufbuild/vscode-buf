@@ -1,5 +1,5 @@
-import { Command } from "./command";
 import { bufState } from "../state";
+import { Command } from "./command";
 
 /**
  * startLanguageServer starts the language server and client.
