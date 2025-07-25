@@ -1,42 +1,43 @@
 import * as vscode from "vscode";
 
-import { BufContext } from "../context";
 import { Command } from "./command";
-
 import { bufGenerate } from "./buf-generate";
-import { findBuf } from "./find-buf";
 import { installBuf } from "./install-buf";
-import { restartBuf } from "./restart-buf";
 import { showCommands } from "./show-commands";
 import { showOutput } from "./show-output";
-import { stopBuf } from "./stop-buf";
+import { startLanguageServer } from "./start-lsp";
+import { stopLanguageServer } from "./stop-lsp";
 import { updateBuf } from "./update-buf";
+
+/**
+ * @file Provides a convenience function for registering all commands in the extension.
+ * Also provides a helper for finding a command by name.
+ */
 
 const commands = [
   bufGenerate,
-  findBuf,
   installBuf,
-  restartBuf,
   showCommands,
   showOutput,
-  stopBuf,
+  startLanguageServer,
+  stopLanguageServer,
   updateBuf,
 ];
 
-const commandMap = new Map<string, Command>();
-commands.forEach((command) => {
-  commandMap.set(command.command, command);
-});
-
-export const registerAllCommands = (
-  ctx: vscode.ExtensionContext,
-  bufCtx: BufContext
-) => {
+/**
+ * Convenience function for registering all commands to the extension.
+ */
+export const registerAllCommands = (ctx: vscode.ExtensionContext) => {
   commands.forEach((command) => {
-    command.register(ctx, bufCtx);
+    command.register(ctx);
   });
 };
 
-export const findCommand = (command: string): Command | undefined => {
-  return commandMap.get(command);
+/**
+ * A helper for finding the commands from the command list.
+ */
+export const findCommand = (name: string): Command | undefined => {
+  return commands.find((command) => {
+    return command.name === name;
+  });
 };

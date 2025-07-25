@@ -1,0 +1,47 @@
+{
+  "name": "vscode-buf-unit-test",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.83.1"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "Buf",
+      "properties": {
+        "buf.foo": {
+          "type": "string"
+        },
+        "buf.home": {
+          "type": "string"
+        },
+        "buf.cwd": {
+          "type": "string"
+        },
+        "buf.env": {
+          "type": "string"
+        },
+        "buf.config": {
+          "type": "string"
+        },
+        "buf.nested_config": {
+          "type": "string"
+        },
+        "buf.fake_substitution": {
+          "type": "string"
+        },
+        "buf.array": {
+          "type": "array"
+        },
+        "buf.array_substitution": {
+          "type": "array"
+        },
+        "buf.object": {
+          "type": "object"
+        },
+        "buf.object_substitution": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

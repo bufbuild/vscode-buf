@@ -1,69 +1,42 @@
 import * as semver from "semver";
-import * as github from "./github";
 
 import { execFile } from "./util";
 
-const loose: semver.Options = {
-  loose: true,
-};
+/**
+ * @file Provides a class for managing the Buf CLI version used by the extension.
+ */
 
-export interface Upgrade {
-  old: string;
-  new: string;
-  upgrade: boolean;
-}
-
+/**
+ * BufVersion contains the version information for the Buf CLI used by the extension.
+ *
+ * @param path is the path of the Buf CLI binary used by the extension.
+ * @param version is the
+ */
 export class BufVersion {
   constructor(
     public readonly path: string,
-    public readonly version: semver.Range
+    public readonly version: semver.SemVer
   ) {}
 
   static async fromPath(path: string): Promise<BufVersion> {
     const version = await getBufVersion(path);
     return new BufVersion(path, version);
   }
-
-  hasUpgrade(release: github.Release): Upgrade {
-    const releasedVer = getReleaseVersion(release);
-    return {
-      old: this.version.raw,
-      new: releasedVer.raw,
-      upgrade: rangeGreater(releasedVer, this.version),
-    };
-  }
 }
 
-export const getBufVersion = async (bufPath: string): Promise<semver.Range> => {
+/**
+ * A helper function for checking the Buf version for the Buf CLI installed at a given path.
+ */
+async function getBufVersion(bufPath: string): Promise<semver.SemVer> {
   const { stdout, stderr } = await execFile(bufPath, ["--version"]);
-
   if (stderr) {
     throw new Error(`Error getting version of '${bufPath}'! ${stderr}`);
   }
-
-  // Some vendors add trailing ~patchlevel, ignore this.
+  // Some vendors add trailing ~patchlevel, ignore this. This is currently not something
+  // we do for Buf CLI releases, but this supports custom builds.
   const rawVersion = stdout.trim().split(/\s|~/, 1)[0];
-
   if (!rawVersion) {
     throw new Error(`Unable to determine version of '${bufPath}'!`);
   }
-
-  return new semver.Range(rawVersion, loose);
-};
-
-// Get the version of a github release, by parsing the tag or name.
-const getReleaseVersion = (release: github.Release): semver.Range => {
-  // Prefer the tag name, but fall back to the release name.
-  return !semver.validRange(release.tag_name, loose) &&
-    semver.validRange(release.name, loose)
-    ? new semver.Range(release.name, loose)
-    : new semver.Range(release.tag_name, loose);
-};
-
-const rangeGreater = (newVer: semver.Range, oldVer: semver.Range) => {
-  const minVersion = semver.minVersion(newVer);
-  if (minVersion === null) {
-    throw new Error(`Couldn't parse version range: ${newVer}`);
-  }
-  return semver.gtr(minVersion, oldVer);
-};
+  return new semver.SemVer(rawVersion);
+}

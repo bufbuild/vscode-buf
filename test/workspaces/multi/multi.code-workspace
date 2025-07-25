@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "path": "foo"
+    },
+    {
+      "path": "bar"
+    },
+    {
+      "path": "../empty-single"
+    }
+  ],
+  "settings": {
+  }
+}

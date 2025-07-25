@@ -25,23 +25,27 @@ jobs:
         run: make install
       - name: build
         run: npm run compile
+      - name: prepworkspaces
+        run: npm run prepworkspaces
       - name: lint
         run: npm run lint
       - name: format
         run: npm run format
-      - name: unit-tests-with-xvfb
-        run: xvfb-run -a npm run test:unit
+      - name: integration-tests-with-xvfb
+        run: xvfb-run -a npm run test:integration
         if: runner.os == 'Linux'
-      - name: unit-test
-        run: npm run test:unit
+      - name: integration-tests
+        shell: bash
+        run: npm run test:integration
         if: runner.os != 'Linux'
-      - name: e2e-test
-        run: npm run test:e2e
-        # Limiting to macOS for now due to issues with xvfb on Linux and timeouts on windows
+      - name: playwright-tests
+        run: npm run test:playwright
+        # Limiting playwright tests to macOS for now due to issues with xvfb on Linux and
+        # timeouts on windows
         if: runner.os == 'macOS'
       - name: check diff
         run: node scripts/gh-diffcheck.mjs
-      - name: upload-e2e-test-results
+      - name: upload-playwright-test-results
         uses: actions/upload-artifact@v4
         if: always()
         with:

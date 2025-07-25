@@ -1,71 +1,90 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as vscode from "vscode";
 
-import { BufContext } from "../context";
+import { bufState } from "../state";
 
-export type CommandCallback<T = any> = (...args: any) => Promise<T> | T;
+/**
+ * @file Provides the framework for defining extension Commands.
+ *
+ * Instead of using Typescript enums, we use a type inference on an exported const array
+ * of strings. We use this pattern because the Javascript compiled from Typescript enums
+ * do not provide a developer-friendly API (e.g. they cannot be iterated over safely).
+ */
 
-export type CommandFactory<T = any> = (
+const _commandType = [
+  "COMMAND_TYPE_EXTENSION",
+  "COMMAND_TYPE_SETUP",
+  "COMMAND_TYPE_SERVER",
+  "COMMAND_TYPE_BUF",
+] as const;
+
+/**
+ * The command types available for this extension.
+ *
+ * COMMAND_TYPE_EXTENSION commands are used to interact with extension-specifc elements,
+ * e.g. showing the extension log output window.
+ *
+ * COMMAND_TYPE_SETUP commands are used to manage the Buf CLI tool used by the extension,
+ * e.g. updating the Buf CLI version, installing the Buf CLI.
+ *
+ * COMMAND_TYPE_SERVER commands are used to manage the Buf LSP server, e.g. starting and
+ * stopping the LSP server.
+ *
+ * COMMAND_TYPE_BUF commands are used to execute non-LSP server Buf CLI commands, e.g. `buf lint`.
+ */
+type CommandType = (typeof _commandType)[number];
+
+/**
+ * CommandCallback defines the type for the callback containing command logic.
+ */
+export type CommandCallback<T = unknown> = (
   ctx: vscode.ExtensionContext,
-  bufCtx: BufContext
-) => CommandCallback<T>;
+  ...args: unknown[]
+) => Promise<T> | T;
 
-// Various command types that can be registered with the command palette. Types
-// control grouping in the command palette.
-export enum CommandType {
-  // Group of commands that run buf e.g. `buf generate`.
-  COMMAND_BUF,
-
-  // Group of commands that interact with the extension.
-  COMMAND_EXTENSION,
-
-  // Group of commands that relate to setting buf cli up e.g. install / update.
-  COMMAND_SETUP,
-
-  // Internal commands. Note: these are not registered in the command palette
-  COMMAND_INTERNAL,
-}
-
-export class Command<T = any> {
+/**
+ * Command creates a new extension command.
+ *
+ * This provides handling for the extension state when the command is executing.
+ */
+export class Command<T = unknown> {
+  /**
+   * @param {string} name - the name of the command
+   * @param {CommandType} type - the type of the command
+   * @param {CommandCallback} callback - the callback that contains the logic of the command
+   */
   constructor(
-    public readonly command: string,
+    public readonly name: string,
     public readonly type: CommandType,
-    public readonly factory: CommandFactory<T>
+    public readonly callback: CommandCallback<T>
   ) {}
 
-  register(ctx: vscode.ExtensionContext, bufCtx: BufContext) {
+  /**
+   * Registers the command to the extension. Also provides handling for the extension state.
+   */
+  register(ctx: vscode.ExtensionContext) {
     ctx.subscriptions.push(
-      vscode.commands.registerCommand(
-        this.command,
-        this.wrapCommand(ctx, bufCtx)
-      )
+      vscode.commands.registerCommand(this.name, this.wrapCommand(ctx))
     );
   }
 
+  /**
+   * Execute the command.
+   */
   execute(): Thenable<T> {
-    return vscode.commands.executeCommand<T>(this.command);
+    return vscode.commands.executeCommand<T>(this.name);
   }
 
-  private wrapCommand(
-    ctx: vscode.ExtensionContext,
-    bufCtx: BufContext
-  ): CommandCallback<T> {
-    const fn = this.factory(ctx, bufCtx);
-
-    return async (...args: any[]) => {
+  /**
+   * Wrap the command callback to handle the extension state.
+   */
+  private wrapCommand(ctx: vscode.ExtensionContext): CommandCallback<T> {
+    return async (...args: unknown[]) => {
       let result: Promise<T> | T;
-
-      bufCtx.busy = true;
-      try {
-        result = fn(...args);
-
-        if (result instanceof Promise) {
-          result = await result;
-        }
-      } finally {
-        bufCtx.busy = false;
+      using _ = bufState.handleExtensionStatus("EXTENSION_PROCESSING");
+      result = this.callback(ctx, ...args);
+      if (result instanceof Promise) {
+        result = await result;
       }
-
       return result;
     };
   }

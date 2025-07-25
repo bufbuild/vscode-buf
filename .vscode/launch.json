@@ -17,7 +17,23 @@
       "preLaunchTask": "npm: watch"
     },
     {
-      "name": "Extension Tests",
+      "name": "Extension Tests - empty single workspace",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--profile-temp",
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--extensionTestsPath=${workspaceFolder}/out/test/integration",
+        "${workspaceFolder}/test/workspaces/empty-single"
+      ],
+      "preLaunchTask": "npm: pretest",
+      "outFiles": ["${workspaceFolder}/out/test/integration/**/*.js"],
+      "sourceMaps": true,
+      "smartStep": true
+    },
+    {
+      "name": "Extension Tests - empty multi-root workspace",
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}",
@@ -25,16 +41,13 @@
         "--disable-extensions",
         "--profile-temp",
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/unit/index",
-        "--user-data-dir=${workspaceFolder}/extension/.user-data-dir-test",
-        "--timeout",
-        "999999"
+        "--extensionTestsPath=${workspaceFolder}/out/test/integration",
+        "${workspaceFolder}/test/workspaces/multi/mult.code-workspace"
       ],
-      "outFiles": ["${workspaceFolder}/out/test/**/*.js"],
+      "preLaunchTask": "npm: pretest",
+      "outFiles": ["${workspaceFolder}/out/test/integration/**/*.js"],
       "sourceMaps": true,
-      "smartStep": true,
-      "preLaunchTask": "npm: watch",
-      "cwd": "${workspaceFolder}/extension"
+      "smartStep": true
     }
   ]
 }

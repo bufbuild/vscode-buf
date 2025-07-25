@@ -42,7 +42,6 @@
     "workspaceContains:**/buf.lock",
     "workspaceContains:**/buf.mod",
     "workspaceContains:**/buf.work",
-    "workspaceContains:**/buf.gen",
     "workspaceContains:**/buf.gen.yaml",
     "workspaceContains:**/buf.work.yaml"
   ],
@@ -117,6 +116,12 @@
         "editor.formatOnSave": true
       }
     },
+    "yamlValidation": [
+      {
+        "fileMatch": "buf.yaml",
+        "url": "https://www.schemastore.org/buf.json"
+      }
+    ],
     "languages": [
       {
         "id": "yaml",
@@ -137,59 +142,79 @@
           "Protobuf"
         ],
         "configuration": "./protobuf-language-configuration.json"
+      },
+      {
+        "//": "This is a special language used by the 'declaration' part of hover inlays in Markdown.",
+        "id": "proto-decl"
       }
     ],
     "grammars": [
       {
         "language": "proto",
         "scopeName": "source.proto",
-        "path": "./syntaxes/proto.tmLanguage.json"
+        "path": "./syntaxes/proto.json"
+      },
+      {
+        "language": "proto-decl",
+        "scopeName": "source.proto-decl",
+        "path": "./syntaxes/proto-decl.json"
       }
     ],
     "commands": [
       {
         "command": "buf.generate",
         "category": "Buf",
-        "title": "$(run) Generate",
+        "icon": "$(run)",
+        "title": "Generate",
         "description": "Run Buf to generate code with protoc plugins."
       },
       {
         "command": "buf.showOutput",
         "category": "Buf",
-        "title": "$(output) Show Buf Output"
+        "icon": "$(output)",
+        "title": "Show Buf Output"
       },
       {
         "command": "buf.install",
         "category": "Buf",
-        "title": "$(cloud-download) Install CLI",
+        "icon": "$(cloud-download)",
+        "title": "Install CLI",
         "description": "Install the Buf CLI from GitHub releases."
       },
       {
         "command": "buf.update",
         "category": "Buf",
-        "title": "$(arrow-swap) Update CLI",
+        "icon": "$(arrow-swap)",
+        "title": "Update CLI",
         "description": "Check for updates and install the latest version of the Buf CLI."
       },
       {
-        "command": "buf.restart",
+        "command": "buf.startLanguageServer",
         "category": "Buf",
-        "title": "$(debug-restart) Restart Buf Language Server"
+        "icon": "$(debug-start)",
+        "title": "Start Buf Language Server"
+      },
+      {
+        "command": "buf.stopLanguageServer",
+        "category": "Buf",
+        "icon": "$(debug-stop)",
+        "title": "Stop Buf Language Server"
       }
     ]
   },
   "main": "./out/src/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "clean": "rm -rf ./dist/* && rm -rf ./out/* && rm -rf ./bin/* && rm *.vsix",
+    "clean": "rm -rf ./dist/* && rm -rf ./out/* && rm -rf ./bin/* && rm -rf ./test-results/* && rm -rf .vscode-test/* rm *.vsix",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run prepworkspaces",
-    "prepworkspaces": "(cd test-workspaces/npm-buf-workspace && npm install)",
+    "prepworkspaces": "npm ci --prefix test/workspaces/empty-single",
     "lint": "eslint --max-warnings 0 .",
-    "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "vscode-test",
-    "test:e2e": "playwright test",
-    "test:e2e:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
+    "test": "npm run test:integration && npm run test:playwright",
+    "test:integration": "vscode-test",
+    "test:playwright": "playwright test",
+    "test:playwright:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
     "package": "vsce package",
     "format": "prettier --write '**/*.{json,js,jsx,ts,tsx,css,yaml,yml,mjs,mts,md}' --log-level error"
   },
@@ -205,7 +230,7 @@
     "@types/which": "^3.0.4",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
-    "@vscode/test-cli": "0.0.4",
+    "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^2.15.0",
     "cross-env": "^7.0.3",
@@ -213,6 +238,7 @@
     "eslint-plugin-unicorn": "^58.0.0",
     "globals": "^16.0.0",
     "mocha": "^10.2.0",
+    "msw": "^2.10.3",
     "playwright": "^1.51.1",
     "prettier": "^3.5.3",
     "proxyquire": "^2.1.3",
@@ -221,6 +247,7 @@
     "typescript-eslint": "^8.29.0"
   },
   "dependencies": {
+    "@preact/signals-core": "^1.11.0",
     "rimraf": "^6.0.1",
     "semver": "^7.7.1",
     "vscode-languageclient": "^9.0.1",

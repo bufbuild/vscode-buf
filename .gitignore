@@ -1,9 +1,8 @@
-out
+.env
+.vscode-test
 dist
 node_modules
-.vscode-test/
-*.vsix
-.env/
-.user-data-dir-test
-test-results
+out
 playwright-report
+test-results
+*.vsix

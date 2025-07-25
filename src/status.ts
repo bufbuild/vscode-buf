@@ -1,95 +1,32 @@
-import * as vscode from "vscode";
-import * as commands from "./commands";
+/**
+ * @file Provides the status type definitions for BufState.
+ *
+ * Instead of using Typescript enums, we use a type inference on an exported const array
+ * of strings. We use this pattern because the Javascript compiled from Typescript enums
+ * do not provide a developer-friendly API (e.g. they cannot be iterated over safely).
+ */
 
-import { BufContext, ServerStatus } from "./context";
+const _languageServerStatus = [
+  "LANGUAGE_SERVER_DISABLED",
+  "LANGUAGE_SERVER_STARTING",
+  "LANGUAGE_SERVER_RUNNING",
+  "LANGUAGE_SERVER_STOPPED",
+  "LANGUAGE_SERVER_ERRORED",
+  "LANGUAGE_SERVER_NOT_INSTALLED",
+] as const;
 
-export let statusBarItem: vscode.StatusBarItem | undefined;
+/**
+ * LanguageServerStatus represents the status of the LSP server.
+ * Commands that interact with the LSP server set this status.
+ * The status bar displays an icon based on this status.
+ */
+export type LanguageServerStatus = (typeof _languageServerStatus)[number];
 
-const StatusBarItemName = "Buf";
+const _extensionStatus = ["EXTENSION_PROCESSING", "EXTENSION_IDLE"] as const;
 
-type StatusBarConfig = {
-  icon: string;
-  colour?: vscode.ThemeColor;
-  command?: string;
-  tooltip?: string;
-};
-
-const icons: Record<ServerStatus, StatusBarConfig> = {
-  [ServerStatus.SERVER_DISABLED]: {
-    icon: "$(circle-slash)",
-    colour: new vscode.ThemeColor("statusBarItem.warningBackground"),
-    tooltip: "$(circle-slash) Language server disabled",
-  },
-  [ServerStatus.SERVER_STARTING]: {
-    icon: "$(sync~spin)",
-    command: commands.showOutput.command,
-    tooltip: "$(debug-start) Starting language server",
-  },
-  [ServerStatus.SERVER_RUNNING]: {
-    icon: "$(check)",
-    command: commands.showCommands.command,
-    tooltip: "$(check) Language server running",
-  },
-  [ServerStatus.SERVER_STOPPED]: {
-    icon: "$(x)",
-    command: commands.restartBuf.command,
-    tooltip: "$(debug-restart) Restart language server",
-  },
-  [ServerStatus.SERVER_ERRORED]: {
-    icon: "$(error)",
-    colour: new vscode.ThemeColor("statusBarItem.errorBackground"),
-    command: commands.restartBuf.command,
-    tooltip: "$(debug-restart) Restart language server",
-  },
-  [ServerStatus.SERVER_NOT_INSTALLED]: {
-    icon: "$(circle-slash)",
-    colour: new vscode.ThemeColor("statusBarItem.errorBackground"),
-    command: commands.installBuf.command,
-    tooltip: "$(circle-slash) Buf not installed",
-  },
-};
-
-const busyStatusBarConfig: StatusBarConfig = {
-  icon: "$(loading~spin)",
-};
-
-export function activate(ctx: vscode.ExtensionContext, bufCtx: BufContext) {
-  updateStatusBar(bufCtx);
-
-  ctx.subscriptions.push(
-    bufCtx.onDidChangeContext(() => {
-      updateStatusBar(bufCtx);
-    })
-  );
-}
-
-const updateStatusBar = (bufCtx: BufContext) => {
-  if (!statusBarItem) {
-    statusBarItem = vscode.window.createStatusBarItem(
-      StatusBarItemName,
-      vscode.StatusBarAlignment.Right,
-      100
-    );
-    statusBarItem.name = StatusBarItemName;
-    statusBarItem.show();
-  }
-
-  const config = bufCtx.busy ? busyStatusBarConfig : icons[bufCtx.status];
-
-  statusBarItem.text = `${config.icon} Buf${bufCtx.buf?.version ? ` (${bufCtx.buf.version})` : ""}`;
-  statusBarItem.color = config.colour;
-  statusBarItem.command = config.command || commands.showOutput.command;
-  statusBarItem.tooltip = new vscode.MarkdownString("", true);
-  statusBarItem.tooltip.supportHtml = true;
-
-  if (config.tooltip) {
-    statusBarItem.tooltip.appendMarkdown(`${config.tooltip}\n\n`);
-  }
-};
-
-export const disposeStatusBar = () => {
-  if (statusBarItem) {
-    statusBarItem.dispose();
-    statusBarItem = undefined;
-  }
-};
+/**
+ * ExtensionStatus represents the status of the extension.
+ * When commands are processing work, the status should reflect a busy status.
+ * The status bar displays spinner when the extension is busy.
+ */
+export type ExtensionStatus = (typeof _extensionStatus)[number];

@@ -1,0 +1,79 @@
+// This file contains all of Protobuf syntax for testing against `proto.json`
+// It is not a valid file, since it exercises some failure cases.
+/* Here's a line comment */
+
+0, 123, 0xab, .01234, 4.56e+123, 0.0.0, 100to3
+
+"foo"
+'bar'
+"A string with \"nested quotes\" in it"
+'Another with \'nested quotes\' inside'
+"Some whitespace:\n\r\t\v"
+'Hex escaped bytes: \x01\x2\X03\X4'
+'A string with a literal back-slash \\ in it'
+"A string that has a NULL character in hex: \x00"
+"Another with a NULL in octal: \00"
+"A unicode right arrow can use unicode escape \u2192 or not →"
+'Long unicode escape can represent emojis \U0001F389 but isn\'t necessary 🎉'
+
+"all escapes: \a, \b, \f, \n, \r, \t, \v, \', \", \?"
+"more escapes: \xa, \xAa, \X20, \XfF, \0, \777, \778, \uaAaAa, \UaAaAaAaAa \\"
+"bad escapes: \, \ , \z, \xgg, \xfg, \ugggg, \ufff, \Ugggggggg, \Ugg,"
+
+syntax = "buf"
+edition = "1999"
+
+package;
+
+package .foo.bar;
+package foo;
+package foo.v1;
+
+import;
+import "foo";
+import public "foo";
+import weak "foo";
+
+option x.(y.z).a.b.(c) = {
+    special: [nan, inf, true, false],
+    [type.googleapis.com/foo.bar.MyOptionData]: {
+        name: "foobar"
+        id: 42
+    }
+};
+
+message Foo {
+    enum Bar {
+        A = 1;
+        B = 2;
+        C = 3;
+    }
+
+    optional bool x = 1;
+    required long.Type y = 2;
+    repeated .rooted.long.Type z = 3 [deprecated = true];
+
+    bool x = 1;
+    long.Type y = 2;
+    .rooted.long.Type z = 3;
+
+    map<string, long.Type> a = 55;
+
+    oneof foo { bool x = 4; }
+
+    group Bar = 6 { bool x = 5; }
+
+    extensions 100 to 200;
+    extensions 5;
+    extensions 1 to max;
+
+    reserved "foo";
+    reserved 5;
+    reserved 1 to max, 7;
+
+    extend google.protobuf.FileDescriptor {
+        map<string, long.Type> a = 55;
+    }
+
+
+}

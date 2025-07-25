@@ -3,7 +3,7 @@
     "module": "Node16",
     "target": "ES2022",
     "outDir": "out",
-    "lib": ["ES2022"],
+    "lib": ["ES2024"],
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true /* enable all strict type-checking options */,
