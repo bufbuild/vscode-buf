@@ -10,11 +10,10 @@
   "files": {
     "includes": [
       "**/*.ts",
-      "**/*.tsx",
       "**/*.js",
-      "**/*.jsx",
       "**/*.mjs",
-      "**/*.json"
+      "**/*.json",
+      "!test/workspaces/**/.vscode/settings.json"
     ],
     "ignoreUnknown": false
   },
