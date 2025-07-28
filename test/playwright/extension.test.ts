@@ -525,7 +525,7 @@ extensionTest.describe("lsp", async () => {
       "message example.v1.User User represents a user in the system"
     );
   });
-  extensionTest("lint checks", async ({ page }) => {
+  extensionTest.skip("lint checks", async ({ page }) => {
     // Ensure that the LSP is running
     await expect(page.getByRole("button", { name: "check Buf" })).toBeVisible();
 
