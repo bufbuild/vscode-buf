@@ -224,7 +224,7 @@
     "@types/mocha": "^10.0.6",
     "@types/node": "^24.x",
     "@types/semver": "^7.7.0",
-    "@types/vscode": "^1.83.1",
+    "@types/vscode": "^1.102.0",
     "@types/which": "^3.0.4",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
