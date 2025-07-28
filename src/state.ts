@@ -78,7 +78,7 @@ class BufState {
         case "LANGUAGE_SERVER_DISABLED":
           this.lspClient = undefined;
           break;
-        case "LANGUAGE_SERVER_STARTING":
+        case "LANGUAGE_SERVER_STARTING": {
           if (!this.bufBinary) {
             throw new Error(
               `Attempted to start language server with no Buf binary set`
@@ -90,17 +90,19 @@ class BufState {
             );
           }
           log.info(`Starting Buf Language Server (${this.bufBinary.version})`);
-          this.lspClient.start().then(
-            () => {
+          const listener = this.lspClient.onDidChangeState((event) => {
+            if (event.newState === lsp.State.Running) {
               this._languageServerStatus.value = "LANGUAGE_SERVER_RUNNING";
               log.info("Buf Language Server started.");
-            },
-            (reason) => {
-              // Start failed, we log the error and allow the caller to retry
-              log.error(`Error starting the Buf Language Server: ${reason}`);
+              listener.dispose();
             }
-          );
+          });
+          this.lspClient.start().catch((reason) => {
+            // Start failed, we log the error and allow the caller to retry
+            log.error(`Error starting the Buf Language Server: ${reason}`);
+          });
           break;
+        }
         case "LANGUAGE_SERVER_ERRORED":
       }
     });
