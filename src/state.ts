@@ -566,8 +566,18 @@ function getBufArgs() {
   return bufArgs;
 }
 
-function createConsoleOutputChannel(name: string): vscode.OutputChannel {
+/**
+ * A helper function for creating the VS Code output channel. A debug option is available
+ * to enable output to local console for development.
+ */
+function createConsoleOutputChannel(
+  name: string,
+  debug?: boolean
+): vscode.OutputChannel {
   const localChannel = vscode.window.createOutputChannel(name);
+  if (!debug) {
+    return localChannel;
+  }
   return {
     ...localChannel,
     append: (line: string) => {
