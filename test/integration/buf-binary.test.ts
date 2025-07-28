@@ -146,7 +146,7 @@ suite("manage buf binary and LSP", () => {
     assert.strictEqual(bufPath, bufState.getBufBinaryPath());
   });
 
-  test.skip("configure commandLine.path", async () => {
+  test("configure commandLine.path", async () => {
     // Setup a listener for the language server status
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
@@ -169,7 +169,7 @@ suite("manage buf binary and LSP", () => {
     assert.ok(bufBinaryPath.endsWith(configPath), bufBinaryPath);
   });
 
-  test.skip("configure commandLine.update", async () => {
+  test("configure commandLine.update", async () => {
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
     );
