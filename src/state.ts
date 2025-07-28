@@ -91,7 +91,10 @@ class BufState {
           }
           log.info(`Starting Buf Language Server (${this.bufBinary.version})`);
           const listener = this.lspClient.onDidChangeState((event) => {
-            if (event.newState === lsp.State.Running) {
+            if (
+              event.oldState === lsp.State.Starting &&
+              event.newState === lsp.State.Running
+            ) {
               this._languageServerStatus.value = "LANGUAGE_SERVER_RUNNING";
               log.info("Buf Language Server started.");
               listener.dispose();

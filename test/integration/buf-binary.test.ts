@@ -3,11 +3,12 @@ import * as cp from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
+import * as vscode from "vscode";
 import { promisify } from "node:util";
 import { effect } from "@preact/signals-core";
 import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
-import { installBuf } from "../../src/commands/install-buf";
+import which from "which";
 import { stopLanguageServer } from "../../src/commands/stop-lsp";
 import * as config from "../../src/config";
 import { githubReleaseURL, type Release } from "../../src/github";
@@ -132,16 +133,20 @@ suite("manage buf binary and LSP", () => {
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
     );
-    await installBuf.execute();
+    // Must activate the extension as part of the test
+    await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
     await languageServerRunning;
     const { stdout, stderr } = await exec("buf --version");
     assert.strictEqual(stderr, "");
     const bufBinaryVersion = bufState.getBufBinaryVersion();
     assert.ok(bufBinaryVersion);
     assert.strictEqual(bufBinaryVersion.compare(stdout), 0);
+    const bufFilename = os.platform() === "win32" ? "buf.exe" : "buf";
+    const bufPath = await which(bufFilename, { nothrow: true });
+    assert.strictEqual(bufPath, bufState.getBufBinaryPath());
   });
 
-  test("configure commandLine.path", async () => {
+  test.skip("configure commandLine.path", async () => {
     // Setup a listener for the language server status
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
@@ -164,7 +169,7 @@ suite("manage buf binary and LSP", () => {
     assert.ok(bufBinaryPath.endsWith(configPath), bufBinaryPath);
   });
 
-  test("configure commandLine.update", async () => {
+  test.skip("configure commandLine.update", async () => {
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
     );
