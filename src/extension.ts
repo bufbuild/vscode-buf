@@ -1,11 +1,10 @@
 import * as vscode from "vscode";
-import { registerAllCommands } from "./commands/register-all-commands";
 import { installBuf } from "./commands/install-buf";
+import { registerAllCommands } from "./commands/register-all-commands";
 import { startLanguageServer } from "./commands/start-lsp";
 import { stopLanguageServer } from "./commands/stop-lsp";
-
-import { activateStatusBar, deactivateStatusBar } from "./status-bar";
 import { log } from "./log";
+import { activateStatusBar, deactivateStatusBar } from "./status-bar";
 
 /**
  * activate is the entrypoint for activating the extension.

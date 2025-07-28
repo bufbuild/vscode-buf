@@ -1,12 +1,14 @@
-import { test as baseTest, type Page, _electron } from "@playwright/test";
+import { _electron, test as baseTest, type Page } from "@playwright/test";
 import {
   downloadAndUnzipVSCode,
   resolveCliArgsFromVSCodeExecutablePath,
 } from "@vscode/test-electron";
+
 export { expect, type Page } from "@playwright/test"; // Use base expect and Page from Playwright
-import path from "node:path";
+
 import fs from "node:fs";
 import os from "node:os";
+import path from "node:path";
 
 /**
  * @file Provides the basic scaffolding for testing the Buf VS Code extension.
@@ -128,7 +130,7 @@ export const test = baseTest.extend<TestFixtures>({
       return projectPath;
     });
   },
-  // eslint-disable-next-line no-empty-pattern
+  // biome-ignore lint/correctness/noEmptyPattern: required by Playwright fixture API
   createTempDir: async ({}, use) => {
     const tempDirs: string[] = [];
     await use(async () => {

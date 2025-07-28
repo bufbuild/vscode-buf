@@ -1,12 +1,11 @@
+import { effect } from "@preact/signals-core";
 import * as vscode from "vscode";
-
+import { installBuf } from "./commands/install-buf";
 import { showCommands } from "./commands/show-commands";
 import { showOutput } from "./commands/show-output";
 import { startLanguageServer } from "./commands/start-lsp";
-import { installBuf } from "./commands/install-buf";
-import { LanguageServerStatus } from "./status";
 import { bufState } from "./state";
-import { effect } from "@preact/signals-core";
+import type { LanguageServerStatus } from "./status";
 
 /**
  * @file Provides handling for the status bar.
@@ -77,7 +76,7 @@ function updateStatusBar() {
     return;
   }
   const config =
-    bufState.getExtensionStatus() == "EXTENSION_PROCESSING"
+    bufState.getExtensionStatus() === "EXTENSION_PROCESSING"
       ? busyStatusConfig
       : languageServerStatusConfig[bufState.getLanguageServerStatus()];
   const bufBinaryVersion = bufState.getBufBinaryVersion();

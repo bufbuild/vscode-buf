@@ -1,7 +1,6 @@
-import * as vscode from "vscode";
-
-import { Command } from "./command";
+import type * as vscode from "vscode";
 import { bufGenerate } from "./buf-generate";
+import type { Command } from "./command";
 import { installBuf } from "./install-buf";
 import { showCommands } from "./show-commands";
 import { showOutput } from "./show-output";

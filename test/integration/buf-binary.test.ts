@@ -1,18 +1,19 @@
-import * as cp from "child_process";
-import * as fs from "fs";
-import * as os from "os";
-import * as path from "path";
-import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
+import assert from "node:assert";
+import * as cp from "node:child_process";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import * as vscode from "vscode";
+import { promisify } from "node:util";
 import { effect } from "@preact/signals-core";
-import assert from "assert";
-import { promisify } from "util";
-import { githubReleaseURL, Release } from "../../src/github";
-import * as config from "../../src/config";
-import { bufState } from "../../src/state";
-import { LanguageServerStatus } from "../../src/status";
-import { installBuf } from "../../src/commands/install-buf";
+import { HttpResponse, http } from "msw";
+import { setupServer } from "msw/node";
+import which from "which";
 import { stopLanguageServer } from "../../src/commands/stop-lsp";
+import * as config from "../../src/config";
+import { githubReleaseURL, type Release } from "../../src/github";
+import { bufState } from "../../src/state";
+import type { LanguageServerStatus } from "../../src/status";
 
 /**
  * The test asset download URL. We use a single test download URL for all assets so that
@@ -132,13 +133,17 @@ suite("manage buf binary and LSP", () => {
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
     );
-    await installBuf.execute();
+    // Must activate the extension as part of the test
+    await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
     await languageServerRunning;
     const { stdout, stderr } = await exec("buf --version");
     assert.strictEqual(stderr, "");
     const bufBinaryVersion = bufState.getBufBinaryVersion();
     assert.ok(bufBinaryVersion);
     assert.strictEqual(bufBinaryVersion.compare(stdout), 0);
+    const bufFilename = os.platform() === "win32" ? "buf.exe" : "buf";
+    const bufPath = await which(bufFilename, { nothrow: true });
+    assert.strictEqual(bufPath, bufState.getBufBinaryPath());
   });
 
   test("configure commandLine.path", async () => {

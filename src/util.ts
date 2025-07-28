@@ -1,6 +1,6 @@
-import * as cp from "child_process";
+import * as cp from "node:child_process";
 
-import { promisify } from "util";
+import { promisify } from "node:util";
 
 /**
  * @file Provides shared helpers for the extension.

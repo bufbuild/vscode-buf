@@ -1,5 +1,5 @@
 import { defineConfig } from "@playwright/test";
-import { TestOptions } from "./test/playwright/base-test";
+import type { TestOptions } from "./test/playwright/base-test";
 
 /**
  * See https://playwright.dev/docs/test-configuration
