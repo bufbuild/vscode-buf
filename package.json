@@ -20,7 +20,7 @@
     }
   ],
   "engines": {
-    "vscode": "^1.83.1"
+    "vscode": "^1.102.0"
   },
   "categories": [
     "Formatters",

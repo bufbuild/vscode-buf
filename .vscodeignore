@@ -12,11 +12,10 @@ src/**
 test/**
 test-results/**
 scripts/**
+**/biome.json
 **/tsconfig.json
-**/.eslintrc.json
 **/*.map
 **/*.ts
 .vscode-test.mjs
-eslint.config.mjs
 DEVELOPMENT.md
 Makefile
