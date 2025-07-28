@@ -46,6 +46,48 @@
     "workspaceContains:**/buf.work.yaml"
   ],
   "contributes": {
+    "//": "This is kept in alphabetical order. https://code.visualstudio.com/api/references/contribution-points",
+    "commands": [
+      {
+        "command": "buf.generate",
+        "category": "Buf",
+        "icon": "$(run)",
+        "title": "Generate",
+        "description": "Run Buf to generate code with protoc plugins."
+      },
+      {
+        "command": "buf.showOutput",
+        "category": "Buf",
+        "icon": "$(output)",
+        "title": "Show Buf Output"
+      },
+      {
+        "command": "buf.install",
+        "category": "Buf",
+        "icon": "$(cloud-download)",
+        "title": "Install CLI",
+        "description": "Install the Buf CLI from GitHub releases."
+      },
+      {
+        "command": "buf.update",
+        "category": "Buf",
+        "icon": "$(arrow-swap)",
+        "title": "Update CLI",
+        "description": "Check for updates and install the latest version of the Buf CLI."
+      },
+      {
+        "command": "buf.startLanguageServer",
+        "category": "Buf",
+        "icon": "$(debug-start)",
+        "title": "Start Buf Language Server"
+      },
+      {
+        "command": "buf.stopLanguageServer",
+        "category": "Buf",
+        "icon": "$(debug-stop)",
+        "title": "Stop Buf Language Server"
+      }
+    ],
     "configuration": {
       "title": "Buf",
       "properties": {
@@ -116,10 +158,26 @@
         "editor.formatOnSave": true
       }
     },
-    "yamlValidation": [
+    "grammars": [
+      {
+        "language": "proto",
+        "scopeName": "source.proto",
+        "path": "./syntaxes/proto.json"
+      },
+      {
+        "language": "proto-decl",
+        "scopeName": "source.proto-decl",
+        "path": "./syntaxes/proto-decl.json"
+      }
+    ],
+    "jsonValidation": [
       {
         "fileMatch": "buf.yaml",
         "url": "https://www.schemastore.org/buf.json"
+      },
+      {
+        "fileMatch": "buf.gen.yaml",
+        "url": "https://www.schemastore.org/buf.gen.json"
       }
     ],
     "languages": [
@@ -148,57 +206,14 @@
         "id": "proto-decl"
       }
     ],
-    "grammars": [
+    "yamlValidation": [
       {
-        "language": "proto",
-        "scopeName": "source.proto",
-        "path": "./syntaxes/proto.json"
+        "fileMatch": "buf.yaml",
+        "url": "https://www.schemastore.org/buf.json"
       },
       {
-        "language": "proto-decl",
-        "scopeName": "source.proto-decl",
-        "path": "./syntaxes/proto-decl.json"
-      }
-    ],
-    "commands": [
-      {
-        "command": "buf.generate",
-        "category": "Buf",
-        "icon": "$(run)",
-        "title": "Generate",
-        "description": "Run Buf to generate code with protoc plugins."
-      },
-      {
-        "command": "buf.showOutput",
-        "category": "Buf",
-        "icon": "$(output)",
-        "title": "Show Buf Output"
-      },
-      {
-        "command": "buf.install",
-        "category": "Buf",
-        "icon": "$(cloud-download)",
-        "title": "Install CLI",
-        "description": "Install the Buf CLI from GitHub releases."
-      },
-      {
-        "command": "buf.update",
-        "category": "Buf",
-        "icon": "$(arrow-swap)",
-        "title": "Update CLI",
-        "description": "Check for updates and install the latest version of the Buf CLI."
-      },
-      {
-        "command": "buf.startLanguageServer",
-        "category": "Buf",
-        "icon": "$(debug-start)",
-        "title": "Start Buf Language Server"
-      },
-      {
-        "command": "buf.stopLanguageServer",
-        "category": "Buf",
-        "icon": "$(debug-stop)",
-        "title": "Stop Buf Language Server"
+        "fileMatch": "buf.gen.yaml",
+        "url": "https://www.schemastore.org/buf.gen.json"
       }
     ]
   },
