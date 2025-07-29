@@ -232,6 +232,7 @@
     "cross-env": "^7.0.3",
     "mocha": "^10.2.0",
     "msw": "^2.10.4",
+    "ovsx": "^0.10.5",
     "typescript": "^5.8.3"
   },
   "dependencies": {
