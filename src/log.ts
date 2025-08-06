@@ -31,7 +31,6 @@ class Log {
 
   error(...messages: [unknown, ...unknown[]]): void {
     this.output.error(this.stringify(messages));
-    this.output.show(true);
   }
 
   show(): void {
