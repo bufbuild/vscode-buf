@@ -79,7 +79,7 @@ function updateStatusBar() {
     bufState.getExtensionStatus() === "EXTENSION_PROCESSING"
       ? busyStatusConfig
       : languageServerStatusConfig[bufState.getLanguageServerStatus()];
-  const bufBinaryVersion = bufState.getBufBinaryVersion();
+  const bufBinaryVersion = bufState.getBufBinaryVersion() ?? "";
   statusBarItem.text = `${config.icon} Buf${bufBinaryVersion ? ` (${bufBinaryVersion})` : ""}`;
   statusBarItem.color = config.colour;
   statusBarItem.command = config.command;

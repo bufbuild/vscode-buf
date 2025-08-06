@@ -22,6 +22,7 @@ export const showCommands = new Command(
         command: string;
         title: string;
         description: string;
+        icon: string;
       }[] = pkgJSON.contributes.commands;
 
       const bufCommands: BufQuickPickItem[] = [];
@@ -39,6 +40,7 @@ export const showCommands = new Command(
           label: cmd.title,
           command: extCmd,
           detail: cmd.description,
+          iconPath: new vscode.ThemeIcon(getIconID(cmd.icon)),
         };
         switch (extCmd.type) {
           case "COMMAND_TYPE_SERVER":
@@ -83,3 +85,15 @@ export const showCommands = new Command(
       .then((cmd) => cmd?.command?.execute());
   }
 );
+
+/**
+ * A helper function for extracting the icon ID from the icon string from the command
+ * configuration, e.g. $(icon-id) -> icon-id.
+ */
+function getIconID(icon: string) {
+  const matches = icon.match(/^\$\((.+)\)/);
+  if (matches) {
+    return matches[1];
+  }
+  return "";
+}
