@@ -9,7 +9,7 @@ The [VS Code Buf extension][vs-code-marketplace] provides rich support for [Prot
 - **Code editing** - Formatting via `buf format` and annotations based on `buf lint` and `buf breaking`.
 - **Buf command support** - Execution of `buf` CLI commands via the [Command Palette][command-palette].
 
-TODO: screenshot of go-to def and documentation hovers
+![Preview features](./preview.gif)
 
 ## Getting Started
 
