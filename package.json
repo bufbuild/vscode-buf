@@ -27,14 +27,14 @@
     "Linters"
   ],
   "keywords": [
+    "buf",
+    "bufbuild",
+    "format",
+    "lint",
     "proto",
     "proto3",
     "protobuf",
-    "protocol buffers",
-    "buf",
-    "bufbuild",
-    "lint",
-    "format"
+    "protocol buffers"
   ],
   "activationEvents": [
     "workspaceContains:**/*.proto",
