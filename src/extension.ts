@@ -5,6 +5,7 @@ import { startLanguageServer } from "./commands/start-lsp";
 import { stopLanguageServer } from "./commands/stop-lsp";
 import { log } from "./log";
 import { activateStatusBar, deactivateStatusBar } from "./status-bar";
+import { bufState } from "./state";
 
 /**
  * activate is the entrypoint for activating the extension.
@@ -15,6 +16,20 @@ export async function activate(ctx: vscode.ExtensionContext) {
   ctx.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange)
   );
+  
+  // Listen for when .proto files are opened
+  ctx.subscriptions.push(
+    vscode.workspace.onDidOpenTextDocument(handleProtoFileOpened)
+  );
+  
+  // Check if any .proto files are already open
+  for (const document of vscode.workspace.textDocuments) {
+    if (document.languageId === "proto") {
+      await handleProtoFileOpened(document);
+      break; // Only need to check once
+    }
+  }
+  
   await installBuf.execute();
 }
 
@@ -44,4 +59,23 @@ const handleOnDidConfigChange = async (e: vscode.ConfigurationChangeEvent) => {
   if (e.affectsConfiguration("buf.enable")) {
     await startLanguageServer.execute();
   }
+};
+
+/**
+ * handleProtoFileOpened checks when a .proto file is opened and ensures the language server is running.
+ */
+const handleProtoFileOpened = async (document: vscode.TextDocument) => {
+  if (document.languageId !== "proto") {
+    return;
+  }
+  
+  const languageServerStatus = bufState.getLanguageServerStatus();
+  if (languageServerStatus === "LANGUAGE_SERVER_RUNNING") {
+    // Language server is already running, nothing to do
+    return;
+  }
+  
+  // Start the language server if it's not running
+  log.info("Proto file opened, ensuring language server is running...");
+  await startLanguageServer.execute();
 };
