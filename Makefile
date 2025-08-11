@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := package
 
-.PHONY: check-install compile package
+.PHONY: compile package
 package: compile
 	npm run package
 
@@ -8,13 +8,9 @@ package: compile
 install:
 	npm install
 
-.PHONY: check-install
-check-install:
-	@if [ ! -d "node_modules" ]; then \
-		echo "installing npm packages..."; \
-		npm install; \
-	fi
+node_modules: package-lock.json
+	npm ci
 
 .PHONY: compile
-compile: check-install
+compile: node_modules
 	npm run compile

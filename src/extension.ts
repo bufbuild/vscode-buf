@@ -16,20 +16,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   ctx.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange)
   );
-  
-  // Listen for when .proto files are opened
-  ctx.subscriptions.push(
-    vscode.workspace.onDidOpenTextDocument(handleProtoFileOpened)
-  );
-  
-  // Check if any .proto files are already open
-  for (const document of vscode.workspace.textDocuments) {
-    if (document.languageId === "proto") {
-      await handleProtoFileOpened(document);
-      break; // Only need to check once
-    }
-  }
-  
+
   await installBuf.execute();
 }
 
