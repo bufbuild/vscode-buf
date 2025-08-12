@@ -492,10 +492,14 @@ extensionTest.describe("command palette", async () => {
     extensionTest("update then prune deps", async ({ page }) => {
       // Update deps and expect a buf.lock file with deps entry
       await runExtensionCommand(page, "Update module dependencies.");
-      const bufLockFileTreeLocator = page.getByRole("treeitem", { name: "buf.lock" });
+      const bufLockFileTreeLocator = page.getByRole("treeitem", {
+        name: "buf.lock",
+      });
       await expect(bufLockFileTreeLocator).toBeVisible();
       await bufLockFileTreeLocator.locator("a").click();
-      const googleapisDepLocator = page.getByText("buf.build/googleapis/googleapis");
+      const googleapisDepLocator = page.getByText(
+        "buf.build/googleapis/googleapis"
+      );
       await expect(googleapisDepLocator).toBeVisible();
 
       // Prune deps and expect buf.lock file to have removed unused dep
@@ -503,7 +507,7 @@ extensionTest.describe("command palette", async () => {
       await expect(bufLockFileTreeLocator).toBeVisible();
       await bufLockFileTreeLocator.locator("a").click();
       // Close console output
-      await page.getByRole('button', { name: 'Hide Panel' }).click();
+      await page.getByRole("button", { name: "Hide Panel" }).click();
       await expect(googleapisDepLocator).toBeHidden();
     });
   });
