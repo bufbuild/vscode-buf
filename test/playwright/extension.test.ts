@@ -436,14 +436,13 @@ extensionTest.describe("command palette", async () => {
     for (const expectation of expectations) {
       // First click on the status bar button to show the quick pick list
       await page.getByRole("button", { name: "check Buf" }).click();
-
       // Enter the full name of the expected command. This will filter the quick pick menu
       // to the desired command.
       await page.keyboard.type(expectation);
-
       await expect(
         page.getByRole("option", { name: expectation })
       ).toBeVisible();
+      await page.keyboard.press("Escape");
     }
   });
   extensionTest("build", async ({ page }) => {
