@@ -2,8 +2,8 @@
 
 ## Unreleased
 
-This release contains a rework of Buf for Visual Studio Code. It integrates the Buf Language
-Server, available in [beta on the `buf` CLI][buf-lsp], introducing new [language server enabled features](README.md#features).
+This release reworks Buf for Visual Studio Code. It integrates the Buf Language Server,
+available in [beta on the `buf` CLI][buf-lsp], introducing new [language server enabled features](README.md#features).
 
 Thanks to [@christogav](https://github.com/christogav) for their contributions on integrating
 the Buf Language Server with VS Code on this release.
@@ -42,11 +42,11 @@ the Buf Language Server with VS Code on this release.
 
 ## v0.5.1
 
-- Fix an issue with setting buf format as the default formatter for proto3 files.
+- Fix an issue with setting `buf format` as the default formatter for proto3 files.
 
 ## v0.5.0
 
-- Add formatting through using buf format. Defaults to format on save.
+- Add formatting using `buf format`. Defaults to format on save.
 
 ## v0.4.0
 
