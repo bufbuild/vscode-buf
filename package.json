@@ -301,10 +301,10 @@
     "format": "biome format --write ."
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
+    "@biomejs/biome": "^2.1.4",
     "@playwright/test": "^1.54.2",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^24.2.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.2.1",
     "@types/semver": "^7.7.0",
     "@types/vscode": "^1.102.0",
     "@types/which": "^3.0.4",
@@ -312,7 +312,7 @@
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.6.0",
     "cross-env": "^10.0.0",
-    "mocha": "^10.8.2",
+    "mocha": "^11.7.1",
     "msw": "^2.10.4",
     "typescript": "^5.9.2"
   },

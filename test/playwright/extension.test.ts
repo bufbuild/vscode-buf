@@ -15,9 +15,15 @@ lint:
   rpc_allow_google_protobuf_empty_responses: true
 `;
 
+const depsBufYaml = `version: v2
+deps:
+  - buf.build/googleapis/googleapis
+`;
+
 const baseBufGenYaml = `version: v2
 managed:
   enabled: true
+
 plugins:
   - remote: buf.build/bufbuild/es:v2.2.2
     out: gen-es
@@ -362,7 +368,7 @@ message UserEvent {
  * after creating the files in the project.
  * @param projectPath is passed through from test and is the path of the project folder.
  */
-const extensionTest = test.extend<{
+export const extensionTest = test.extend<{
   fileContents: Record<string, string>;
   activateFileName: string;
   projectPath: string;
@@ -386,7 +392,7 @@ const extensionTest = test.extend<{
     if (activateFileName) {
       // Highlight the proto file in explorer
       await page
-        .getByRole("treeitem", { name: "example.proto" })
+        .getByRole("treeitem", { name: activateFileName })
         .locator("a")
         .click();
     }
@@ -408,32 +414,101 @@ extensionTest.describe("status bar", async () => {
 extensionTest.describe("command palette", async () => {
   extensionTest.use({ activateFileName: "example.proto" });
   extensionTest("command palette contents", async ({ page }) => {
-    await page.getByRole("button", { name: "check Buf" }).click();
     const expectations = [
       "Start Buf Language Server",
       "Stop Buf Language Server",
+      "Build",
+      "Init",
+      "List available breaking change detection rules.",
+      "List available lint rules.",
+      "Prune module dependencies.",
+      "Update module dependencies.",
       "Generate",
+      "List module files.",
+      "Price for BSR paid plans.",
+      "Module stats",
       "Install CLI",
       "Update CLI",
       "Show Buf Output",
     ];
     for (const expectation of expectations) {
+      // First click on the status bar button to show the quick pick list
+      await page.getByRole("button", { name: "check Buf" }).click();
+
+      // Enter the full name of the expected command. This will filter the quick pick menu
+      // to the desired command.
+      await page.keyboard.type(expectation);
+
       await expect(
         page.getByRole("option", { name: expectation })
       ).toBeVisible();
     }
-    const commandPaletteOptions = await page.getByRole("option").all();
-    expect(commandPaletteOptions).toHaveLength(expectations.length);
+  });
+  extensionTest("build", async ({ page }) => {
+    await runExtensionCommand(page, "Build");
+    await expect(page.getByText("Provide an output path for")).toBeVisible();
+    const outPath = "out.binpb";
+    await page.keyboard.type(outPath);
+    await expect(page.getByRole("treeitem", { name: outPath })).toBeVisible();
   });
   extensionTest("show output", async ({ page }) => {
-    await page.getByRole("button", { name: "check Buf" }).click();
-    await page.getByRole("option", { name: "Show Buf Output" }).click();
+    await runExtensionCommand(page, "Show Buf Output");
     // This is based on the name of the output channel set in log.ts.
-    expect(page.getByRole("combobox")).toHaveValue("Buf");
+    await expect(page.getByRole("combobox")).toHaveValue("Buf");
   });
-  extensionTest("buf generate", async ({ page }) => {
-    await page.getByRole("button", { name: "check Buf" }).click();
-    await page.getByRole("option", { name: "Generate" }).click();
+  extensionTest.describe("init", async () => {
+    extensionTest.use({ fileContents: {}, activateFileName: "" });
+    extensionTest("init empty", async ({ page }) => {
+      await runExtensionCommand(page, "Init");
+      await expect(
+        page.getByRole("treeitem", { name: "buf.yaml" })
+      ).toBeVisible();
+    });
+  });
+  extensionTest("ls-breaking-rules", async ({ page }) => {
+    await runExtensionCommand(
+      page,
+      "List available breaking change detection rules."
+    );
+    await expect(
+      page.getByRole("tab", { name: "ID CATEGORIES DEFAULT PURPOSE" })
+    ).toBeVisible();
+  });
+  extensionTest("ls-lint-rules", async ({ page }) => {
+    await runExtensionCommand(page, "List available lint rules.");
+    await expect(
+      page.getByRole("tab", { name: "ID CATEGORIES DEFAULT PURPOSE" })
+    ).toBeVisible();
+  });
+  extensionTest.describe("manage deps", async () => {
+    extensionTest.use({
+      fileContents: {
+        "buf.gen.yaml": baseBufGenYaml,
+        "buf.yaml": depsBufYaml,
+        "example.proto": exampleUserProto,
+      },
+      activateFileName: "example.proto",
+    });
+    extensionTest("update then prune deps", async ({ page }) => {
+      // Update deps and expect a buf.lock file with deps entry
+      await runExtensionCommand(page, "Update module dependencies.");
+      const bufLockFileTreeLocator = page.getByRole("treeitem", { name: "buf.lock" });
+      await expect(bufLockFileTreeLocator).toBeVisible();
+      await bufLockFileTreeLocator.locator("a").click();
+      const googleapisDepLocator = page.getByText("buf.build/googleapis/googleapis");
+      await expect(googleapisDepLocator).toBeVisible();
+
+      // Prune deps and expect buf.lock file to have removed unused dep
+      await runExtensionCommand(page, "Prune module dependencies.");
+      await expect(bufLockFileTreeLocator).toBeVisible();
+      await bufLockFileTreeLocator.locator("a").click();
+      // Close console output
+      await page.getByRole('button', { name: 'Hide Panel' }).click();
+      await expect(googleapisDepLocator).toBeHidden();
+    });
+  });
+  extensionTest("generate", async ({ page }) => {
+    await runExtensionCommand(page, "Generate");
     // Generate should be successful and a new directory should be created. This is based
     // on the buf.gen.yaml.
     await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
@@ -558,4 +633,14 @@ async function expectHover(page: Page, text: string, contents: string) {
   }).toPass({
     timeout: 2000,
   });
+}
+
+/**
+ * A helper for running extension commands from the command palette.
+ */
+async function runExtensionCommand(page: Page, command: string) {
+  await page.keyboard.press("ControlOrMeta+Shift+KeyP");
+  const commandFullName = `Buf: ${command}`;
+  await page.keyboard.type(commandFullName);
+  await page.getByRole("option", { name: commandFullName }).click();
 }
