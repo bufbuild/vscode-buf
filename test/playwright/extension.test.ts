@@ -449,6 +449,7 @@ extensionTest.describe("command palette", async () => {
     await expect(page.getByText("Provide an output path for")).toBeVisible();
     const outPath = "out.binpb";
     await page.keyboard.type(outPath);
+    await page.keyboard.press("Enter");
     await expect(page.getByRole("treeitem", { name: outPath })).toBeVisible();
   });
   extensionTest("show output", async ({ page }) => {
