@@ -388,7 +388,9 @@ export const extensionTest = test.extend<{
       await createFile(fileName, fileContent);
     }
     // Reload entire window to pick up new files
-    await page.keyboard.press("ControlOrMeta+KeyR");
+    if (Object.entries(fileContents).length !== 0) {
+      await page.keyboard.press("ControlOrMeta+KeyR");
+    }
     if (activateFileName) {
       // Highlight the proto file in explorer
       await page
