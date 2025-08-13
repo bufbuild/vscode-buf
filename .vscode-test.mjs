@@ -3,6 +3,9 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "@vscode/test-cli";
 
 /**
+ * Integration test configs.
+ *
+ * VS Code version defaults to stable.
  */
 export default defineConfig([
   {
