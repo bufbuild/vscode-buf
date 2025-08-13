@@ -295,7 +295,7 @@
     "lint": "biome lint --fix .",
     "test": "npm run test:integration && npm run test:playwright",
     "test:integration": "vscode-test",
-    "test:playwright": "playwright test",
+    "test:playwright": "node ./test/playwright/setup-script.mts &&playwright test",
     "test:playwright:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
     "package": "vsce package",
     "format": "biome format --write ."
