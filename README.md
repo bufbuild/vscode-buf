@@ -39,7 +39,7 @@ This extension contributes the following configuration settings.
 ### buf.commandLine.path
 
 Default: `null`
-The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root.
+The path to a specific install of Buf to use. Relative paths are supported and are relative to the VS Code workspace root.
 
 ### buf.commandLine.version
 
@@ -102,7 +102,22 @@ This extension contributes the following commands to the [Command Palette][comma
 
 ### Buf
 
-- Generate: runs `buf generate` at the root of each workspace.
+- Build: runs `buf build` with an optional user input for the build output.
+- Init: runs `buf config init` at the root of each VS Code workspace. This creates a `buf.yaml` file
+  to help users get started with Buf modules and workspaces.
+- List available breaking change detection rules: lists the breaking change detection rules
+  that are available.
+- List available lint rules: lists the lint rules that are available.
+- Prune module dependencies: prunes unused dependencies from the `buf.lock` at the root of
+  each VS Code workspace.
+- Update module dependencies: updates the dependencies in `buf.lock` at the root of each
+  VS Code workspace.
+- Generate: runs `buf generate` at the root of each VS Code workspace.
+- List module files: lists the Protobuf definition files for the Buf module/workspace at the
+  root of each VS Code workspace.
+- Price of BSR paid plans: provides the pricing information for Buf Schema Registry (BSR)
+  for each VS Code workspace.
+- Module stats: provides Buf module/workspace stats at the root of each VS Code workspace.
 
 ### Extension
 
