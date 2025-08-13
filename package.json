@@ -20,7 +20,7 @@
     }
   ],
   "engines": {
-    "vscode": "^1.102.0"
+    "vscode": "^1.95.0"
   },
   "categories": [
     "Formatters",
@@ -49,17 +49,78 @@
     "//": "This is kept in alphabetical order. https://code.visualstudio.com/api/references/contribution-points",
     "commands": [
       {
-        "command": "buf.generate",
+        "command": "buf.build",
         "category": "Buf",
-        "icon": "$(run)",
-        "title": "Generate",
-        "description": "Run Buf to generate code with protoc plugins."
+        "icon": "$(files)",
+        "title": "Build",
+        "description": "Run `buf build` across VS Code workspace(s)."
       },
       {
-        "command": "buf.showOutput",
+        "command": "buf.configinit",
         "category": "Buf",
-        "icon": "$(output)",
-        "title": "Show Buf Output"
+        "icon": "$(file-add)",
+        "title": "Init",
+        "description": "Run `buf config init` to initialize a new Buf workspace"
+      },
+      {
+        "command": "buf.configlsbreakingrules",
+        "category": "Buf",
+        "icon": "$(list-unordered)",
+        "title": "List available breaking change detection rules."
+      },
+      {
+        "command": "buf.configlslintrules",
+        "category": "Buf",
+        "icon": "$(list-unordered)",
+        "title": "List available lint rules."
+      },
+      {
+        "command": "buf.configlsmodules",
+        "category": "Buf",
+        "icon": "$(folder-library)",
+        "title": "List modules in workspace."
+      },
+      {
+        "command": "buf.depprune",
+        "category": "Buf",
+        "icon": "$(gather)",
+        "title": "Prune module dependencies.",
+        "description": "Run `buf dep prune` across VS Code workspace(s) to prune unused buf.lock dependencies."
+      },
+      {
+        "command": "buf.depupdate",
+        "category": "Buf",
+        "icon": "$(repo-pull)",
+        "title": "Update module dependencies.",
+        "description": "Run `buf dep update` across VS Code workspace(s) to update buf.lock dependencies."
+      },
+      {
+        "command": "buf.generate",
+        "category": "Buf",
+        "icon": "$(file-submodule)",
+        "title": "Generate",
+        "description": "Run `buf generate` across VS Code workspace(s)."
+      },
+      {
+        "command": "buf.lsfiles",
+        "category": "Buf",
+        "icon": "$(files)",
+        "title": "List module files.",
+        "description": "List module files across VS Code workspace(s)."
+      },
+      {
+        "command": "buf.price",
+        "category": "Buf",
+        "icon": "$(briefcase)",
+        "title": "Price for BSR paid plans.",
+        "description": "Check the price of BSR paid plans across VS Code workspace(s)."
+      },
+      {
+        "command": "buf.stats",
+        "category": "Buf",
+        "icon": "$(graph-line)",
+        "title": "Module stats",
+        "description": "Get stats for Buf modules across VS Code workspace(s)."
       },
       {
         "command": "buf.install",
@@ -69,11 +130,10 @@
         "description": "Install the Buf CLI from GitHub releases."
       },
       {
-        "command": "buf.update",
+        "command": "buf.showOutput",
         "category": "Buf",
-        "icon": "$(arrow-swap)",
-        "title": "Update CLI",
-        "description": "Check for updates and install the latest version of the Buf CLI."
+        "icon": "$(output)",
+        "title": "Show Buf Output"
       },
       {
         "command": "buf.startLanguageServer",
@@ -86,6 +146,13 @@
         "category": "Buf",
         "icon": "$(debug-stop)",
         "title": "Stop Buf Language Server"
+      },
+      {
+        "command": "buf.update",
+        "category": "Buf",
+        "icon": "$(sync)",
+        "title": "Update CLI",
+        "description": "Check for updates and install the latest version of the Buf CLI."
       }
     ],
     "configuration": {
@@ -229,10 +296,10 @@
     "format": "biome format --write ."
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
+    "@biomejs/biome": "^2.1.4",
     "@playwright/test": "^1.54.2",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^24.2.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.2.1",
     "@types/semver": "^7.7.0",
     "@types/vscode": "^1.102.0",
     "@types/which": "^3.0.4",
@@ -248,6 +315,7 @@
     "@preact/signals-core": "^1.11.0",
     "rimraf": "^6.0.1",
     "semver": "^7.7.2",
+    "tmp": "^0.2.4",
     "vscode-languageclient": "^9.0.1",
     "which": "^5.0.0"
   }
