@@ -47,22 +47,3 @@ const handleOnDidConfigChange = async (e: vscode.ConfigurationChangeEvent) => {
     await startLanguageServer.execute();
   }
 };
-
-/**
- * handleProtoFileOpened checks when a .proto file is opened and ensures the language server is running.
- */
-const handleProtoFileOpened = async (document: vscode.TextDocument) => {
-  if (document.languageId !== "proto") {
-    return;
-  }
-  
-  const languageServerStatus = bufState.getLanguageServerStatus();
-  if (languageServerStatus === "LANGUAGE_SERVER_RUNNING") {
-    // Language server is already running, nothing to do
-    return;
-  }
-  
-  // Start the language server if it's not running
-  log.info("Proto file opened, ensuring language server is running...");
-  await startLanguageServer.execute();
-};

@@ -43,8 +43,7 @@
     "workspaceContains:**/buf.mod",
     "workspaceContains:**/buf.work",
     "workspaceContains:**/buf.gen.yaml",
-    "workspaceContains:**/buf.work.yaml",
-    "onLanguage:protp"
+    "workspaceContains:**/buf.work.yaml"
   ],
   "contributes": {
     "//": "This is kept in alphabetical order. https://code.visualstudio.com/api/references/contribution-points",
@@ -220,7 +219,7 @@
   },
   "main": "./out/src/extension.js",
   "scripts": {
-    "vscode:prepackage": "npm run compile",
+    "vscode:prepublish": "npm run compile",
     "clean": "rm -rf ./dist/* && rm -rf ./out/* && rm -rf ./bin/* && rm -rf ./test-results/* && rm -rf .vscode-test/* rm *.vsix",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
