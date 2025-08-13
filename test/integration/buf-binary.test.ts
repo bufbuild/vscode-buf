@@ -143,7 +143,9 @@ suite("manage buf binary and LSP", () => {
     assert.strictEqual(bufBinaryVersion.compare(stdout), 0);
     const bufFilename = os.platform() === "win32" ? "buf.exe" : "buf";
     const bufPath = await which(bufFilename, { nothrow: true });
-    assert.strictEqual(bufPath, bufState.getBufBinaryPath());
+    const installedBufBinaryPath = bufState.getBufBinaryPath();
+    assert.ok(installedBufBinaryPath);
+    assert.strictEqual(bufPath, installedBufBinaryPath);
   });
 
   test("configure commandLine.path", async () => {

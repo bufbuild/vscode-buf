@@ -5,7 +5,7 @@ import { Command } from "./command";
 
 /**
  * bufGenerate runs `buf generate` at the root of each VS Code workspace folder. If there
- * are no workspace folders, then `buf generate` displays a warning and is a no-op.
+ * are no workspace folders, then bufGenerate displays a warning and is a no-op.
  */
 export const bufGenerate = new Command(
   "buf.generate",

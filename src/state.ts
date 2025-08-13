@@ -48,6 +48,7 @@ const minBufVersion = "v1.43.0";
  * @method getExtensionStatus gets the current extension status.
  * @method getLanguageServerStatus gets the current language server status.
  * @method getBufBinaryVersion gets the current Buf binary version.
+ * @method getBufBinaryPath gets the current Buf binary path.
  * @method execBufCommand execs the Buf binary with the specified arguments and working directory.
  * @method installBufBinary installs the Buf CLI for the extension based on the extension
  * configuration.
@@ -142,14 +143,14 @@ class BufState {
    * getBufBinaryVersion gets the current Buf binary version.
    */
   public getBufBinaryVersion() {
-    return this.bufBinary?.version ?? "";
+    return this.bufBinary?.version ?? null;
   }
 
   /**
    * getBufBinaryPath gets the current Buf binary path.
    */
   public getBufBinaryPath() {
-    return this.bufBinary?.path ?? "";
+    return this.bufBinary?.path ?? null;
   }
 
   /**
@@ -352,7 +353,7 @@ class BufState {
     if (this.bufBinary?.version.compare(minBufVersion) === -1) {
       this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
       log.warn(
-        `Buf version does not meet minimum required version ${minBufVersion} for Language Server features, disabling.`
+        `Buf version ${this.bufBinary?.version} does not meet minimum required version ${minBufVersion} for Language Server features, disabling.`
       );
       return;
     }
