@@ -5,6 +5,7 @@ import { startLanguageServer } from "./commands/start-lsp";
 import { stopLanguageServer } from "./commands/stop-lsp";
 import { log } from "./log";
 import { activateStatusBar, deactivateStatusBar } from "./status-bar";
+import { bufState } from "./state";
 
 /**
  * activate is the entrypoint for activating the extension.
@@ -15,6 +16,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   ctx.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange)
   );
+
   await installBuf.execute();
 }
 
