@@ -27,14 +27,14 @@
     "Linters"
   ],
   "keywords": [
+    "buf",
+    "bufbuild",
+    "format",
+    "lint",
     "proto",
     "proto3",
     "protobuf",
-    "protocol buffers",
-    "buf",
-    "bufbuild",
-    "lint",
-    "format"
+    "protocol buffers"
   ],
   "activationEvents": [
     "workspaceContains:**/*.proto",
@@ -170,11 +170,6 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically restart Buf (up to 4 times) if it crashes."
-        },
-        "buf.checkUpdates": {
-          "type": "boolean",
-          "default": true,
-          "description": "Check for language server updates on startup."
         },
         "buf.enableHover": {
           "type": "boolean",

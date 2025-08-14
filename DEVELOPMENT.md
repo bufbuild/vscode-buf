@@ -1,12 +1,25 @@
 # VS Code Buf extension development guide
 
-## Running the extension
+## Setup
+
+To get started, run `npm install` to install all the packages.
+
+## Running the extension with VS Code Debugger
 
 To start a new instance of VS Code with the extension loaded and running, open this project,
-`vscode-buf` in VS Code.
+`vscode-buf` in VS Code. Then, navigate to "Run and Debug" in the Activity Bar and select
+`Run Extension` or press F5.
 
-To run a new instance of VS Code with the extension loaded, navigate to "Run and Debug" in
-the Activity Bar and select `Run Extension` or press F5.
+## Running the extension by building from source and installing
+
+To build the extension, run `make`. This produces a `*.vsix` file, which can be manually
+installed to an instance of VS Code by running:
+
+```sh
+$ code --install-extension <name>.vsix
+```
+
+[vscode-docs-test-cli]: https://code.visualstudio.com/api/working-with-extensions/testing-extension#quick-setup-the-test-cli
 
 ## Tests
 
@@ -28,14 +41,3 @@ These tests are runnable from VS Code in the "Run and Debug" tab using the dropd
 
 We use Playwright to orchestrate end-to-end tests with user actions and conditions, e.g. running
 commands from the Command Palette.
-
-## Building the extension
-
-To build the extension, run `make`. This produces a `*.vsix` file, which
-can be manually installed to an instance of VS Code by running:
-
-```sh
-$ code --install-extension <name>.vsix
-```
-
-[vscode-docs-test-cli]: https://code.visualstudio.com/api/working-with-extensions/testing-extension#quick-setup-the-test-cli
