@@ -294,6 +294,7 @@
     "test:playwright": "playwright test",
     "test:playwright:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
     "package": "vsce package",
+    "package:prerelease": "vsce package --pre-release",
     "format": "biome format --write ."
   },
   "devDependencies": {
