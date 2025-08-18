@@ -302,7 +302,7 @@
     "format": "biome format --write ."
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.4",
+    "@biomejs/biome": "^2.2.0",
     "@playwright/test": "^1.54.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.2.1",
