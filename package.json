@@ -317,7 +317,7 @@
     "@preact/signals-core": "^1.11.0",
     "rimraf": "^6.0.1",
     "semver": "^7.7.2",
-    "tmp": "^0.2.4",
+    "tmp": "^0.2.5",
     "vscode-languageclient": "^9.0.1",
     "which": "^5.0.0"
   }
