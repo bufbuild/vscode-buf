@@ -4,3 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # This dependency is kept in sync with our configured vs code engine and does not need
+      # to be updated.
+      - dependency-name: "@types/vscode"
