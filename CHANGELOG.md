@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.8.1
+
+- Upgrade packages and bump version for stable release.
+
+## 0.8.0
 
 This release reworks Buf for Visual Studio Code. It integrates the Buf Language Server,
 available in [beta on the `buf` CLI][buf-lsp], introducing new [language server enabled features](README.md#features).
