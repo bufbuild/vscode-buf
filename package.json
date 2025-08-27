@@ -299,7 +299,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.4",
-    "@playwright/test": "^1.54.2",
+    "@playwright/test": "^1.55.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.2.1",
     "@types/semver": "^7.7.0",
