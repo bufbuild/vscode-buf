@@ -244,13 +244,18 @@
     ],
     "languages": [
       {
-        "id": "yaml",
+        "id": "buf",
         "filenames": [
+          "buf.yaml",
+          "buf.gen.yaml",
           "buf.lock",
           "buf.mod",
-          "buf.work",
-          "buf.gen"
-        ]
+          "buf.work"
+        ],
+        "icon": {
+          "light": "./icons/_buf_file.svg",
+          "dark": "./icons/_buf_file.svg"
+        }
       },
       {
         "id": "proto",
@@ -261,7 +266,11 @@
           "Protocol Buffers",
           "Protobuf"
         ],
-        "configuration": "./protobuf-language-configuration.json"
+        "configuration": "./protobuf-language-configuration.json",
+        "icon": {
+          "light": "./icons/_proto_file_light_mode.svg",
+          "dark": "./icons/_proto_file_dark_mode.svg"
+        }
       },
       {
         "//": "This is a special language used by the 'declaration' part of hover inlays in Markdown.",
