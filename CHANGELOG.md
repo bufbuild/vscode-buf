@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- No changes yet.
+- Add file icons for Protobuf and Buf configuration files.
 
 ## 0.8.1
 
