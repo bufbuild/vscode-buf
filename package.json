@@ -310,7 +310,7 @@
     "@biomejs/biome": "^2.2.2",
     "@playwright/test": "^1.55.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.3.1",
+    "@types/node": "^24.4.0",
     "@types/semver": "^7.7.1",
     "@types/vscode": "^1.95.0",
     "@types/which": "^3.0.4",
