@@ -42,7 +42,7 @@
         "--profile-temp",
         "--extensionDevelopmentPath=${workspaceFolder}",
         "--extensionTestsPath=${workspaceFolder}/out/test/integration",
-        "${workspaceFolder}/test/workspaces/multi/mult.code-workspace"
+        "${workspaceFolder}/test/workspaces/multi/multi.code-workspace"
       ],
       "preLaunchTask": "npm: pretest",
       "outFiles": ["${workspaceFolder}/out/test/integration/**/*.js"],
