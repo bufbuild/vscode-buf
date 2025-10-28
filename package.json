@@ -317,7 +317,6 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.6.0",
-    "cross-env": "^10.0.0",
     "mocha": "^11.7.2",
     "msw": "^2.11.6",
     "typescript": "^5.9.2"
