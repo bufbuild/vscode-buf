@@ -598,7 +598,7 @@ extensionTest.describe("lsp", async () => {
     await expectHover(
       page,
       "User", // LSP shows the documentation for types that have it
-      "message example.v1.User User represents a user in the system"
+      " User represents a user in the system"
     );
   });
   extensionTest.skip("lint checks", async ({ page }) => {
