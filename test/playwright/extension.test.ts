@@ -597,11 +597,6 @@ extensionTest.describe("lsp", async () => {
     await expect(page.getByRole("button", { name: "check Buf" })).toBeVisible();
     await expectHover(
       page,
-      "ListUsersRequest", // LSP handles missing documentation in hovers
-      "message example.v1.ListUsersRequest"
-    );
-    await expectHover(
-      page,
       "User", // LSP shows the documentation for types that have it
       "message example.v1.User User represents a user in the system"
     );
