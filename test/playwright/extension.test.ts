@@ -598,7 +598,7 @@ extensionTest.describe("lsp", async () => {
     await expectHover(
       page,
       "ListUsersRequest", // LSP handles missing documentation in hovers
-      "message example.v1.ListUsersRequest<missing docs>"
+      "message example.v1.ListUsersRequest"
     );
     await expectHover(
       page,
