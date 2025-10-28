@@ -569,16 +569,16 @@ function getBufArgs() {
     bufArgs.push("--log-format", logFormat);
   }
   const bufVersion = bufState.getBufBinaryVersion();
-  let args = ["lsp", "serve"]
-    if (bufVersion?.compare(minBufVersion) === -1) {
-      args = ["beta", "lsp"];
-      if (bufVersion?.compare(minBufBetaVersion) === -1) {
-        log.warn(
-          `Current Buf Version ${bufVersion} does not meet minimum required version of lsp command ${minBufBetaVersion}, unable to run "buf lsp serve".`
-        );
-        return;
-      }
+  let args = ["lsp", "serve"];
+  if (bufVersion?.compare(minBufVersion) === -1) {
+    args = ["beta", "lsp"];
+    if (bufVersion?.compare(minBufBetaVersion) === -1) {
+      log.warn(
+        `Current Buf Version ${bufVersion} does not meet minimum required version of lsp command ${minBufBetaVersion}, unable to run "buf lsp serve".`
+      );
+      return;
     }
+  }
 
   return args;
 }
