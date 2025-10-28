@@ -355,13 +355,6 @@ class BufState {
       log.warn("Buf is disabled. Enable it by setting 'buf.enable' to true.");
       return;
     }
-    if (this.bufBinary?.version.compare(minBufBetaVersion) === -1) {
-      this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
-      log.warn(
-        `Buf version ${this.bufBinary?.version} does not meet minimum required version ${minBufBetaVersion} for Language Server features, disabling.`
-      );
-      return;
-    }
     if (this.lspClient) {
       if (this._languageServerStatus.value === "LANGUAGE_SERVER_STARTING") {
         log.warn("Buf Language Server already starting, no new actions taken.");
@@ -389,9 +382,16 @@ class BufState {
       this._languageServerStatus.value = "LANGUAGE_SERVER_NOT_INSTALLED";
       return;
     }
+    const args = getBufArgs();
+    if (!args) {
+      this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
+      log.warn(
+        `Buf version ${this.bufBinary?.version} does not meet minimum required version ${minBufBetaVersion} for Language Server features, disabling.`
+      );
+    }
     const serverOptions: lsp.Executable = {
       command: this.bufBinary.path,
-      args: getBufArgs(),
+      args: args,
     };
     const clientOptions: lsp.LanguageClientOptions = {
       documentSelector: protoDocumentSelector,
@@ -558,6 +558,8 @@ async function showPopup(message: string, url: string) {
 
 /**
  * A helper for getting the Buf CLI args for the LSP server.
+ *
+ * Returns an empty array if bufVersion is too low to run the LSP server.
  */
 function getBufArgs() {
   const bufArgs = [];
@@ -573,14 +575,11 @@ function getBufArgs() {
   if (bufVersion?.compare(minBufVersion) === -1) {
     args = ["beta", "lsp"];
     if (bufVersion?.compare(minBufBetaVersion) === -1) {
-      log.warn(
-        `Current Buf Version ${bufVersion} does not meet minimum required version of lsp command ${minBufBetaVersion}, unable to run "buf lsp serve".`
-      );
       return;
     }
   }
-
-  return args;
+  bufArgs.push(...args);
+  return bufArgs;
 }
 
 /**
