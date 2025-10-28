@@ -34,9 +34,14 @@ let serverOutputChannel: vscode.OutputChannel | undefined;
 const protoDocumentSelector = [{ scheme: "file", language: "proto" }];
 
 /**
- * Minimum Buf version required to use LSP.
+ * Minimum Buf version required to use LSP via `buf beta lsp`.
  */
-const minBufVersion = "v1.43.0";
+const minBufBetaVersion = "v1.43.0";
+
+/**
+ * Minimum Buf version required to use LSP via `buf lsp serve`.
+ */
+const minBufVersion = "v1.59.0";
 
 /**
  * BufState handles and tracks the state of the extension:
@@ -350,10 +355,10 @@ class BufState {
       log.warn("Buf is disabled. Enable it by setting 'buf.enable' to true.");
       return;
     }
-    if (this.bufBinary?.version.compare(minBufVersion) === -1) {
+    if (this.bufBinary?.version.compare(minBufBetaVersion) === -1) {
       this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
       log.warn(
-        `Buf version ${this.bufBinary?.version} does not meet minimum required version ${minBufVersion} for Language Server features, disabling.`
+        `Buf version ${this.bufBinary?.version} does not meet minimum required version ${minBufBetaVersion} for Language Server features, disabling.`
       );
       return;
     }
@@ -563,8 +568,19 @@ function getBufArgs() {
   if (logFormat) {
     bufArgs.push("--log-format", logFormat);
   }
-  bufArgs.push("beta", "lsp");
-  return bufArgs;
+  const bufVersion = bufState.getBufBinaryVersion();
+  let args = ["lsp", "serve"]
+    if (bufVersion?.compare(minBufVersion) === -1) {
+      args = ["beta", "lsp"];
+      if (bufVersion?.compare(minBufBetaVersion) === -1) {
+        log.warn(
+          `Current Buf Version ${bufVersion} does not meet minimum required version of lsp command ${minBufBetaVersion}, unable to run "buf lsp serve".`
+        );
+        return;
+      }
+    }
+
+  return args;
 }
 
 /**
