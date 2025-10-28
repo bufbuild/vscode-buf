@@ -383,11 +383,12 @@ class BufState {
       return;
     }
     const args = getBufArgs();
-    if (!args) {
+    if (args instanceof Error) {
       this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
       log.warn(
         `Buf version ${this.bufBinary?.version} does not meet minimum required version ${minBufBetaVersion} for Language Server features, disabling.`
       );
+      return;
     }
     const serverOptions: lsp.Executable = {
       command: this.bufBinary.path,
@@ -559,7 +560,7 @@ async function showPopup(message: string, url: string) {
 /**
  * A helper for getting the Buf CLI args for the LSP server.
  *
- * Returns undefined if bufVersion is too low to run the LSP server.
+ * Returns an error if bufVersion is too low to run the LSP server.
  */
 function getBufArgs() {
   const bufArgs = [];
@@ -575,7 +576,7 @@ function getBufArgs() {
   if (bufVersion?.compare(minBufVersion) === -1) {
     args = ["beta", "lsp"];
     if (bufVersion?.compare(minBufBetaVersion) === -1) {
-      return undefined;
+      return new Error("buf version too low for LSP");
     }
   }
   bufArgs.push(...args);
