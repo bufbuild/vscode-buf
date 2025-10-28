@@ -559,7 +559,7 @@ async function showPopup(message: string, url: string) {
 /**
  * A helper for getting the Buf CLI args for the LSP server.
  *
- * Returns an empty array if bufVersion is too low to run the LSP server.
+ * Returns undefined if bufVersion is too low to run the LSP server.
  */
 function getBufArgs() {
   const bufArgs = [];
@@ -575,7 +575,7 @@ function getBufArgs() {
   if (bufVersion?.compare(minBufVersion) === -1) {
     args = ["beta", "lsp"];
     if (bufVersion?.compare(minBufBetaVersion) === -1) {
-      return;
+      return undefined;
     }
   }
   bufArgs.push(...args);
