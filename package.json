@@ -43,7 +43,8 @@
     "workspaceContains:**/buf.mod",
     "workspaceContains:**/buf.work",
     "workspaceContains:**/buf.gen.yaml",
-    "workspaceContains:**/buf.work.yaml"
+    "workspaceContains:**/buf.work.yaml",
+    "workspaceContains:**/buf.plugin.yaml"
   ],
   "contributes": {
     "//": "This is kept in alphabetical order. https://code.visualstudio.com/api/references/contribution-points",
@@ -235,6 +236,14 @@
       {
         "fileMatch": "buf.gen.yaml",
         "url": "https://www.schemastore.org/buf.gen.json"
+      },
+      {
+        "fileMatch": "buf.work.yaml",
+        "url": "https://www.schemastore.org/buf.work.json"
+      },
+      {
+        "fileMatch": "buf.plugin.yaml",
+        "url": "https://www.schemastore.org/buf.plugin.json"
       }
     ],
     "languages": [
@@ -245,7 +254,9 @@
           "buf.gen.yaml",
           "buf.lock",
           "buf.mod",
-          "buf.work"
+          "buf.work",
+          "buf.work.yaml",
+          "buf.plugin.yaml"
         ],
         "icon": {
           "light": "./icons/_buf_file.svg",
@@ -276,6 +287,14 @@
       {
         "fileMatch": "buf.gen.yaml",
         "url": "https://www.schemastore.org/buf.gen.json"
+      },
+      {
+        "fileMatch": "buf.work.yaml",
+        "url": "https://www.schemastore.org/buf.work.json"
+      },
+      {
+        "fileMatch": "buf.plugin.yaml",
+        "url": "https://www.schemastore.org/buf.plugin.json"
       }
     ]
   },
