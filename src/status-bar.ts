@@ -84,7 +84,6 @@ function updateStatusBar() {
   statusBarItem.color = config.colour;
   statusBarItem.command = config.command;
   statusBarItem.tooltip = new vscode.MarkdownString("", true);
-  statusBarItem.tooltip.supportHtml = true;
   if (config.tooltip) {
     statusBarItem.tooltip.appendMarkdown(`${config.tooltip}\n\n`);
   }
