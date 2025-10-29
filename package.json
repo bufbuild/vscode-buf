@@ -225,11 +225,6 @@
         "language": "proto",
         "scopeName": "source.proto",
         "path": "./syntaxes/proto.json"
-      },
-      {
-        "language": "proto-decl",
-        "scopeName": "source.proto-decl",
-        "path": "./syntaxes/proto-decl.json"
       }
     ],
     "jsonValidation": [
@@ -271,10 +266,6 @@
           "light": "./icons/_proto_file_light_mode.svg",
           "dark": "./icons/_proto_file_dark_mode.svg"
         }
-      },
-      {
-        "//": "This is a special language used by the 'declaration' part of hover inlays in Markdown.",
-        "id": "proto-decl"
       }
     ],
     "yamlValidation": [
