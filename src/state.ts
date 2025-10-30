@@ -408,9 +408,6 @@ class BufState {
           return next(document, position, token);
         },
       },
-      markdown: {
-        supportHtml: true,
-      },
     };
     this.lspClient = new lsp.LanguageClient(
       "Buf Language Server",

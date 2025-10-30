@@ -43,7 +43,8 @@
     "workspaceContains:**/buf.mod",
     "workspaceContains:**/buf.work",
     "workspaceContains:**/buf.gen.yaml",
-    "workspaceContains:**/buf.work.yaml"
+    "workspaceContains:**/buf.work.yaml",
+    "workspaceContains:**/buf.plugin.yaml"
   ],
   "contributes": {
     "//": "This is kept in alphabetical order. https://code.visualstudio.com/api/references/contribution-points",
@@ -225,11 +226,6 @@
         "language": "proto",
         "scopeName": "source.proto",
         "path": "./syntaxes/proto.json"
-      },
-      {
-        "language": "proto-decl",
-        "scopeName": "source.proto-decl",
-        "path": "./syntaxes/proto-decl.json"
       }
     ],
     "jsonValidation": [
@@ -240,6 +236,14 @@
       {
         "fileMatch": "buf.gen.yaml",
         "url": "https://www.schemastore.org/buf.gen.json"
+      },
+      {
+        "fileMatch": "buf.work.yaml",
+        "url": "https://www.schemastore.org/buf.work.json"
+      },
+      {
+        "fileMatch": "buf.plugin.yaml",
+        "url": "https://www.schemastore.org/buf.plugin.json"
       }
     ],
     "languages": [
@@ -250,7 +254,9 @@
           "buf.gen.yaml",
           "buf.lock",
           "buf.mod",
-          "buf.work"
+          "buf.work",
+          "buf.work.yaml",
+          "buf.plugin.yaml"
         ],
         "icon": {
           "light": "./icons/_buf_file.svg",
@@ -271,10 +277,6 @@
           "light": "./icons/_proto_file_light_mode.svg",
           "dark": "./icons/_proto_file_dark_mode.svg"
         }
-      },
-      {
-        "//": "This is a special language used by the 'declaration' part of hover inlays in Markdown.",
-        "id": "proto-decl"
       }
     ],
     "yamlValidation": [
@@ -285,6 +287,14 @@
       {
         "fileMatch": "buf.gen.yaml",
         "url": "https://www.schemastore.org/buf.gen.json"
+      },
+      {
+        "fileMatch": "buf.work.yaml",
+        "url": "https://www.schemastore.org/buf.work.json"
+      },
+      {
+        "fileMatch": "buf.plugin.yaml",
+        "url": "https://www.schemastore.org/buf.plugin.json"
       }
     ]
   },
