@@ -8,8 +8,7 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 
 - **Code navigation** - Go-to definition and documentation insets for `.proto` symbols.
 - **Syntax highlighting** - Protobuf specific color and styling of code.
-- **Code editing** - Formatting via `buf format` and annotations and hovers based on `buf lint`
-  and `buf breaking`.
+- **Code editing** - Formatting via `buf format` and annotations and hovers based on `buf lint`.
 - **Documentation hovers** - Documentation for definitions when hovering a reference.
 - **Buf command support** - Execution of `buf` CLI commands via the [Command Palette][command-palette].
 
@@ -70,17 +69,6 @@ Enable debug logs in output channels.
 
 Default: `text`
 Buf Language Server log format.
-
-### buf.checks.breaking.againstStrategy
-
-Default: `git`
-The strategy to use when checking breaking changes against a specific reference.
-
-### buf.checks.breaking.againstGitRef
-
-Default: `refs/remotes/origin/HEAD`
-The Git reference to check breaking changes against. This is only compatible when `buf.checks.breaking.againstStrategy`
-is set to `git`, otherwise it is ignored.
 
 ## Commands
 
