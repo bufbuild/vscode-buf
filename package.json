@@ -207,12 +207,14 @@
             "git"
           ],
           "default": "git",
-          "description": "The strategy to use when checking breaking changes against a specific reference."
+          "description": "The strategy to use when checking breaking changes against a specific reference.",
+          "deprecationMessage": "Deprecated: breaking change detection is no longer supported in the LSP."
         },
         "buf.checks.breaking.againstGitRef": {
           "type": "string",
           "default": "refs/remotes/origin/HEAD",
-          "description": "The Git reference to check breaking changes against."
+          "description": "The Git reference to check breaking changes against.",
+          "deprecationMessage": "Deprecated: breaking change detection is no longer supported in the LSP."
         }
       }
     },
