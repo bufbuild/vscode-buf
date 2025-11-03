@@ -329,7 +329,7 @@
     "@vscode/vsce": "^3.6.0",
     "mocha": "^11.7.2",
     "msw": "^2.11.6",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@preact/signals-core": "^1.12.1",
