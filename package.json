@@ -207,12 +207,14 @@
             "git"
           ],
           "default": "git",
-          "description": "The strategy to use when checking breaking changes against a specific reference."
+          "description": "The strategy to use when checking breaking changes against a specific reference.",
+          "deprecationMessage": "Deprecated: breaking change detection is no longer supported in the LSP."
         },
         "buf.checks.breaking.againstGitRef": {
           "type": "string",
           "default": "refs/remotes/origin/HEAD",
-          "description": "The Git reference to check breaking changes against."
+          "description": "The Git reference to check breaking changes against.",
+          "deprecationMessage": "Deprecated: breaking change detection is no longer supported in the LSP."
         }
       }
     },
@@ -317,7 +319,7 @@
     "format": "biome format --write ."
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.3",
+    "@biomejs/biome": "^2.3.3",
     "@playwright/test": "^1.56.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.9.2",
@@ -329,7 +331,7 @@
     "@vscode/vsce": "^3.6.2",
     "mocha": "^11.7.2",
     "msw": "^2.11.6",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@preact/signals-core": "^1.12.1",
