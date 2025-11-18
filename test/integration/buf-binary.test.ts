@@ -9,8 +9,6 @@ import { effect } from "@preact/signals-core";
 import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
 import which from "which";
-import { stopLanguageServer } from "../../src/commands/stop-lsp";
-import * as config from "../../src/config";
 import { githubReleaseURL, type Release } from "../../src/github";
 import { bufState } from "../../src/state";
 import type { LanguageServerStatus } from "../../src/status";
@@ -103,106 +101,43 @@ suite("manage buf binary and LSP", () => {
 
   suiteTeardown(async () => {
     server.close();
-    await config.update("commandLine.path", undefined);
-    await config.update("commandLine.version", undefined);
   });
 
   teardown(async () => {
-    // Reset the state of the extension after each test case
-    await stopLanguageServerForTest();
-    if (config.get("commandLine.path")) {
-      const languageServerRunning = setupLanguageServerListener(
-        "LANGUAGE_SERVER_RUNNING"
-      );
-      await config.update("commandLine.path", undefined);
-      await languageServerRunning;
-      await stopLanguageServerForTest();
-    }
-    if (config.get("commandLine.version")) {
-      const languageServerRunning = setupLanguageServerListener(
-        "LANGUAGE_SERVER_RUNNING"
-      );
-      await config.update("commandLine.version", undefined);
-      await languageServerRunning;
-      await stopLanguageServerForTest();
-    }
     server.resetHandlers();
   });
 
-  test("no configs, use system buf on $PATH", async () => {
+  test("setup buf", async () => {
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
     );
-    // Must activate the extension as part of the test
     await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
     await languageServerRunning;
-    const { stdout, stderr } = await exec("buf --version");
-    assert.strictEqual(stderr, "");
-    const bufBinaryVersion = bufState.getBufBinaryVersion();
-    assert.ok(bufBinaryVersion);
-    assert.strictEqual(bufBinaryVersion.compare(stdout), 0);
-    const bufFilename = os.platform() === "win32" ? "buf.exe" : "buf";
-    const bufPath = await which(bufFilename, { nothrow: true });
-    const installedBufBinaryPath = bufState.getBufBinaryPath();
-    assert.ok(installedBufBinaryPath);
-    assert.strictEqual(bufPath, installedBufBinaryPath);
-  });
-
-  test("configure commandLine.path", async () => {
-    // Setup a listener for the language server status
-    const languageServerRunning = setupLanguageServerListener(
-      "LANGUAGE_SERVER_RUNNING"
-    );
-    let configPath = "node_modules/.bin/buf";
-    if (os.platform() === "win32") {
-      configPath = path.resolve(
-        __dirname,
-        `../../../test/workspaces/empty-single/node_modules/@bufbuild/buf-${os.platform()}-${os.arch()}/bin/buf.exe`
+    if (process.env.NO_BUF) {
+      // We expect no buf CLI in the $PATH and the installation flow to trigger.
+      const bufBinaryPath = bufState.getBufBinaryPath();
+      assert.ok(bufBinaryPath);
+      assert.ok(
+        path.matchesGlob(
+          bufBinaryPath,
+          `**/.vscode-test/user-data/User/globalStorage/bufbuild.vscode-buf/v1.54.0/buf*`
+        )
       );
+    } else {
+      // Otherwise, we expect the system $PATH buf to be used
+      const { stdout, stderr } = await exec("buf --version");
+      assert.strictEqual(stderr, "");
+      const bufFilename = os.platform() === "win32" ? "buf.exe" : "buf";
+      const bufPath = await which(bufFilename, { nothrow: true });
+      const installedBufBinaryPath = bufState.getBufBinaryPath();
+      assert.ok(installedBufBinaryPath);
+      assert.strictEqual(bufPath, installedBufBinaryPath);
+      const bufBinaryVersion = bufState.getBufBinaryVersion();
+      assert.ok(bufBinaryVersion);
+      assert.strictEqual(bufBinaryVersion.compare(stdout), 0);
     }
-    // Update the configuration to use a path for the buf binary. This will trigger a new
-    // install process for the buf binary, which then starts the language server after.
-    await config.update("commandLine.path", configPath);
-    await languageServerRunning;
-
-    // Assert the binary path is the configured path
-    const bufBinaryPath = bufState.getBufBinaryPath();
-    assert.ok(bufBinaryPath);
-    assert.ok(bufBinaryPath.endsWith(configPath), bufBinaryPath);
-  });
-
-  test("configure commandLine.update", async () => {
-    const languageServerRunning = setupLanguageServerListener(
-      "LANGUAGE_SERVER_RUNNING"
-    );
-    const configuredVersion = "v1.54.0";
-    await config.update("commandLine.version", configuredVersion);
-    await languageServerRunning;
-
-    // Assert the binary path used is the "downloaded" binary in global storage
-    const bufBinaryPath = bufState.getBufBinaryPath();
-    assert.ok(bufBinaryPath);
-    assert.ok(
-      path.matchesGlob(
-        bufBinaryPath,
-        `**/.vscode-test/user-data/User/globalStorage/bufbuild.vscode-buf/v1.54.0/buf*`
-      ),
-      bufBinaryPath
-    );
   });
 });
-
-/**
- * A helper function for stopping the language server and ensuring the status is stable using
- * a listener.
- */
-async function stopLanguageServerForTest() {
-  const languageServerStopped = setupLanguageServerListener(
-    "LANGUAGE_SERVER_STOPPED"
-  );
-  await stopLanguageServer.execute();
-  await languageServerStopped;
-}
 
 /**
  * A helper function that returns a Promise listening for the language server status. Once
@@ -219,10 +154,7 @@ function setupLanguageServerListener(
       resolve();
       dispose();
     }
-    if (
-      languageServerStatus === "LANGUAGE_SERVER_NOT_INSTALLED" ||
-      languageServerStatus === "LANGUAGE_SERVER_ERRORED"
-    ) {
+    if (languageServerStatus === "LANGUAGE_SERVER_ERRORED") {
       reject(
         new Error(`language server in failed state: ${languageServerStatus}`)
       );

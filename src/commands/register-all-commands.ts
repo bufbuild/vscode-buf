@@ -11,12 +11,10 @@ import { bufGenerate } from "./buf-generate";
 import { bufLsFiles } from "./buf-ls-files";
 import { bufPrice } from "./buf-price";
 import { bufStats } from "./buf-stats";
-import { installBuf } from "./install-buf";
 import { showCommands } from "./show-commands";
 import { showOutput } from "./show-output";
 import { startLanguageServer } from "./start-lsp";
 import { stopLanguageServer } from "./stop-lsp";
-import { updateBuf } from "./update-buf";
 
 /**
  * @file Provides a convenience function for registering all commands in the extension.
@@ -35,12 +33,10 @@ const commands = [
   bufLsFiles,
   bufPrice,
   bufStats,
-  installBuf,
   showCommands,
   showOutput,
   startLanguageServer,
   stopLanguageServer,
-  updateBuf,
 ];
 
 /**

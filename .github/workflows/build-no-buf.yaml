@@ -1,0 +1,41 @@
+name: ci
+on: push
+
+# This runs only the integration tests without first installing the buf CLI. This exercises
+# the flow to install buf.
+jobs:
+  build-no-buf:
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    env:
+      NO_BUF: 1
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+      - name: install-deps
+        run: make install
+      - name: build
+        run: npm run compile
+      - name: prepworkspaces
+        run: npm run prepworkspaces
+      - name: lint
+        run: npm run lint
+      - name: format
+        run: npm run format
+      - name: integration-tests-with-xvfb
+        run: xvfb-run -a npm run test:integration
+        if: runner.os == 'Linux'
+      - name: integration-tests
+        shell: bash
+        run: npm run test:integration
+        if: runner.os != 'Linux'

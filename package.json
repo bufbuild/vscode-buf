@@ -124,13 +124,6 @@
         "description": "Get stats for Buf modules across VS Code workspace(s)."
       },
       {
-        "command": "buf.install",
-        "category": "Buf",
-        "icon": "$(cloud-download)",
-        "title": "Install CLI",
-        "description": "Install the Buf CLI from GitHub releases."
-      },
-      {
         "command": "buf.showOutput",
         "category": "Buf",
         "icon": "$(output)",
@@ -147,13 +140,6 @@
         "category": "Buf",
         "icon": "$(debug-stop)",
         "title": "Stop Buf Language Server"
-      },
-      {
-        "command": "buf.update",
-        "category": "Buf",
-        "icon": "$(sync)",
-        "title": "Update CLI",
-        "description": "Check for updates and install the latest version of the Buf CLI."
       }
     ],
     "configuration": {
@@ -161,31 +147,36 @@
       "properties": {
         "buf.commandLine.path": {
           "type": "string",
-          "description": "The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root."
+          "description": "The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root.",
+          "deprecationMessage": "Deprecated: buf CLI path is no longer configurable."
         },
         "buf.commandLine.version": {
           "type": "string",
-          "description": "Specific version (git tag e.g. 'v1.53.0') of Buf release to download and install."
+          "description": "Specific version (git tag e.g. 'v1.53.0') of Buf release to download and install.",
+          "deprecationMessage": "Deprecated: buf CLI version is no longer configurable."
         },
         "buf.restartAfterCrash": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically restart Buf (up to 4 times) if it crashes."
+          "description": "Automatically restart Buf (up to 4 times) if it crashes.",
+          "deprecationMessage": "Deprecated: this is no longer configurable, the Buf language server will restart after crash, up to 4 times."
         },
         "buf.enableHover": {
           "type": "boolean",
           "default": true,
-          "description": "Enable hover features provided by the language server."
+          "description": "Enable hover features provided by the language server.",
+          "deprecationMessage": "Deprecated: the hover is no longer configurable."
         },
         "buf.enable": {
           "type": "boolean",
           "default": true,
-          "description": "Enable Buf language server features."
+          "description": "Enable Buf language server features.",
+          "deprecationMessage": "Deprecated: this is no longer configurable, language server features are always enabled."
         },
-        "buf.debug": {
+        "buf.debugLogs": {
           "type": "boolean",
           "default": false,
-          "description": "Enable debug mode."
+          "description": "Enable debug logs for Buf language server."
         },
         "buf.log-format": {
           "type": [
@@ -198,7 +189,8 @@
             "json"
           ],
           "default": "text",
-          "description": "Buf language server log format."
+          "description": "Buf language server log format.",
+          "deprecationMessage": "Deprecated: the log format is no longer configurable."
         },
         "buf.checks.breaking.againstStrategy": {
           "type": "string",
