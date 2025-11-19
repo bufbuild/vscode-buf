@@ -104,13 +104,13 @@ suite("manage buf binary and LSP", () => {
     server.resetHandlers();
   });
 
-  test("setup buf", async () => {
+  test(`setup buf ${process.env.BUF_INSTALLED}`, async () => {
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
     );
     await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
     await languageServerRunning;
-    if (process.env.BUF_INSTALLED) {
+    if (process.env.BUF_INSTALLED === "1") {
       // We expected buf to be installed on the system $PATH and for that to be used.
       const { stdout, stderr } = await exec("buf --version");
       assert.strictEqual(stderr, "");
