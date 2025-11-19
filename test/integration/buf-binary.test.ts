@@ -25,13 +25,10 @@ const downloadBinPath = "test/workspaces/empty-single/node_modules/@bufbuild/";
  * msw stub handlers for GitHub releases API.
  */
 const handlers = [
-  http.get(`${githubReleaseURL}tags/:tag`, ({ params }) => {
-    if (typeof params.tag !== "string") {
-      return HttpResponse.json({ error: params.tag }, { status: 404 });
-    }
+  http.get(`${githubReleaseURL}latest`, () => {
     return HttpResponse.json({
-      name: params.tag,
-      tag_name: params.tag,
+      name: "v1.54.0",
+      tag_name: "v1.54.0",
       assets: [
         {
           name: "buf-Darwin-arm64",
