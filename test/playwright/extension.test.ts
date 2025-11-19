@@ -459,7 +459,12 @@ extensionTest.describe("command palette", async () => {
     await expect(page.getByRole("combobox")).toHaveValue("Buf");
   });
   extensionTest.describe("init", async () => {
-    extensionTest.use({ fileContents: {}, activateFileName: "" });
+    extensionTest.use({
+      fileContents: {
+        "example.proto": exampleUserProto,
+      },
+      activateFileName: "example.proto",
+    });
     extensionTest("init empty", async ({ page }) => {
       await runExtensionCommand(page, "Init");
       await expect(
