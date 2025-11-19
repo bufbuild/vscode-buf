@@ -22,7 +22,7 @@ jobs:
           node-version-file: ".nvmrc"
           cache: npm
       - uses: bufbuild/buf-action@v1
-        if: matrix.buf-bin-setup == "buf-on-path"
+        if: matrix.buf-bin-setup == 'buf-on-path'
         with:
           setup_only: true
       - name: install-deps
