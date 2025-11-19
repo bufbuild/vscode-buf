@@ -9,9 +9,9 @@ jobs:
           - macos-latest
           - ubuntu-latest
           - windows-latest
-        install-buf:
-          - 0
-          - 1
+        buf-bin-setup:
+          - buf-on-path
+          - buf-not-on-path
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout
@@ -22,7 +22,7 @@ jobs:
           node-version-file: ".nvmrc"
           cache: npm
       - uses: bufbuild/buf-action@v1
-        if: matrix.install-buf == 1
+        if: matrix.buf-bin-setup == "buf-on-path"
         with:
           setup_only: true
       - name: install-deps
@@ -37,13 +37,13 @@ jobs:
         run: npm run format
       - name: integration-tests-with-xvfb
         env:
-          BUF_INSTALLED: ${{ matrix.install-buf }}
+          BUF_INSTALLED: ${{ matrix.buf-bin-setup }}
         run: xvfb-run -a npm run test:integration
         if: runner.os == 'Linux'
       - name: integration-tests
         shell: bash
         env:
-          BUF_INSTALLED: ${{ matrix.install-buf }}
+          BUF_INSTALLED: ${{ matrix.buf-bin-setup }}
         run: npm run test:integration
         if: runner.os != 'Linux'
       - name: playwright-tests
@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-${{ matrix.install-buf }}
+          name: test-results-${{ matrix.buf-bin-setup }}
           path: test-results/
           retention-days: 5
           if-no-files-found: ignore

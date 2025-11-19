@@ -110,7 +110,8 @@ suite("manage buf binary and LSP", () => {
     );
     await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
     await languageServerRunning;
-    if (process.env.BUF_INSTALLED === "1") {
+    // This value is set in the GitHub Actions testing workflow
+    if (process.env.BUF_INSTALLED === "buf-on-path") {
       // We expected buf to be installed on the system $PATH and for that to be used.
       const { stdout, stderr } = await exec("buf --version");
       assert.strictEqual(stderr, "");
