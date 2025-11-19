@@ -1,7 +1,7 @@
 # Buf for Visual Studio Code
 
 The [VS Code Buf extension][vs-code-marketplace] helps you work with [Protocol Buffers][protobuf]
-files in a much more intuitive way, adding smart syntax highlighting, navigation, formatting,
+files in a much more intuitive way, adding semantic syntax highlighting, navigation, formatting,
 documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 
 ## Features
@@ -9,6 +9,7 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 - **Code navigation** - Go-to definition and documentation insets for `.proto` symbols.
 - **Syntax highlighting** - Protobuf specific color and styling of code.
 - **Code editing** - Formatting via `buf format` and annotations and hovers based on `buf lint`.
+- **Autocompletion** - Autocomplete for types and imports.
 - **Documentation hovers** - Documentation for definitions when hovering a reference.
 - **Buf command support** - Execution of `buf` CLI commands via the [Command Palette][command-palette].
 
@@ -19,67 +20,22 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 [Install the latest version via the VS Code marketplace][vs-code-marketplace].
 
 By default, the extension will use your locally-installed version of `buf` on your system
-`$PATH`. However, you don't have to install `buf` - the extension can manage and install it
-for you based on the [buf.commandLine.path](#buf.commandline.path) and [buf.commandLine.version](#buf.commandline.version)
-configurations:
-
-| | <pre>buf.commandLine.path</pre> | <pre>buf.commandLine.version</pre> |
-| --- | --- | --- |
-| Default: Use `buf` from the system `$PATH`. | {empty} | {empty} |
-| Use the latest released version of `buf` and check for updates on extension activation. | {empty} | `latest` |
-| Use `buf` at specified path. | User specified path | {empty} |
-| Install and use the specified version of `buf`. | {empty} | User specified semver version |
-| Use `buf` at specified path and display an error message. | User specified path | User specified semver version |
+`$PATH`. However, you don't have to install `buf` if you don't have it. If the extension does
+not find a locally-installed version on your system `$PATH`, it will install the latest version
+of `buf` to the extension storage and use that.
 
 ## Extension Settings
 
-This extension contributes the following configuration settings.
+This extension contributes the following configuration setting.
 
-### buf.commandLine.path
-
-Default: `null`
-The path to a specific install of Buf to use. Relative paths are supported and are relative to the VS Code workspace root.
-
-### buf.commandLine.version
-
-Default: `null`
-Specific version (e.g. 'v1.53.0') of Buf release to download and install.
-
-### buf.restartAfterCrash
-
-Default: `true`
-Automatically restart the Buf Language Server (up to 4 times) if it crashes.
-
-### buf.enableHover
-
-Default: `true`
-Enable hover features provided by the language server.
-
-### buf.enable
-
-Default: `true`
-Enable Buf Language Server features.
-
-### buf.debug
+### buf.debugLogs
 
 Default: `false`
-Enable debug logs in output channels.
-
-### buf.log-format
-
-Default: `text`
-Buf Language Server log format.
+Enable debug logs in Buf language server output channels.
 
 ## Commands
 
 This extension contributes the following commands to the [Command Palette][command-palette].
-
-### Setup
-
-- Install CLI: installs the `buf` CLI based on `buf.commandLine.path` and `buf.commandLine.version`
-  configurations and then attempts to start the language server.
-- Update CLI: updates the `buf` CLI based on `buf.commandLine.path` and `buf.commandLine.version`
-  configurations and then attempts to start the language server.
 
 ### Language Server
 
