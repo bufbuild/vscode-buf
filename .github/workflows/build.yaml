@@ -9,6 +9,9 @@ jobs:
           - macos-latest
           - ubuntu-latest
           - windows-latest
+        install-buf:
+          - 0
+          - 1
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout
@@ -19,6 +22,7 @@ jobs:
           node-version-file: ".nvmrc"
           cache: npm
       - uses: bufbuild/buf-action@v1
+        if: matrix.install-buf == 1
         with:
           setup_only: true
       - name: install-deps
@@ -36,6 +40,8 @@ jobs:
         if: runner.os == 'Linux'
       - name: integration-tests
         shell: bash
+        env:
+          NO_BUF: ${{ matrix.install-buf }}
         run: npm run test:integration
         if: runner.os != 'Linux'
       - name: playwright-tests

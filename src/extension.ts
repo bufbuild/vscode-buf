@@ -15,7 +15,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   ctx.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange)
   );
-  bufState.init(ctx);
+  await bufState.init(ctx);
 }
 
 /**
