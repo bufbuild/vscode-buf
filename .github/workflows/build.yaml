@@ -36,6 +36,8 @@ jobs:
       - name: format
         run: npm run format
       - name: integration-tests-with-xvfb
+        env:
+          BUF_INSTALLED: ${{ matrix.install-buf }}
         run: xvfb-run -a npm run test:integration
         if: runner.os == 'Linux'
       - name: integration-tests
