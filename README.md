@@ -6,12 +6,13 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 
 ## Features
 
-- **Code navigation** - Go-to definition and documentation insets for `.proto` symbols.
-- **Syntax highlighting** - Protobuf specific color and styling of code.
-- **Code editing** - Formatting via `buf format` and annotations and hovers based on `buf lint`.
-- **Autocompletion** - Autocomplete for types and imports.
-- **Documentation hovers** - Documentation for definitions when hovering a reference.
-- **Buf command support** - Execution of `buf` CLI commands via the [Command Palette][command-palette].
+- Go to definition
+- Go to references
+- Auto-complete
+- Contextual information on mouse hover
+- Protobuf file formatting
+- Syntax highlighting
+- Workspace / Document symbols
 
 ![Preview features](./preview.gif)
 
