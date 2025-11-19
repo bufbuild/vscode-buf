@@ -41,7 +41,7 @@ jobs:
       - name: integration-tests
         shell: bash
         env:
-          NO_BUF: ${{ matrix.install-buf }}
+          BUF_INSTALLED: ${{ matrix.install-buf }}
         run: npm run test:integration
         if: runner.os != 'Linux'
       - name: playwright-tests

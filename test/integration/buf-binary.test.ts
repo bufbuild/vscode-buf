@@ -110,18 +110,8 @@ suite("manage buf binary and LSP", () => {
     );
     await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
     await languageServerRunning;
-    if (process.env.NO_BUF) {
-      // We expect no buf CLI in the $PATH and the installation flow to trigger.
-      const bufBinaryPath = bufState.getBufBinaryPath();
-      assert.ok(bufBinaryPath);
-      assert.ok(
-        path.matchesGlob(
-          bufBinaryPath,
-          `**/.vscode-test/user-data/User/globalStorage/bufbuild.vscode-buf/v1.54.0/buf*`
-        )
-      );
-    } else {
-      // Otherwise, we expect the system $PATH buf to be used
+    if (process.env.BUF_INSTALLED) {
+      // We expected buf to be installed on the system $PATH and for that to be used.
       const { stdout, stderr } = await exec("buf --version");
       assert.strictEqual(stderr, "");
       const bufFilename = os.platform() === "win32" ? "buf.exe" : "buf";
@@ -132,6 +122,16 @@ suite("manage buf binary and LSP", () => {
       const bufBinaryVersion = bufState.getBufBinaryVersion();
       assert.ok(bufBinaryVersion);
       assert.strictEqual(bufBinaryVersion.compare(stdout), 0);
+    } else {
+      // We expect no buf CLI in the $PATH and the installation flow to trigger.
+      const bufBinaryPath = bufState.getBufBinaryPath();
+      assert.ok(bufBinaryPath);
+      assert.ok(
+        path.matchesGlob(
+          bufBinaryPath,
+          `**/.vscode-test/user-data/User/globalStorage/bufbuild.vscode-buf/v1.54.0/buf*`
+        )
+      );
     }
   });
 });
