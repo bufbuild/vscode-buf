@@ -497,6 +497,10 @@ extensionTest.describe("status bar", async () => {
 });
 
 extensionTest.describe("command palette", async () => {
+  server.listen();
+  extensionTest.afterEach(async () => {
+    server.resetHandlers();
+  });
   extensionTest.use({ activateFileName: "example.proto" });
   extensionTest("command palette contents", async ({ page }) => {
     const expectations = [
@@ -605,9 +609,14 @@ extensionTest.describe("command palette", async () => {
     // on the buf.gen.yaml.
     await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
   });
+  server.close();
 });
 
 extensionTest.describe("lsp", async () => {
+  server.listen();
+  extensionTest.afterEach(async () => {
+    server.resetHandlers();
+  });
   extensionTest.use({ activateFileName: "example.proto" });
   extensionTest("stop and start lsp", async ({ page }) => {
     // Use the command palette to stop the LSP
@@ -701,6 +710,7 @@ extensionTest.describe("lsp", async () => {
 
     await expectHover(page, "UserEvent", "(RPC_REQUEST_RESPONSE_UNIQUE)");
   });
+  server.close();
 });
 
 /**
