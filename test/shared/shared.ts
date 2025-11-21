@@ -13,8 +13,7 @@ import { setupServer } from "msw/node";
 const assetDownloadURL =
   "https://api.github.com/repos/bufbuild/buf/releases/assets/";
 const downloadBinPath = "test/workspaces/empty-single/node_modules/@bufbuild/";
-const githubReleaseURL =
-  "https://api.github.com/repos/bufbuild/buf/releases/";
+const githubReleaseURL = "https://api.github.com/repos/bufbuild/buf/releases/";
 
 /**
  * msw stub handlers for GitHub releases API.

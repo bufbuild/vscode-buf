@@ -14,8 +14,7 @@ import { progress } from "./progress";
 /**
  * The GitHub release URL for the Buf CLI.
  */
-const githubReleaseURL =
-  "https://api.github.com/repos/bufbuild/buf/releases/";
+const githubReleaseURL = "https://api.github.com/repos/bufbuild/buf/releases/";
 
 /**
  * Release is a GitHub release for the Buf CLI.
