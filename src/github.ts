@@ -13,10 +13,8 @@ import { progress } from "./progress";
 
 /**
  * The GitHub release URL for the Buf CLI.
- *
- * Exported for tests.
  */
-export const githubReleaseURL =
+const githubReleaseURL =
   "https://api.github.com/repos/bufbuild/buf/releases/";
 
 /**
