@@ -20,10 +20,9 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 
 [Install the latest version via the VS Code marketplace][vs-code-marketplace].
 
-By default, the extension will use your locally-installed version of `buf` on your system
-`$PATH`. However, you don't have to install `buf` if you don't have it. If the extension does
-not find a locally-installed version on your system `$PATH`, it will install the latest version
-of `buf` to the extension storage and use that.
+You do not need to install the Buf CLI to use this extension. By default, the extension uses
+the buf CLI from your system `$PATH`. If `buf` isn't found on your `$PATH`, the extension
+automatically downloads and installs the latest version to its own storage directory.
 
 ## Extension Settings
 

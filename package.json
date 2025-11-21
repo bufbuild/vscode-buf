@@ -148,17 +148,17 @@
         "buf.commandLine.path": {
           "type": "string",
           "description": "The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root.",
-          "deprecationMessage": "Deprecated: buf CLI path is no longer configurable."
+          "deprecationMessage": "Deprecated: Buf path is no longer configurable."
         },
         "buf.commandLine.version": {
           "type": "string",
           "description": "Specific version (git tag e.g. 'v1.53.0') of Buf release to download and install.",
-          "deprecationMessage": "Deprecated: buf CLI version is no longer configurable."
+          "deprecationMessage": "Deprecated: Buf version is no longer configurable."
         },
         "buf.restartAfterCrash": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically restart Buf (up to 4 times) if it crashes.",
+          "description": "Automatically restart Buf language server (up to 4 times) if it crashes.",
           "deprecationMessage": "Deprecated: this is no longer configurable, the Buf language server will restart after crash, up to 4 times."
         },
         "buf.enableHover": {
@@ -176,7 +176,7 @@
         "buf.debugLogs": {
           "type": "boolean",
           "default": false,
-          "description": "Enable debug logs for Buf language server."
+          "description": "Enable debug logs for the Buf language server."
         },
         "buf.log-format": {
           "type": [
