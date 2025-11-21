@@ -145,68 +145,10 @@
     "configuration": {
       "title": "Buf",
       "properties": {
-        "buf.commandLine.path": {
-          "type": "string",
-          "description": "The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root.",
-          "deprecationMessage": "Deprecated: Buf path is no longer configurable."
-        },
-        "buf.commandLine.version": {
-          "type": "string",
-          "description": "Specific version (git tag e.g. 'v1.53.0') of Buf release to download and install.",
-          "deprecationMessage": "Deprecated: Buf version is no longer configurable."
-        },
-        "buf.restartAfterCrash": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically restart Buf language server (up to 4 times) if it crashes.",
-          "deprecationMessage": "Deprecated: this is no longer configurable, the Buf language server will restart after crash, up to 4 times."
-        },
-        "buf.enableHover": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable hover features provided by the language server.",
-          "deprecationMessage": "Deprecated: the hover is no longer configurable."
-        },
-        "buf.enable": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable Buf language server features.",
-          "deprecationMessage": "Deprecated: this is no longer configurable, language server features are always enabled."
-        },
         "buf.debugLogs": {
           "type": "boolean",
           "default": false,
           "description": "Enable debug logs for the Buf language server."
-        },
-        "buf.log-format": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "text",
-            "color",
-            "json"
-          ],
-          "default": "text",
-          "description": "Buf language server log format.",
-          "deprecationMessage": "Deprecated: the log format is no longer configurable."
-        },
-        "buf.checks.breaking.againstStrategy": {
-          "type": "string",
-          "enum": [
-            "disk",
-            "git"
-          ],
-          "default": "git",
-          "description": "The strategy to use when checking breaking changes against a specific reference.",
-          "deprecationMessage": "Deprecated: breaking change detection is no longer supported in the LSP."
-        },
-        "buf.checks.breaking.againstGitRef": {
-          "type": "string",
-          "default": "refs/remotes/origin/HEAD",
-          "description": "The Git reference to check breaking changes against.",
-          "deprecationMessage": "Deprecated: breaking change detection is no longer supported in the LSP."
         }
       }
     },
