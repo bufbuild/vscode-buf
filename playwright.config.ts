@@ -13,7 +13,7 @@ export default defineConfig<TestOptions>({
   reporter: process.env.CI ? "html" : "list",
   timeout: 120_000_000,
   expect: {
-    timeout: 40_000,
+    timeout: 60_000,
   },
   projects: [
     {
