@@ -330,7 +330,7 @@
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.7.1",
     "mocha": "^11.7.5",
-    "msw": "^2.12.2",
+    "msw": "^2.12.3",
     "typescript": "^5.9.3"
   },
   "dependencies": {
