@@ -253,10 +253,10 @@
     "format": "biome format --write ."
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.6",
+    "@biomejs/biome": "^2.3.7",
     "@playwright/test": "^1.56.1",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.1",
     "@types/semver": "^7.7.1",
     "@types/vscode": "^1.95.0",
     "@types/which": "^3.0.4",
@@ -264,7 +264,7 @@
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.7.1",
     "mocha": "^11.7.5",
-    "msw": "^2.12.2",
+    "msw": "^2.12.3",
     "typescript": "^5.9.3"
   },
   "dependencies": {
