@@ -21,7 +21,7 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 [Install the latest version via the VS Code marketplace][vs-code-marketplace].
 
 You do not need to install the Buf CLI to use this extension. By default, the extension uses
-the buf CLI from your system `$PATH`. If `buf` isn't found on your `$PATH`, the extension
+the Buf CLI from your system `$PATH`. If `buf` isn't found on your `$PATH`, the extension
 automatically downloads and installs the latest version to its own storage directory.
 
 ## Extension Settings
@@ -31,7 +31,7 @@ This extension contributes the following configuration setting.
 ### buf.debugLogs
 
 Default: `false`
-Enable debug logs in Buf language server output channels.
+Enable debug logs in the Buf language server output channels.
 
 ## Commands
 
