@@ -1,6 +1,5 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { server } from "../shared/shared";
 import { expect, type Page, test } from "./base-test";
 
 const baseBufYaml = `version: v2`;
@@ -407,23 +406,14 @@ export const extensionTest = test.extend<{
 });
 
 extensionTest.describe("status bar", async () => {
-  server.listen();
-  extensionTest.afterEach(async () => {
-    server.resetHandlers();
-  });
   extensionTest.use({ activateFileName: "example.proto" });
   extensionTest("toolbar displays successful running lsp", async ({ page }) => {
     // Validate that buf lsp is displaying success in the status bar
     await expect(page.getByRole("button", { name: "check Buf" })).toBeVisible();
   });
-  server.close();
 });
 
 extensionTest.describe("command palette", async () => {
-  server.listen();
-  extensionTest.afterEach(async () => {
-    server.resetHandlers();
-  });
   extensionTest.use({ activateFileName: "example.proto" });
   extensionTest("command palette contents", async ({ page }) => {
     const expectations = [
@@ -532,14 +522,9 @@ extensionTest.describe("command palette", async () => {
     // on the buf.gen.yaml.
     await expect(page.getByRole("treeitem", { name: "gen-es" })).toBeVisible();
   });
-  server.close();
 });
 
 extensionTest.describe("lsp", async () => {
-  server.listen();
-  extensionTest.beforeEach(async () => {
-    server.resetHandlers();
-  });
   extensionTest.use({ activateFileName: "example.proto" });
   extensionTest("stop and start lsp", async ({ page }) => {
     // Use the command palette to stop the LSP
@@ -633,7 +618,6 @@ extensionTest.describe("lsp", async () => {
 
     await expectHover(page, "UserEvent", "(RPC_REQUEST_RESPONSE_UNIQUE)");
   });
-  server.close();
 });
 
 /**

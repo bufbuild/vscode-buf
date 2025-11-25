@@ -15,6 +15,7 @@ export default defineConfig<TestOptions>({
   expect: {
     timeout: 60_000,
   },
+  globalSetup: "./test/playwright/global-setup",
   projects: [
     {
       name: "VS Code insiders",
