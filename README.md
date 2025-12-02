@@ -31,7 +31,7 @@ This extension contributes the following configuration setting.
 ### buf.debugLogs
 
 Default: `false`
-Enable debug logs in the Buf language server output channels.
+Enable debug logs in the Buf Language Server output channels.
 
 ## Commands
 
