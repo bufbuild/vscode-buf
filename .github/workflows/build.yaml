@@ -50,7 +50,11 @@ jobs:
         run: npm run test:playwright
         # Limiting playwright tests to macOS for now due to issues with xvfb on Linux and
         # timeouts on windows
-        if: runner.os == 'macOS'
+        #
+        # NOTE: We disable playwright tests when buf is not installed on the system $PATH
+        # for now so we don't have the extension attempting to resolve the installation.
+        # We'll need to find a way to intercept the call from playwright's VS Code extension.
+        if: runner.os == 'macOS' && matrix.buf-bin=setup == 'buf-on-path'
       - name: check diff
         run: node scripts/gh-diffcheck.mjs
       - name: upload-playwright-test-results
