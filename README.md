@@ -6,15 +6,22 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 
 ## Features
 
-- Go to definition
-- Go to references
-- Auto-complete
-- Contextual information on mouse hover
-- Protobuf file formatting
-- Syntax highlighting
-- Workspace / Document symbols
+- Code navigation: Go-to definition and go-to references for `.proto` symbols.
+- Autocompletion: Completion results for `.proto` symbols using [IntelliSense][intellisense].
+- Syntax highlighting: Protobuf specific color and styling for code.
+- Documentation hovers: Documentation for definitions when hovering a reference.
+- Formatting: Formats `.proto` files on-save.
+- Diagnostics: Annotations and highlights for build and lint errors.
 
 ![Preview features](./preview.gif)
+
+In addition to integrated editing features, the extension provides commands through the
+`buf` CLI. These commands are accessible by opening the [Command Palette][command-palette],
+`Ctrl/Cmd+Shift+P`. See the [full list of commands](#commands) provided by this extension.
+
+## Requirements
+
+- Visual Studio Code 1.95 or newer (or editors compatible with VS Code 1.90+ APIs)
 
 ## Getting Started
 
@@ -24,55 +31,59 @@ You do not need to install the Buf CLI to use this extension. By default, the ex
 the Buf CLI from your system `$PATH`. If `buf` isn't found on your `$PATH`, the extension
 automatically downloads and installs the latest version to its own storage directory.
 
-## Extension Settings
+## Community and Support
 
-This extension contributes the following configuration setting.
+Feedback is welcome and appreciated! For feature requests, bugs, or questions, please
+[file an issue][issue].
 
-### buf.debugLogs
-
-Default: `false`
-Enable debug logs in the Buf Language Server output channels.
+If you're looking for help and/or discussion around Protobuf, best practices, etc., join us
+on [Slack][slack].
 
 ## Commands
 
-This extension contributes the following commands to the [Command Palette][command-palette].
-
-### Language Server
+A full list of [Command Palette][command-palette] commands provided by this extension:
 
 - Start Buf Language Server: starts the Buf Language Server. If the Buf Language Server is
   already running, it will stop and then start it.
+
 - Stop Buf Language Server: stops the Buf Language Server. If the Buf Language Server is not
   currently running, then it is a no-op.
 
-### Buf
+- Build: runs `buf build` with optional user input for the build output file. If the build
+  output is specified by the user, it will be created at the root of each VS Code workspace.
 
-- Build: runs `buf build` with an optional user input for the build output.
 - Init: runs `buf config init` at the root of each VS Code workspace. This creates a `buf.yaml` file
   to help users get started with Buf modules and workspaces.
-- List available breaking change detection rules: lists the breaking change detection rules
-  that are available.
-- List available lint rules: lists the lint rules that are available.
-- Prune module dependencies: prunes unused dependencies from the `buf.lock` at the root of
-  each VS Code workspace.
-- Update module dependencies: updates the dependencies in `buf.lock` at the root of each
-  VS Code workspace.
-- Generate: runs `buf generate` at the root of each VS Code workspace.
-- List module files: lists the Protobuf definition files for the Buf module/workspace at the
-  root of each VS Code workspace.
-- Price of BSR paid plans: provides the pricing information for Buf Schema Registry (BSR)
-  for each VS Code workspace.
-- Module stats: provides Buf module/workspace stats at the root of each VS Code workspace.
 
-### Extension
+- List available breaking change detection rules: runs `buf config ls-breaking-rules` at the
+  root of each VS Code workspace and provides a list of available [breaking change detection rules][breaking-rules]
+  in a VS Code editor window.
 
-- Show Buf Output: shows the extension output channel
+- List available lint rules: runs `buf config ls-lint-rules` at the root of each VS Code workspace
+  and provides a list of available [lint rules][lint-rules] in a VS Code editor window.
+
+- Prune module dependencies: runs `buf dep prune` at the root of each VS Code workspace and
+  prunes unused dependencies from the `buf.lock` file(s).
+
+- Update module dependencies: runs `buf dep update` at the root of each VS Code workspace and
+  updates the dependencies in the `buf.lock` file(s).
+
+- Generate: runs `buf generate` at the root of each VS Code workspace and generates code based
+  on the `buf.gen.yaml` file(s).
+
+- Show Buf Output: shows the extension output channel.
 
 ## Legal
 
 Offered under the [Apache 2 license][license].
 
-[command-palette]: https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette
-[vs-code-marketplace]: https://marketplace.visualstudio.com/items?itemName=bufbuild.vscode-buf
-[protobuf]: https://protobuf.dev/
 [buf]: https://buf.build/
+[breaking-rules]: https://buf.build/docs/breaking/rules
+[command-palette]: https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette
+[issue]: https://github.com/bufbuild/vscode-buf/issues/new/choose
+[intellisense]: https://code.visualstudio.com/docs/editing/intellisense
 [license]: https://github.com/bufbuild/vscode-buf/blob/main/LICENSE
+[lint-rules]: https://buf.build/docs/lint/rules
+[protobuf]: https://protobuf.dev/
+[slack]: https://buf.build/links/slack
+[vs-code-marketplace]: https://marketplace.visualstudio.com/items?itemName=bufbuild.vscode-buf

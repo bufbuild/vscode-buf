@@ -76,12 +76,6 @@
         "title": "List available lint rules."
       },
       {
-        "command": "buf.configlsmodules",
-        "category": "Buf",
-        "icon": "$(folder-library)",
-        "title": "List modules in workspace."
-      },
-      {
         "command": "buf.depprune",
         "category": "Buf",
         "icon": "$(gather)",
@@ -101,27 +95,6 @@
         "icon": "$(file-submodule)",
         "title": "Generate",
         "description": "Run `buf generate` across VS Code workspace(s)."
-      },
-      {
-        "command": "buf.lsfiles",
-        "category": "Buf",
-        "icon": "$(files)",
-        "title": "List module files.",
-        "description": "List module files across VS Code workspace(s)."
-      },
-      {
-        "command": "buf.price",
-        "category": "Buf",
-        "icon": "$(briefcase)",
-        "title": "Price for BSR paid plans.",
-        "description": "Check the price of BSR paid plans across VS Code workspace(s)."
-      },
-      {
-        "command": "buf.stats",
-        "category": "Buf",
-        "icon": "$(graph-line)",
-        "title": "Module stats",
-        "description": "Get stats for Buf modules across VS Code workspace(s)."
       },
       {
         "command": "buf.showOutput",

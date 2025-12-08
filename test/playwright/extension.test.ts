@@ -426,9 +426,6 @@ extensionTest.describe("command palette", async () => {
       "Prune module dependencies.",
       "Update module dependencies.",
       "Generate",
-      "List module files.",
-      "Price for BSR paid plans.",
-      "Module stats",
       "Show Buf Output",
     ];
     for (const expectation of expectations) {
