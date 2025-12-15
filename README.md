@@ -6,38 +6,28 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 
 ## Features
 
-- Code navigation: Jump to a symbol's declaration and check references to a symbol.
-- Autocompletion: Get code completion for symbols as you code through [IntelliSense][intellisense].
-- Syntax highlighting: 
-- Documentation hovers: Peek at a symbol's documentation
-
-
-
-
-Go-to definition and go-to references for `.proto` symbols.
-- Autocompletion: Completion results for `.proto` symbols using [IntelliSense][intellisense].
-- Syntax highlighting: Protobuf specific color and styling for code.
-- Documentation hovers: Documentation for definitions when hovering a reference.
-- Formatting: Formats `.proto` files on-save.
-- Diagnostics: Annotations and highlights for build and lint errors.
+- **Code navigation and documentation hovers**: Jump to or quickly glance a message or
+  service's definition.
+- **Autocompletion**: Get code completion as you type through [IntelliSense][intellisense].
+- **Formatting**: Formats `.proto` files on-save.
+- **Syntax highlighting**: Code styling that provides clarity on Protobuf keywords and identifiers.
+- **Diagnostics**: Get highlights and feedback on build and lint errors as you code.
 
 ![Preview features](./preview.gif)
 
-In addition to integrated editing features, the extension provides commands through the
-`buf` CLI. These commands are accessible by opening the [Command Palette][command-palette],
-`Ctrl/Cmd+Shift+P`. See the [full list of commands](#commands) provided by this extension.
-
-## Requirements
-
-- Visual Studio Code 1.95 or newer (or editors compatible with VS Code 1.90+ APIs)
+This extension doesn't stop at editing: open the [Command Palette][command-palette] (`Ctrl/Cmd+Shift+P`)
+to quickly run common tasks through `buf` like `buf generate`. See the [full list of commands](#commands)
+provided by this extension.
 
 ## Getting Started
 
-[Install the latest version via the VS Code marketplace][vs-code-marketplace].
+This extension is requires Visual Studio Code 1.95 or newer (or editors compatible with VS Code 1.95+ APIs).
 
-You do not need to install the Buf CLI to use this extension. By default, the extension uses
-the Buf CLI from your system `$PATH`. If `buf` isn't found on your `$PATH`, the extension
-automatically downloads and installs the latest version to its own storage directory.
+[Install the latest version via the VS Code marketplace][vs-code-marketplace]. And that's all you need to get started!
+
+This extension does not require you to have the Buf CLI already installed. By default, the extension uses
+the Buf CLI from your system `$PATH`. If `buf` isn't found on your `$PATH`, the extension automatically
+downloads and installs the latest version to its own storage directory.
 
 ## Community and Support
 
