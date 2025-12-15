@@ -6,7 +6,15 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 
 ## Features
 
-- Code navigation: Go-to definition and go-to references for `.proto` symbols.
+- Code navigation: Jump to a symbol's declaration and check references to a symbol.
+- Autocompletion: Get code completion for symbols as you code through [IntelliSense][intellisense].
+- Syntax highlighting: 
+- Documentation hovers: Peek at a symbol's documentation
+
+
+
+
+Go-to definition and go-to references for `.proto` symbols.
 - Autocompletion: Completion results for `.proto` symbols using [IntelliSense][intellisense].
 - Syntax highlighting: Protobuf specific color and styling for code.
 - Documentation hovers: Documentation for definitions when hovering a reference.
