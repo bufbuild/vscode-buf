@@ -16,14 +16,14 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 ![Preview features](./preview.gif)
 
 This extension doesn't stop at editing: open the [Command Palette][command-palette] (`Ctrl/Cmd+Shift+P`)
-to quickly run common tasks through `buf` like `buf generate`. See the [full list of commands](#commands)
-provided by this extension.
+to quickly run common tasks `buf` tasks such as `buf generate`. See the [full list of commands](#commands) for more.
 
 ## Getting Started
 
-This extension is requires Visual Studio Code 1.95 or newer (or editors compatible with VS Code 1.95+ APIs).
+This extension requires Visual Studio Code 1.95 or newer (or editors compatible with VS Code 1.95+ APIs).
 
-[Install the latest version via the VS Code marketplace][vs-code-marketplace]. And that's all you need to get started!
+1. [Install the latest version via the VS Code marketplace][vs-code-marketplace].
+2. Start editing `.proto` files!
 
 This extension does not require you to have the Buf CLI already installed. By default, the extension uses
 the Buf CLI from your system `$PATH`. If `buf` isn't found on your `$PATH`, the extension automatically
