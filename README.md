@@ -29,14 +29,6 @@ This extension does not require you to have the Buf CLI already installed. By de
 the Buf CLI from your system `$PATH`. If `buf` isn't found on your `$PATH`, the extension automatically
 downloads and installs the latest version to its own storage directory.
 
-## Community and Support
-
-Feedback is welcome and appreciated! For feature requests, bugs, or questions, please
-[file an issue][issue].
-
-If you're looking for help and/or discussion around Protobuf, best practices, etc., join us
-on [Slack][slack].
-
 ## Commands
 
 A full list of [Command Palette][command-palette] commands provided by this extension:
@@ -70,6 +62,14 @@ A full list of [Command Palette][command-palette] commands provided by this exte
   on the `buf.gen.yaml` file(s).
 
 - Show Buf Output: shows the extension output channel.
+
+## Community and Support
+
+Feedback is welcome and appreciated! For feature requests, bugs, or questions, please
+[file an issue][issue].
+
+If you're looking for help and/or discussion around Protobuf, best practices, etc., join us
+on [Slack][slack].
 
 ## Legal
 
