@@ -12,7 +12,6 @@ const _languageServerStatus = [
   "LANGUAGE_SERVER_RUNNING",
   "LANGUAGE_SERVER_STOPPED",
   "LANGUAGE_SERVER_ERRORED",
-  "LANGUAGE_SERVER_NOT_INSTALLED",
 ] as const;
 
 /**
