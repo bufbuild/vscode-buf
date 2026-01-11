@@ -76,12 +76,6 @@
         "title": "List available lint rules."
       },
       {
-        "command": "buf.configlsmodules",
-        "category": "Buf",
-        "icon": "$(folder-library)",
-        "title": "List modules in workspace."
-      },
-      {
         "command": "buf.depprune",
         "category": "Buf",
         "icon": "$(gather)",
@@ -103,34 +97,6 @@
         "description": "Run `buf generate` across VS Code workspace(s)."
       },
       {
-        "command": "buf.lsfiles",
-        "category": "Buf",
-        "icon": "$(files)",
-        "title": "List module files.",
-        "description": "List module files across VS Code workspace(s)."
-      },
-      {
-        "command": "buf.price",
-        "category": "Buf",
-        "icon": "$(briefcase)",
-        "title": "Price for BSR paid plans.",
-        "description": "Check the price of BSR paid plans across VS Code workspace(s)."
-      },
-      {
-        "command": "buf.stats",
-        "category": "Buf",
-        "icon": "$(graph-line)",
-        "title": "Module stats",
-        "description": "Get stats for Buf modules across VS Code workspace(s)."
-      },
-      {
-        "command": "buf.install",
-        "category": "Buf",
-        "icon": "$(cloud-download)",
-        "title": "Install CLI",
-        "description": "Install the Buf CLI from GitHub releases."
-      },
-      {
         "command": "buf.showOutput",
         "category": "Buf",
         "icon": "$(output)",
@@ -147,74 +113,15 @@
         "category": "Buf",
         "icon": "$(debug-stop)",
         "title": "Stop Buf Language Server"
-      },
-      {
-        "command": "buf.update",
-        "category": "Buf",
-        "icon": "$(sync)",
-        "title": "Update CLI",
-        "description": "Check for updates and install the latest version of the Buf CLI."
       }
     ],
     "configuration": {
       "title": "Buf",
       "properties": {
-        "buf.commandLine.path": {
-          "type": "string",
-          "description": "The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root."
-        },
-        "buf.commandLine.version": {
-          "type": "string",
-          "description": "Specific version (git tag e.g. 'v1.53.0') of Buf release to download and install."
-        },
-        "buf.restartAfterCrash": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically restart Buf (up to 4 times) if it crashes."
-        },
-        "buf.enableHover": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable hover features provided by the language server."
-        },
-        "buf.enable": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable Buf language server features."
-        },
-        "buf.debug": {
+        "buf.debugLogs": {
           "type": "boolean",
           "default": false,
-          "description": "Enable debug mode."
-        },
-        "buf.log-format": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "text",
-            "color",
-            "json"
-          ],
-          "default": "text",
-          "description": "Buf language server log format."
-        },
-        "buf.checks.breaking.againstStrategy": {
-          "type": "string",
-          "enum": [
-            "disk",
-            "git"
-          ],
-          "default": "git",
-          "description": "The strategy to use when checking breaking changes against a specific reference.",
-          "deprecationMessage": "Deprecated: breaking change detection is no longer supported in the LSP."
-        },
-        "buf.checks.breaking.againstGitRef": {
-          "type": "string",
-          "default": "refs/remotes/origin/HEAD",
-          "description": "The Git reference to check breaking changes against.",
-          "deprecationMessage": "Deprecated: breaking change detection is no longer supported in the LSP."
+          "description": "Enable debug logs for the Buf language server."
         }
       }
     },
