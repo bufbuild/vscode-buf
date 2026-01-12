@@ -1,3 +1,19 @@
 {
-  "top.foo": "top_bar"
+  "top.foo": "top_bar",
+
+  "buf.foo": "bar",
+  "buf.home": "${userHome}",
+  "buf.cwd": "${cwd}",
+  "buf.env": "${env:TEST_ENV}",
+  "buf.config": "${config:top.foo}",
+  "buf.nested_config": "${config:buf.foo}",
+  "buf.fake_substitution": "${fake}",
+  "buf.array": ["foo", "bar", "baz"],
+  "buf.array_substitution": ["${env:TEST_ENV}", "${config:top.foo}", "foo"],
+  "buf.object": { "foo": "bar" },
+  "buf.object_substitution": {
+    "${env:TEST_ENV}": "${config:buf.foo}",
+    "foo": "bar",
+    "baz": "${env:TEST_ENV}"
+  }
 }
