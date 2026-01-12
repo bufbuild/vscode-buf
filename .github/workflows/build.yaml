@@ -9,6 +9,9 @@ jobs:
           - macos-latest
           - ubuntu-latest
           - windows-latest
+        buf-bin-setup:
+          - buf-on-path
+          - buf-not-on-path
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout
@@ -19,6 +22,7 @@ jobs:
           node-version-file: ".nvmrc"
           cache: npm
       - uses: bufbuild/buf-action@v1
+        if: matrix.buf-bin-setup == 'buf-on-path'
         with:
           setup_only: true
       - name: install-deps
@@ -32,24 +36,32 @@ jobs:
       - name: format
         run: npm run format
       - name: integration-tests-with-xvfb
+        env:
+          BUF_INSTALLED: ${{ matrix.buf-bin-setup }}
         run: xvfb-run -a npm run test:integration
         if: runner.os == 'Linux'
       - name: integration-tests
         shell: bash
+        env:
+          BUF_INSTALLED: ${{ matrix.buf-bin-setup }}
         run: npm run test:integration
         if: runner.os != 'Linux'
       - name: playwright-tests
         run: npm run test:playwright
         # Limiting playwright tests to macOS for now due to issues with xvfb on Linux and
         # timeouts on windows
-        if: runner.os == 'macOS'
+        #
+        # NOTE: We disable playwright tests when buf is not installed on the system $PATH
+        # for now so we don't have the extension attempting to resolve the installation.
+        # We'll need to find a way to intercept the call from playwright's VS Code extension.
+        if: runner.os == 'macOS' && matrix.buf-bin-setup == 'buf-on-path'
       - name: check diff
         run: node scripts/gh-diffcheck.mjs
       - name: upload-playwright-test-results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results
+          name: test-results-${{ matrix.buf-bin-setup }}
           path: test-results/
           retention-days: 5
           if-no-files-found: ignore

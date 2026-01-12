@@ -4,19 +4,13 @@ import { bufBuild } from "./buf-build";
 import { bufConfigInit } from "./buf-config-init";
 import { bufConfigLsBreakingRules } from "./buf-config-ls-breaking-rules";
 import { bufConfigLsLintRules } from "./buf-config-ls-lint-rules";
-import { bufConfigLsModules } from "./buf-config-ls-modules";
 import { bufDepPrune } from "./buf-dep-prune";
 import { bufDepUpdate } from "./buf-dep-update";
 import { bufGenerate } from "./buf-generate";
-import { bufLsFiles } from "./buf-ls-files";
-import { bufPrice } from "./buf-price";
-import { bufStats } from "./buf-stats";
-import { installBuf } from "./install-buf";
 import { showCommands } from "./show-commands";
 import { showOutput } from "./show-output";
 import { startLanguageServer } from "./start-lsp";
 import { stopLanguageServer } from "./stop-lsp";
-import { updateBuf } from "./update-buf";
 
 /**
  * @file Provides a convenience function for registering all commands in the extension.
@@ -28,19 +22,13 @@ const commands = [
   bufConfigInit,
   bufConfigLsBreakingRules,
   bufConfigLsLintRules,
-  bufConfigLsModules,
   bufDepPrune,
   bufDepUpdate,
   bufGenerate,
-  bufLsFiles,
-  bufPrice,
-  bufStats,
-  installBuf,
   showCommands,
   showOutput,
   startLanguageServer,
   stopLanguageServer,
-  updateBuf,
 ];
 
 /**
