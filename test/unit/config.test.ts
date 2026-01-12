@@ -29,23 +29,6 @@ suite("config", () => {
       baz: "${env:TEST_ENV}",
     },
   };
-  // suiteSetup(async () => {
-  //   for (const [key, expected] of Object.entries(settings)) {
-  //     if (!key.startsWith("buf.")) {
-  //       // No need to add these keys.
-  //       continue;
-  //     }
-  //     await vscode.workspace.getConfiguration().update(key, expected);
-  //   }
-  // });
-  // suiteTeardown(async () => {
-  //   for (const key of Object.keys(settings)) {
-  //     if (!key.startsWith("buf.")) {
-  //       continue;
-  //     }
-  //     await vscode.workspace.getConfiguration().update(key, undefined);
-  //   }
-  // });
   test("get keys", () => {
     for (const [key, expected] of Object.entries(settings)) {
       if (!key.startsWith("buf.")) {
