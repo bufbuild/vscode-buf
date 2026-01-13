@@ -118,6 +118,10 @@
     "configuration": {
       "title": "Buf",
       "properties": {
+        "buf.commandLine.path": {
+          "type": "string",
+          "description": "The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root."
+        },
         "buf.debugLogs": {
           "type": "boolean",
           "default": false,

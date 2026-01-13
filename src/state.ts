@@ -185,8 +185,33 @@ class BufState {
    *
    * If the user does not have the buf binary installed locally, then the extension will
    * attempt to install the latest version of buf to the VS Code global storage and use that.
+   *
+   * If the user has a path set for buf using buf.commandLine.path, then we check for the
+   * binary set at this path first. If this is not set or does not exist, then we fallback
+   * to the default behavior above.
+   *
    */
   public async init(ctx: vscode.ExtensionContext) {
+    let configPath = config.get<string>("commandLine.path");
+    if (configPath) {
+      try {
+        if (!path.isAbsolute(configPath)) {
+          configPath = getBinaryPathForRelConfigPath(configPath);
+        }
+        log.info(`Attempting to use configured Buf CLI path '${configPath}...`);
+        this.bufBinary = await getBufBinaryFromPath(configPath);
+        log.info(
+          `Using '${this.bufBinary.path}', version: ${this.bufBinary.version}.`
+        );
+        this.startLanguageServer(ctx);
+        return;
+      } catch (e) {
+        log.error(
+          `Error loading Buf from configured path '${configPath}': ${e}`
+        );
+      }
+    }
+
     log.info("Looking for Buf on the system $PATH...");
     try {
       this.bufBinary = await findBufInSystemPath();
@@ -330,6 +355,23 @@ class BufState {
  * The global state as defined by {@link BufState}.
  */
 export const bufState = new BufState();
+
+/**
+ * A helper function for getting the binary path based on a relative path config. We check
+ * each workspace folder and return the first relative binary path that exists, otherwise
+ * return undefined.
+ */
+function getBinaryPathForRelConfigPath(configPath: string): string {
+  if (vscode.workspace.workspaceFolders) {
+    for (const workspaceFolder of vscode.workspace.workspaceFolders) {
+      const joinedPath = path.join(workspaceFolder.uri.path, configPath);
+      if (fs.existsSync(joinedPath)) {
+        return joinedPath;
+      }
+    }
+  }
+  throw new Error(`Unable to use relative Buf binary path ${configPath}`);
+}
 
 /**
  * BufBinary contains the Buf CLI binary information used by the extension.
