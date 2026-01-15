@@ -1,7 +1,8 @@
 name: Publish Extension
 
 on:
-  workflow_dispatch:
+  release:
+    types: [published]
 
 jobs:
   publish:
@@ -13,8 +14,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -26,7 +27,11 @@ jobs:
         run: npm run package
 
       - name: Publish to VS Code Marketplace
-        run: npm exec @vscode/vsce publish --packagePath *.vsix
+        # NOTE: ${{github.head_ref}} is the tag name from the release.
+        # Ref: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#release
+        # Using `@vscode/vsce publish <version>` will tag a new commit with the version in package.json.
+        # Ref: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#autoincrement-the-extension-version
+        run: npm exec @vscode/vsce publish ${{github.head_ref}} --packagePath *.vsix
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
