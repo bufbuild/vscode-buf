@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
-import { installBuf } from "./commands/install-buf";
 import { registerAllCommands } from "./commands/register-all-commands";
 import { startLanguageServer } from "./commands/start-lsp";
 import { stopLanguageServer } from "./commands/stop-lsp";
 import { log } from "./log";
+import { bufState } from "./state";
 import { activateStatusBar, deactivateStatusBar } from "./status-bar";
 
 /**
@@ -15,7 +15,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   ctx.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(handleOnDidConfigChange)
   );
-  await installBuf.execute();
+  await bufState.init(ctx);
 }
 
 /**
@@ -35,13 +35,9 @@ const handleOnDidConfigChange = async (e: vscode.ConfigurationChangeEvent) => {
   if (!e.affectsConfiguration("buf")) {
     return;
   }
-  if (
-    e.affectsConfiguration("buf.commandLine.path") ||
-    e.affectsConfiguration("buf.commandLine.version")
-  ) {
-    await installBuf.execute();
-  }
-  if (e.affectsConfiguration("buf.enable")) {
+  if (e.affectsConfiguration("buf.debugLogs")) {
+    // When debug logs configuration changes, restart the language server.
+    await stopLanguageServer.execute();
     await startLanguageServer.execute();
   }
 };

@@ -1,6 +1,5 @@
 import { effect } from "@preact/signals-core";
 import * as vscode from "vscode";
-import { installBuf } from "./commands/install-buf";
 import { showCommands } from "./commands/show-commands";
 import { showOutput } from "./commands/show-output";
 import { startLanguageServer } from "./commands/start-lsp";
@@ -54,12 +53,6 @@ const languageServerStatusConfig: Record<
     command: startLanguageServer.name,
     tooltip: "$(debug-restart) Restart language server",
   },
-  LANGUAGE_SERVER_NOT_INSTALLED: {
-    icon: "$(circle-slash)",
-    colour: new vscode.ThemeColor("statusBarItem.errorBackground"),
-    command: installBuf.name,
-    tooltip: "$(circle-slash) Buf not installed",
-  },
 };
 
 const busyStatusConfig: StatusBarConfig = {
@@ -84,7 +77,6 @@ function updateStatusBar() {
   statusBarItem.color = config.colour;
   statusBarItem.command = config.command;
   statusBarItem.tooltip = new vscode.MarkdownString("", true);
-  statusBarItem.tooltip.supportHtml = true;
   if (config.tooltip) {
     statusBarItem.tooltip.appendMarkdown(`${config.tooltip}\n\n`);
   }

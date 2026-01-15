@@ -43,7 +43,8 @@
     "workspaceContains:**/buf.mod",
     "workspaceContains:**/buf.work",
     "workspaceContains:**/buf.gen.yaml",
-    "workspaceContains:**/buf.work.yaml"
+    "workspaceContains:**/buf.work.yaml",
+    "workspaceContains:**/buf.plugin.yaml"
   ],
   "contributes": {
     "//": "This is kept in alphabetical order. https://code.visualstudio.com/api/references/contribution-points",
@@ -75,12 +76,6 @@
         "title": "List available lint rules."
       },
       {
-        "command": "buf.configlsmodules",
-        "category": "Buf",
-        "icon": "$(folder-library)",
-        "title": "List modules in workspace."
-      },
-      {
         "command": "buf.depprune",
         "category": "Buf",
         "icon": "$(gather)",
@@ -102,34 +97,6 @@
         "description": "Run `buf generate` across VS Code workspace(s)."
       },
       {
-        "command": "buf.lsfiles",
-        "category": "Buf",
-        "icon": "$(files)",
-        "title": "List module files.",
-        "description": "List module files across VS Code workspace(s)."
-      },
-      {
-        "command": "buf.price",
-        "category": "Buf",
-        "icon": "$(briefcase)",
-        "title": "Price for BSR paid plans.",
-        "description": "Check the price of BSR paid plans across VS Code workspace(s)."
-      },
-      {
-        "command": "buf.stats",
-        "category": "Buf",
-        "icon": "$(graph-line)",
-        "title": "Module stats",
-        "description": "Get stats for Buf modules across VS Code workspace(s)."
-      },
-      {
-        "command": "buf.install",
-        "category": "Buf",
-        "icon": "$(cloud-download)",
-        "title": "Install CLI",
-        "description": "Install the Buf CLI from GitHub releases."
-      },
-      {
         "command": "buf.showOutput",
         "category": "Buf",
         "icon": "$(output)",
@@ -146,13 +113,6 @@
         "category": "Buf",
         "icon": "$(debug-stop)",
         "title": "Stop Buf Language Server"
-      },
-      {
-        "command": "buf.update",
-        "category": "Buf",
-        "icon": "$(sync)",
-        "title": "Update CLI",
-        "description": "Check for updates and install the latest version of the Buf CLI."
       }
     ],
     "configuration": {
@@ -162,56 +122,10 @@
           "type": "string",
           "description": "The path to a specific install of Buf to use. Relative paths are supported and are relative to the workspace root."
         },
-        "buf.commandLine.version": {
-          "type": "string",
-          "description": "Specific version (git tag e.g. 'v1.53.0') of Buf release to download and install."
-        },
-        "buf.restartAfterCrash": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically restart Buf (up to 4 times) if it crashes."
-        },
-        "buf.enableHover": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable hover features provided by the language server."
-        },
-        "buf.enable": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable Buf language server features."
-        },
-        "buf.debug": {
+        "buf.debugLogs": {
           "type": "boolean",
           "default": false,
-          "description": "Enable debug mode."
-        },
-        "buf.log-format": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "text",
-            "color",
-            "json"
-          ],
-          "default": "text",
-          "description": "Buf language server log format."
-        },
-        "buf.checks.breaking.againstStrategy": {
-          "type": "string",
-          "enum": [
-            "disk",
-            "git"
-          ],
-          "default": "git",
-          "description": "The strategy to use when checking breaking changes against a specific reference."
-        },
-        "buf.checks.breaking.againstGitRef": {
-          "type": "string",
-          "default": "refs/remotes/origin/HEAD",
-          "description": "The Git reference to check breaking changes against."
+          "description": "Enable debug logs for the Buf language server."
         }
       }
     },
@@ -225,11 +139,6 @@
         "language": "proto",
         "scopeName": "source.proto",
         "path": "./syntaxes/proto.json"
-      },
-      {
-        "language": "proto-decl",
-        "scopeName": "source.proto-decl",
-        "path": "./syntaxes/proto-decl.json"
       }
     ],
     "jsonValidation": [
@@ -240,6 +149,14 @@
       {
         "fileMatch": "buf.gen.yaml",
         "url": "https://www.schemastore.org/buf.gen.json"
+      },
+      {
+        "fileMatch": "buf.work.yaml",
+        "url": "https://www.schemastore.org/buf.work.json"
+      },
+      {
+        "fileMatch": "buf.plugin.yaml",
+        "url": "https://www.schemastore.org/buf.plugin.json"
       }
     ],
     "languages": [
@@ -250,7 +167,9 @@
           "buf.gen.yaml",
           "buf.lock",
           "buf.mod",
-          "buf.work"
+          "buf.work",
+          "buf.work.yaml",
+          "buf.plugin.yaml"
         ],
         "icon": {
           "light": "./icons/_buf_file.svg",
@@ -271,10 +190,6 @@
           "light": "./icons/_proto_file_light_mode.svg",
           "dark": "./icons/_proto_file_dark_mode.svg"
         }
-      },
-      {
-        "//": "This is a special language used by the 'declaration' part of hover inlays in Markdown.",
-        "id": "proto-decl"
       }
     ],
     "yamlValidation": [
@@ -285,6 +200,14 @@
       {
         "fileMatch": "buf.gen.yaml",
         "url": "https://www.schemastore.org/buf.gen.json"
+      },
+      {
+        "fileMatch": "buf.work.yaml",
+        "url": "https://www.schemastore.org/buf.work.json"
+      },
+      {
+        "fileMatch": "buf.plugin.yaml",
+        "url": "https://www.schemastore.org/buf.plugin.json"
       }
     ]
   },
@@ -307,28 +230,25 @@
     "format": "biome format --write ."
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.2",
-    "@playwright/test": "^1.55.0",
+    "@biomejs/biome": "^2.3.11",
+    "@playwright/test": "^1.57.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.3.1",
+    "@types/node": "^25.0.6",
     "@types/semver": "^7.7.1",
     "@types/vscode": "^1.95.0",
     "@types/which": "^3.0.4",
-    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.6.2",
-    "cross-env": "^10.0.0",
-    "mocha": "^11.7.2",
-    "msw": "^2.11.1",
-    "ovsx": "^0.10.6",
-    "typescript": "^5.9.2"
+    "@vscode/vsce": "^3.7.1",
+    "mocha": "^11.7.5",
+    "msw": "^2.12.7",
+    "ovsx": "^0.10.8",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@preact/signals-core": "^1.12.1",
-    "rimraf": "^6.0.1",
-    "semver": "^7.7.2",
-    "tmp": "^0.2.5",
+    "semver": "^7.7.3",
     "vscode-languageclient": "^9.0.1",
-    "which": "^5.0.0"
+    "which": "^6.0.0"
   }
 }

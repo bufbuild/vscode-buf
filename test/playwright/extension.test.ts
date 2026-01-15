@@ -426,11 +426,6 @@ extensionTest.describe("command palette", async () => {
       "Prune module dependencies.",
       "Update module dependencies.",
       "Generate",
-      "List module files.",
-      "Price for BSR paid plans.",
-      "Module stats",
-      "Install CLI",
-      "Update CLI",
       "Show Buf Output",
     ];
     for (const expectation of expectations) {
@@ -459,7 +454,12 @@ extensionTest.describe("command palette", async () => {
     await expect(page.getByRole("combobox")).toHaveValue("Buf");
   });
   extensionTest.describe("init", async () => {
-    extensionTest.use({ fileContents: {}, activateFileName: "" });
+    extensionTest.use({
+      fileContents: {
+        "example.proto": exampleUserProto,
+      },
+      activateFileName: "example.proto",
+    });
     extensionTest("init empty", async ({ page }) => {
       await runExtensionCommand(page, "Init");
       await expect(
@@ -597,13 +597,8 @@ extensionTest.describe("lsp", async () => {
     await expect(page.getByRole("button", { name: "check Buf" })).toBeVisible();
     await expectHover(
       page,
-      "ListUsersRequest", // LSP handles missing documentation in hovers
-      "message example.v1.ListUsersRequest<missing docs>"
-    );
-    await expectHover(
-      page,
       "User", // LSP shows the documentation for types that have it
-      "message example.v1.User User represents a user in the system"
+      " User represents a user in the system"
     );
   });
   extensionTest.skip("lint checks", async ({ page }) => {

@@ -34,15 +34,22 @@ let serverOutputChannel: vscode.OutputChannel | undefined;
 const protoDocumentSelector = [{ scheme: "file", language: "proto" }];
 
 /**
- * Minimum Buf version required to use LSP.
+ * Minimum Buf version required to use LSP via `buf beta lsp`.
  */
-const minBufVersion = "v1.43.0";
+const minBufBetaVersion = "v1.43.0";
+
+/**
+ * Minimum Buf version required to use LSP via `buf lsp serve`.
+ */
+const minBufVersion = "v1.59.0";
 
 /**
  * BufState handles and tracks the state of the extension:
  *   - The `buf` CLI binary used by the extension
  *   - The LSP server (e.g. starting and stopping)
  *
+ * @method init initializes the state of the Buf extension by setting up the buf CLI binary.
+ * This is expected to be called when the extension is activated.
  * @method handleExtensionStatus sets the extension status on the state to the provided
  * status, and once the work is complete, sets the extension status back to idle.
  * @method getExtensionStatus gets the current extension status.
@@ -50,10 +57,6 @@ const minBufVersion = "v1.43.0";
  * @method getBufBinaryVersion gets the current Buf binary version.
  * @method getBufBinaryPath gets the current Buf binary path.
  * @method execBufCommand execs the Buf binary with the specified arguments and working directory.
- * @method installBufBinary installs the Buf CLI for the extension based on the extension
- * configuration.
- * @method updateBufBinary updates the Buf CLI for the extension based on the extension
- * configuration.
  * @method startLanguageServer starts the LSP server and client.
  * @method stopLanguageServer stops the language server and client.
  *
@@ -72,10 +75,6 @@ class BufState {
   public constructor() {
     effect(() => {
       switch (this._languageServerStatus.value) {
-        case "LANGUAGE_SERVER_NOT_INSTALLED":
-          this.bufBinary = undefined;
-          this.lspClient = undefined;
-          break;
         case "LANGUAGE_SERVER_DISABLED":
           this.lspClient = undefined;
           break;
@@ -178,156 +177,75 @@ class BufState {
   }
 
   /**
-   * installBufBinary installs the Buf CLI for the extension based on the extension configuration.
+   * init initializes the state of the Buf extension by setting up the buf CLI binary and
+   * starting up the LSP.
    *
-   * There are two configuration fields for managing the Buf CLI binary:
-   *  buf.commandLine.path: a path to a local binary, e.g. /usr/local/bin/buf
-   *  buf.commandLine.version: the expected version of the Buf binary, e.g. v1.53.0. This can
-   *  also be set to "latest", in which case, the extension will check for and expect the latest
-   *  released version of the Buf CLI.
+   * We check the user's system $PATH for buf. If the user has buf installed locally, then
+   * we use their locally installed version of buf.
    *
-   * When checking for the Buf CLI binary, the resolution logic uses the following order of
-   * precendence:
-   *  1. The path set on buf.commandLine.path.
-   *  2. The version set to buf.commandLine.version. If "latest" is set, check for and use the
-   *  latest released version of the Buf CLI.
-   *  3. If neither buf.commandLine.path or buf.commandLine.version is set, look for the Buf
-   *  CLI on the OS path.
+   * If the user does not have the buf binary installed locally, then the extension will
+   * attempt to install the latest version of buf to the VS Code global storage and use that.
    *
-   * If the Buf CLI for the configured path is already installed, then installBufBinary logs
-   * this and is a no-op.
+   * If the user has a path set for buf using buf.commandLine.path, then we check for the
+   * binary set at this path first. If this is not set or does not exist, then we fallback
+   * to the default behavior above.
+   *
    */
-  public async installBufBinary(storagePath: string) {
+  public async init(ctx: vscode.ExtensionContext) {
     let configPath = config.get<string>("commandLine.path");
-    const configVersion = config.get<string>("commandLine.version");
-
     if (configPath) {
-      if (!path.isAbsolute(configPath)) {
-        try {
-          configPath = getBinaryPathForRelConfigPath(configPath);
-        } catch (e) {
-          log.error(`Error loading buf from relative config path: ${e}`);
-          this._languageServerStatus.value = "LANGUAGE_SERVER_NOT_INSTALLED";
-          return;
-        }
-      }
-      if (configVersion) {
-        log.warn(
-          "Both 'buf.commandLine.path' and 'buf.commandLine.version' are set. Using 'buf.commandLine.path'."
-        );
-      }
-      if (this.bufBinary && this.bufBinary.path === configPath) {
-        log.info(
-          `Buf CLI for configured path '${configPath}' already installed`
-        );
-        return;
-      }
       try {
-        log.info(`Installing Buf CLI set to path '${configPath}...`);
+        if (!path.isAbsolute(configPath)) {
+          configPath = getBinaryPathForRelConfigPath(configPath);
+        }
+        log.info(`Attempting to use configured Buf CLI path '${configPath}...`);
         this.bufBinary = await getBufBinaryFromPath(configPath);
         log.info(
           `Using '${this.bufBinary.path}', version: ${this.bufBinary.version}.`
         );
+        this.startLanguageServer(ctx);
+        return;
       } catch (e) {
-        log.error(`Error loading buf from path '${configPath}': ${e}`);
-        this._languageServerStatus.value = "LANGUAGE_SERVER_NOT_INSTALLED";
+        log.error(
+          `Error loading Buf from configured path '${configPath}': ${e}`
+        );
       }
-      return;
     }
-    if (configVersion) {
-      await this.updateBufBinary(storagePath);
-      return;
-    }
+
     log.info("Looking for Buf on the system $PATH...");
     try {
       this.bufBinary = await findBufInSystemPath();
     } catch (e) {
-      log.error(`Buf is not installed on the OS path: ${e}`);
-      this._languageServerStatus.value = "LANGUAGE_SERVER_NOT_INSTALLED";
-    }
-  }
-
-  /**
-   * updateBufBinary updates the Buf CLI for the extension based on the extension configuration.
-   *
-   * The version is specified by the buf.commandLine.version configuration.
-   *
-   * updateBufBinary will download and install the configured version of the Buf CLI if there
-   * is currently no version of the Buf CLI used by the extension or if the current version
-   * used does not match the configured version.
-   *
-   * If an explicit path to the Buf CLI binary is specified via buf.commandLine.path, then
-   * updateBufBinary displays a warning and is a no-op.
-   *
-   * If no version is set, then updateBuf displays a warning and is a no-op.
-   *
-   * If the version set is not valid semver, then updateBufBinary displays a warning and is
-   * a no-op.
-   *
-   * If the version set cannot be resolved, then updateBufBinary will provide the user with
-   * a pop-up with the error message and a link to the installation docs.
-   */
-  public async updateBufBinary(storagePath: string) {
-    if (config.get<string>("commandLine.path")) {
-      vscode.window.showErrorMessage(
-        "'buf.commandLine.path' is explicitly set, no updates will be made."
+      log.info(
+        `Buf not found on the OS path: ${e}, installing from releases...`
       );
-      return;
-    }
-    const configVersion = config.get<string>("commandLine.version");
-    if (!configVersion) {
-      vscode.window.showErrorMessage(
-        "'buf.commandLine.version' is not set, no updates will be made."
-      );
-      return;
-    }
-    if (configVersion !== "latest") {
-      if (!semver.valid(configVersion)) {
-        log.error(
-          `buf.commandLine.version '${configVersion}' is not a valid semver version, no updates installed for Buf CLI...`
+      const abort = new AbortController();
+      try {
+        const release = await github.getRelease("latest");
+        const asset = await github.findAsset(release);
+        this.bufBinary = await installReleaseAsset(
+          ctx.globalStorageUri.fsPath,
+          release,
+          asset,
+          abort
         );
-        return;
+      } catch (e) {
+        if (!abort.signal.aborted) {
+          log.info(`Failed to install buf: ${e}`);
+          this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
+          showPopup(
+            `Failed to install Buf CLI. You may want to install it manually.`,
+            "https://buf.build/docs/cli/installation/"
+          );
+        }
       }
     }
-    if (
-      this.bufBinary &&
-      configVersion !== "latest" &&
-      this.bufBinary.version.compare(configVersion) === 0
-    ) {
-      log.info(`Already installed Buf CLI version '${configVersion}',`);
-      return;
-    }
-    const abort = new AbortController();
-    try {
-      log.info(`Checking github releases for '${configVersion}' release...`);
-      const release = await github.getRelease(configVersion);
-      const asset = await github.findAsset(release);
-      this.bufBinary = await installReleaseAsset(
-        storagePath,
-        release,
-        asset,
-        abort
-      );
-      vscode.window.showInformationMessage(
-        `Buf ${release.name} is now installed.`
-      );
-    } catch (e) {
-      if (!abort.signal.aborted) {
-        log.info(`Failed to install buf: ${e}`);
-        this._languageServerStatus.value = "LANGUAGE_SERVER_NOT_INSTALLED";
-        showPopup(
-          `Failed to install Buf CLI. You may want to install it manually.`,
-          "https://buf.build/docs/cli/installation/"
-        );
-      }
-    }
+    this.startLanguageServer(ctx);
   }
 
   /**
    * startLanguageServer starts the LSP server and client.
    *
-   * If the LSP is disabled through configuration, then startLanguageServer will display
-   * a warning, set the appropriate status, and be a no-op.
    * If the LSP server is already running (or already starting), then startLanguageServer
    * will log a warning and be a no-op.
    * If the LSP server is stopped or in an errored state, startLanguageServer will attempt
@@ -344,21 +262,11 @@ class BufState {
       serverOutputChannel = createConsoleOutputChannel("Buf (server)");
       ctx.subscriptions.push(serverOutputChannel);
     }
-    if (!config.get("enable")) {
-      await this.stopLanguageServer();
-      this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
-      log.warn("Buf is disabled. Enable it by setting 'buf.enable' to true.");
-      return;
-    }
-    if (this.bufBinary?.version.compare(minBufVersion) === -1) {
-      this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
-      log.warn(
-        `Buf version ${this.bufBinary?.version} does not meet minimum required version ${minBufVersion} for Language Server features, disabling.`
-      );
-      return;
-    }
     if (this.lspClient) {
-      if (this._languageServerStatus.value === "LANGUAGE_SERVER_STARTING") {
+      if (
+        this._languageServerStatus.value === "LANGUAGE_SERVER_STARTING" ||
+        this._languageServerStatus.value === "LANGUAGE_SERVER_RUNNING"
+      ) {
         log.warn("Buf Language Server already starting, no new actions taken.");
         return;
       }
@@ -370,40 +278,36 @@ class BufState {
         this._languageServerStatus.value = "LANGUAGE_SERVER_STARTING";
         return;
       }
-      if (this._languageServerStatus.value === "LANGUAGE_SERVER_RUNNING") {
-        log.warn("Buf Language Server already running, restarting.");
-        await this.stopLanguageServer();
-        this._languageServerStatus.value = "LANGUAGE_SERVER_STARTING";
-        return;
-      }
     }
     if (!this.bufBinary) {
       log.error(
         "No installed version of Buf found, cannot start Buf Language Server."
       );
-      this._languageServerStatus.value = "LANGUAGE_SERVER_NOT_INSTALLED";
+      this._languageServerStatus.value = "LANGUAGE_SERVER_STOPPED";
+      return;
+    }
+    const args = getBufArgs();
+    if (args instanceof Error) {
+      this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
+      log.warn(
+        `Buf version ${this.bufBinary?.version} does not meet minimum required version ${minBufBetaVersion} for Language Server features, disabling.`
+      );
       return;
     }
     const serverOptions: lsp.Executable = {
       command: this.bufBinary.path,
-      args: getBufArgs(),
+      args: args,
     };
     const clientOptions: lsp.LanguageClientOptions = {
       documentSelector: protoDocumentSelector,
       diagnosticCollectionName: "bufc",
       outputChannel: serverOutputChannel,
-      // TODO: we can consider making this configurable through our settings.
       revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
       middleware: {
+        // Always configure a hover provider on the client.
         provideHover: async (document, position, token, next) => {
-          if (!config.get<boolean>("enableHover")) {
-            return null;
-          }
           return next(document, position, token);
         },
-      },
-      markdown: {
-        supportHtml: true,
       },
     };
     this.lspClient = new lsp.LanguageClient(
@@ -411,9 +315,8 @@ class BufState {
       serverOptions,
       clientOptions
     );
-    const errorHandler = this.lspClient.createDefaultErrorHandler(
-      config.get<boolean>("restartAfterCrash") ? 4 : 0
-    );
+    // Always restart buf LSP if it crashes, up to 4 times.
+    const errorHandler = this.lspClient.createDefaultErrorHandler(4);
     this.lspClient.clientOptions.errorHandler = {
       error: (error, message, count) => {
         return errorHandler.error(error, message, count);
@@ -529,16 +432,18 @@ async function installReleaseAsset(
     await fs.promises.access(downloadBin);
     // We await for the bufBinary to be set before returning so we can catch any errors.
     const bufBinary = await getBufBinaryFromPath(downloadBin);
+    log.info(`Using buf version v${bufBinary.version} from extension cache.`);
     return bufBinary;
   } catch (e) {
     // In the case of an error, we log, and then move on to attempt a download.
-    log.error(`Error accessing buf binary, downloading... ${e}`);
+    log.info(`No buf binary available locally, downloading... ${e}`);
   }
   log.info(`Downloading ${asset.name} to ${downloadBin}...`);
   await github.download(asset, downloadBin, abort);
   await fs.promises.chmod(downloadBin, 0o755);
   // We await for the bufBinary to be set before returning and mutating the extension state.
   const bufBinary = await getBufBinaryFromPath(downloadBin);
+  vscode.window.showInformationMessage(`Buf ${release.name} is now installed.`);
   return bufBinary;
 }
 
@@ -553,17 +458,23 @@ async function showPopup(message: string, url: string) {
 
 /**
  * A helper for getting the Buf CLI args for the LSP server.
+ *
+ * Returns an error if bufVersion is too low to run the LSP server.
  */
 function getBufArgs() {
-  const bufArgs = [];
-  if (config.get<string>("debug")) {
+  const bufArgs = ["--log-format", "text"];
+  if (config.get<string>("debugLogs")) {
     bufArgs.push("--debug");
   }
-  const logFormat = config.get<string | null>("log-format");
-  if (logFormat) {
-    bufArgs.push("--log-format", logFormat);
+  const bufVersion = bufState.getBufBinaryVersion();
+  let args = ["lsp", "serve"];
+  if (bufVersion?.compare(minBufVersion) === -1) {
+    args = ["beta", "lsp"];
+    if (bufVersion?.compare(minBufBetaVersion) === -1) {
+      return new Error("buf version too low for LSP");
+    }
   }
-  bufArgs.push("beta", "lsp");
+  bufArgs.push(...args);
   return bufArgs;
 }
 
