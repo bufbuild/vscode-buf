@@ -26,7 +26,10 @@ This extension requires Visual Studio Code 1.95 or newer (or editors compatible 
 2. Start editing `.proto` files!
 
 This extension does not require you to have the Buf CLI already installed. By default, the extension uses
-the Buf CLI from your system `$PATH`. If `buf` isn't found on your `$PATH`, the extension automatically
+the Buf CLI from your system `$PATH`.
+(You can use the extension's `commandLine.path` config to point to a `buf` binary not on your `$PATH`,
+for example if you're using `npm` to manage your `buf` version you can set the config to `node_modules/.bin/buf`.)
+If `buf` isn't found on your `$PATH`, the extension automatically
 downloads and installs the latest version to its own storage directory.
 
 ## Commands
