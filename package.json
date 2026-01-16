@@ -242,6 +242,7 @@
     "@vscode/vsce": "^3.7.1",
     "mocha": "^11.7.5",
     "msw": "^2.12.7",
+    "ovsx": "^0.10.8",
     "typescript": "^5.9.3"
   },
   "dependencies": {
