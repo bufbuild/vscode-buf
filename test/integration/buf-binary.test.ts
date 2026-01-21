@@ -8,7 +8,6 @@ import * as vscode from "vscode";
 import which from "which";
 import { bufState } from "../../src/state";
 import type { LanguageServerStatus } from "../../src/status";
-import { server } from "../shared/shared";
 
 /**
  * Wraps {@link cp.exec} into an async call.
@@ -16,18 +15,6 @@ import { server } from "../shared/shared";
 const exec = promisify(cp.exec);
 
 suite("manage buf binary and LSP", () => {
-  suiteSetup(async () => {
-    server.listen();
-  });
-
-  suiteTeardown(async () => {
-    server.close();
-  });
-
-  teardown(async () => {
-    server.resetHandlers();
-  });
-
   test(`setup buf ${process.env.BUF_INSTALLED}`, async () => {
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
