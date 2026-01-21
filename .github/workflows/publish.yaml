@@ -28,21 +28,21 @@ jobs:
 
       - name: Package extension (regular)
         if: github.event.release.prerelease == false
-        run: npm run package
+        run: npm run package ${{ github.event.release.tag_name }}
       - name: Package extension (pre-release)
         if: github.event.release.prerelease == true
-        run: npm run package:prerelease
+        run: npm run package:prerelease ${{ github.event.release.tag_name }}
 
       - name: Publish to VS Code Marketplace (regular)
         if: github.event.release.prerelease == false
         # NOTE: ${{github.event.release.tag_name}} is the tag name from the release.
         # Ref: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#release
-        # Using `@vscode/vsce publish <version>` will tag a new commit with the version in package.json.
+        # Using `@vscode/vsce publish` will tag a new commit with the version in package.json.
         # Ref: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#autoincrement-the-extension-version
         run: |
           git config --global user.email "2702065+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
-          npm exec -- @vscode/vsce publish ${{ github.event.release.tag_name }} --packagePath *.vsix
+          npm exec -- @vscode/vsce publish --packagePath *.vsix
           git push origin HEAD:${{ github.event.repository.default_branch }}
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
@@ -51,7 +51,7 @@ jobs:
         run: |
           git config --global user.email "2702065+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
-          npm exec -- @vscode/vsce publish ${{ github.event.release.tag_name }} --pre-release --packagePath *.vsix
+          npm exec -- @vscode/vsce publish --pre-release --packagePath *.vsix
           git push origin HEAD:${{ github.event.repository.default_branch }}
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
