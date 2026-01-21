@@ -10,6 +10,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
         buf-bin-setup:
+          # these strings are referenced in the tests
           - buf-on-path
           - buf-not-on-path
     runs-on: ${{ matrix.os }}
