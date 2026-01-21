@@ -118,11 +118,18 @@ export const download = async (
     `Downloading ${path.basename(dest)}`,
     abort,
     async (progress) => {
+      const authToken = await getAuthToken();
+      const headers = new Headers({
+        Accept: "application/octet-stream",
+      });
+
+      if (authToken) {
+        headers.set("Authorization", `Bearer ${authToken}`);
+      }
+
       const response = await fetch(asset.url, {
         signal: abort.signal,
-        headers: {
-          Accept: "application/octet-stream",
-        },
+        headers: headers,
       });
       if (!response.ok || response.body === null) {
         throw new Error(`Can't fetch ${asset.url}: ${response.statusText}`);
@@ -156,6 +163,13 @@ export const download = async (
  * A helper for getting the GitHub auth token, if available.
  */
 async function getAuthToken(): Promise<string | undefined> {
+  // First try environment variable (useful for CI/CD)
+  const envToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  if (envToken) {
+    return envToken;
+  }
+
+  // Fall back to VS Code authentication
   try {
     const session = await vscode.authentication.getSession("github", [], {
       createIfNone: false,
