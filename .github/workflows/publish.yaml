@@ -6,6 +6,11 @@ on:
 
 jobs:
   publish:
+    permissions:
+      pull-requests: read
+      # Specifically allow writing the contents of the repository, as this workflow
+      # will create a commit that updates the package.json to the new version.
+      contents: write
     environment: production
     runs-on: ubuntu-latest
     steps:
