@@ -42,7 +42,7 @@ jobs:
         run: |
           git config --global user.email "2702065+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
-          npm exec @vscode/vsce publish ${{ github.event.release.tag_name }} --packagePath *.vsix
+          npm exec -- @vscode/vsce publish ${{ github.event.release.tag_name }} --packagePath *.vsix
           git push origin HEAD:${{ github.event.repository.default_branch }}
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
@@ -51,18 +51,18 @@ jobs:
         run: |
           git config --global user.email "2702065+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
-          npm exec @vscode/vsce publish ${{ github.event.release.tag_name }} --pre-release --packagePath *.vsix
+          npm exec -- @vscode/vsce publish ${{ github.event.release.tag_name }} --pre-release --packagePath *.vsix
           git push origin HEAD:${{ github.event.repository.default_branch }}
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
       - name: Publish to OpenVSX (regular)
         if: github.event.release.prerelease == false
-        run: npm exec ovsx publish *.vsix
+        run: npm exec -- ovsx publish *.vsix
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
       - name: Publish to OpenVSX (pre-release)
         if: github.event.release.prerelease == true
-        run: npm exec ovsx publish *.vsix --pre-release
+        run: npm exec -- ovsx publish *.vsix --pre-release
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
