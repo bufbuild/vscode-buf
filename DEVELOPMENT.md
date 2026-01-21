@@ -36,8 +36,3 @@ such as managing the Buf CLI binary and starting/stopping the LSP server. The in
 run against two different workspaces, a single workspace and a multi-root workspace.
 
 These tests are runnable from VS Code in the "Run and Debug" tab using the dropdown menu.
-
-### Playwright
-
-We use Playwright to orchestrate end-to-end tests with user actions and conditions, e.g. running
-commands from the Command Palette.
