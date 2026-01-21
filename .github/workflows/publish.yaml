@@ -36,7 +36,7 @@ jobs:
       - name: Package extension (regular)
         if: github.event.release.prerelease == false
         run: |
-          git config --global user.email "2703555+app-token-vscode-buf-release[bot]@users.noreply.github.com"
+          git config --global user.email "256439237+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
           git config --global url."https://x-access-token:${{ steps.generate_gh_token.outputs.token }}@github.com/bufbuild/vscode-buf".insteadOf "https://github.com/bufbuild/vscode-buf"
           npm run package ${{ github.event.release.tag_name }}
@@ -45,7 +45,7 @@ jobs:
       - name: Package extension (pre-release)
         if: github.event.release.prerelease == true
         run: |
-          git config --global user.email "2703555+app-token-vscode-buf-release[bot]@users.noreply.github.com"
+          git config --global user.email "256439237+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
           git config --global url."https://x-access-token:${{ steps.generate_gh_token.outputs.token }}@github.com/bufbuild/vscode-buf".insteadOf "https://github.com/bufbuild/vscode-buf"
           npm run package:prerelease ${{ github.event.release.tag_name }}
