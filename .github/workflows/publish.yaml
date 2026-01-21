@@ -39,14 +39,15 @@ jobs:
           git config --global user.email "2702065+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
           npm run package ${{ github.event.release.tag_name }}
-          git push origin HEAD:${{ github.event.repository.default_branch }}
+          git push https://x-access-token:${{ steps.generate_gh_token.outputs.token }}@github.com/${{ github.repository }}.git HEAD:${{ github.event.repository.default_branch }}
+
       - name: Package extension (pre-release)
         if: github.event.release.prerelease == true
         run: |
           git config --global user.email "2702065+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
           npm run package:prerelease ${{ github.event.release.tag_name }}
-          git push origin HEAD:${{ github.event.repository.default_branch }}
+          git push https://x-access-token:${{ steps.generate_gh_token.outputs.token }}@github.com/${{ github.repository }}.git HEAD:${{ github.event.repository.default_branch }}
 
       - name: Publish to VS Code Marketplace (regular)
         if: github.event.release.prerelease == false
