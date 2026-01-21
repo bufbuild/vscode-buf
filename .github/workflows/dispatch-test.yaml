@@ -1,9 +1,0 @@
-name: Test Dispatch
-
-on:
-  workflow_dispatch:
-
-jobs:
-  test:
-    steps:
-      - uses: actions/checkout@v6
