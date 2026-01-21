@@ -8,7 +8,6 @@ import * as vscode from "vscode";
 import which from "which";
 import { bufState } from "../../src/state";
 import type { LanguageServerStatus } from "../../src/status";
-import { server } from "../shared/shared";
 
 /**
  * Wraps {@link cp.exec} into an async call.
@@ -16,29 +15,13 @@ import { server } from "../shared/shared";
 const exec = promisify(cp.exec);
 
 suite("manage buf binary and LSP", () => {
-  suiteSetup(async () => {
-    server.listen();
-  });
-
-  suiteTeardown(async () => {
-    server.close();
-  });
-
-  teardown(async () => {
-    server.resetHandlers();
-  });
-
-  test(`setup buf ${process.env.BUF_INSTALLED}`, async function () {
-    // This value is set in the GitHub Actions testing workflow
-    if (process.env.BUF_INSTALLED === "buf-not-on-path") {
-      // Increase timeout when downloading buf binary from GitHub
-      this.timeout(30000); // 30 seconds
-    }
+  test(`setup buf ${process.env.BUF_INSTALLED}`, async () => {
     const languageServerRunning = setupLanguageServerListener(
       "LANGUAGE_SERVER_RUNNING"
     );
     await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
     await languageServerRunning;
+    // This value is set in the GitHub Actions testing workflow
     if (process.env.BUF_INSTALLED === "buf-on-path") {
       // We expected buf to be installed on the system $PATH and for that to be used.
       const { stdout, stderr } = await exec("buf --version");

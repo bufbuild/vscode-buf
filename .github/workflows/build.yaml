@@ -39,12 +39,14 @@ jobs:
       - name: integration-tests-with-xvfb
         env:
           BUF_INSTALLED: ${{ matrix.buf-bin-setup }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: xvfb-run -a npm run test:integration
         if: runner.os == 'Linux'
       - name: integration-tests
         shell: bash
         env:
           BUF_INSTALLED: ${{ matrix.buf-bin-setup }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run test:integration
         if: runner.os != 'Linux'
       - name: playwright-tests
