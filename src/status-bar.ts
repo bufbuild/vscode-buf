@@ -13,6 +13,8 @@ import type { LanguageServerStatus } from "./status";
  */
 
 let statusBarItem: vscode.StatusBarItem | undefined;
+let statusBarActiveEditorListener: vscode.Disposable | undefined;
+let isStatusBarVisible = false;
 
 const statusBarItemName = "Buf";
 
@@ -82,17 +84,59 @@ function updateStatusBar() {
   }
 }
 
-export function activateStatusBar(_ctx: vscode.ExtensionContext) {
+/**
+ * Document selector for files where the status bar should be visible.
+ * Includes proto files, Buf configuration files, and Buf output channels.
+ */
+const bufDocumentSelector: vscode.DocumentSelector = [
+  { language: "proto" },
+  { pattern: "**/buf.yaml" },
+  { pattern: "**/buf.gen.yaml" },
+  { pattern: "**/buf.lock" },
+  { pattern: "**/buf.mod" },
+  { pattern: "**/buf.work" },
+  { pattern: "**/buf.work.yaml" },
+  { pattern: "**/buf.plugin.yaml" },
+  { scheme: "output", pattern: "extension-output-bufbuild.vscode-buf*" },
+];
+
+/**
+ * Update the status bar visibility based on the active editor.
+ * Only shows the status bar when viewing proto files, Buf configuration files, or Buf output channels.
+ */
+function updateStatusBarVisibility(editor: vscode.TextEditor | undefined) {
+  if (!statusBarItem) {
+    return;
+  }
+
+  if (
+    editor != null &&
+    vscode.languages.match(bufDocumentSelector, editor.document) > 0
+  ) {
+    statusBarItem.show();
+    isStatusBarVisible = true;
+  } else {
+    statusBarItem.hide();
+    isStatusBarVisible = false;
+  }
+}
+
+export function activateStatusBar(ctx: vscode.ExtensionContext) {
   if (!statusBarItem) {
     statusBarItem = vscode.window.createStatusBarItem(
       statusBarItemName,
       vscode.StatusBarAlignment.Right
     );
-    statusBarItem.show();
+    updateStatusBarVisibility(vscode.window.activeTextEditor);
+    statusBarActiveEditorListener = vscode.window.onDidChangeActiveTextEditor(
+      (editor) => updateStatusBarVisibility(editor)
+    );
+    ctx.subscriptions.push(statusBarActiveEditorListener);
+
+    effect(() => {
+      updateStatusBar();
+    });
   }
-  effect(() => {
-    updateStatusBar();
-  });
 }
 
 export function deactivateStatusBar() {
@@ -100,4 +144,25 @@ export function deactivateStatusBar() {
     statusBarItem.dispose();
     statusBarItem = undefined;
   }
+  if (statusBarActiveEditorListener) {
+    statusBarActiveEditorListener.dispose();
+    statusBarActiveEditorListener = undefined;
+  }
+  isStatusBarVisible = false;
+}
+
+/**
+ * Get the current status bar item for testing purposes.
+ * @internal
+ */
+export function getStatusBarItem(): vscode.StatusBarItem | undefined {
+  return statusBarItem;
+}
+
+/**
+ * Get the current status bar visibility state for testing purposes.
+ * @internal
+ */
+export function isStatusBarItemVisible(): boolean {
+  return isStatusBarVisible;
 }
