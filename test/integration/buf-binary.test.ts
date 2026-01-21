@@ -51,11 +51,15 @@ suite("manage buf binary and LSP", () => {
       // We expect no buf CLI in the $PATH and the installation flow to trigger.
       const bufBinaryPath = bufState.getBufBinaryPath();
       assert.ok(bufBinaryPath);
+      const bufBinaryVersion = bufState.getBufBinaryVersion();
+      assert.ok(bufBinaryVersion);
+      // Check that buf was installed to the extension's global storage
       assert.ok(
         path.matchesGlob(
           bufBinaryPath,
-          `**/.vscode-test/user-data/User/globalStorage/bufbuild.vscode-buf/v1.54.0/buf*`
-        )
+          `**/.vscode-test/user-data/User/globalStorage/bufbuild.vscode-buf/v${bufBinaryVersion}/buf*`
+        ),
+        `Expected buf binary at ${bufBinaryPath} to match global storage pattern`
       );
     }
   });
@@ -70,17 +74,18 @@ function setupLanguageServerListener(
   listenFor: LanguageServerStatus
 ): Promise<void> {
   const { promise, resolve, reject } = Promise.withResolvers<void>();
-  const dispose = effect(() => {
+  let dispose: (() => void) | undefined;
+  dispose = effect(() => {
     const languageServerStatus = bufState.getLanguageServerStatus();
     if (languageServerStatus === listenFor) {
       resolve();
-      dispose();
+      dispose?.();
     }
     if (languageServerStatus === "LANGUAGE_SERVER_ERRORED") {
       reject(
         new Error(`language server in failed state: ${languageServerStatus}`)
       );
-      dispose();
+      dispose?.();
     }
   });
   return promise;
