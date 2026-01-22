@@ -78,7 +78,7 @@ export async function setupIntegrationTests(): Promise<void> {
           `[INTEGRATION SETUP] Still waiting for LSP... (${attempts}/${maxAttempts} seconds)`
         );
       }
-    } catch (e) {
+    } catch (_e) {
       if (attempts % 10 === 0) {
         console.log(
           `[INTEGRATION SETUP] Still waiting for LSP... (${attempts}/${maxAttempts} seconds)`

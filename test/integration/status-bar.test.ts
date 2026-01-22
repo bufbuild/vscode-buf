@@ -11,7 +11,6 @@ suite("status bar visibility", () => {
   });
 
   test("status bar item exists after activation", async () => {
-
     const statusBarItem = getStatusBarItem();
     assert.ok(
       statusBarItem,
