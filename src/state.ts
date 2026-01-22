@@ -96,7 +96,13 @@ class BufState {
               event.newState === lsp.State.Running
             ) {
               this._languageServerStatus.value = "LANGUAGE_SERVER_RUNNING";
-              log.info("Buf Language Server started.");
+              log.info("Buf Language Server started successfully.");
+              // Log initialization details for debugging
+              if (this.lspClient?.initializeResult) {
+                log.info(
+                  `LSP initialized with capabilities: ${JSON.stringify(this.lspClient.initializeResult.capabilities, null, 2)}`
+                );
+              }
               listener.dispose();
             }
           });
@@ -298,11 +304,23 @@ class BufState {
       command: this.bufBinary.path,
       args: args,
     };
+    // Set the workspace folder explicitly - this is important for the LSP to know
+    // where to look for buf.yaml and proto files, especially on Windows
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (workspaceFolder) {
+      log.info(
+        `Starting LSP with workspace folder: ${workspaceFolder.uri.fsPath}`
+      );
+    } else {
+      log.warn("No workspace folder found when starting LSP");
+    }
+
     const clientOptions: lsp.LanguageClientOptions = {
       documentSelector: protoDocumentSelector,
       diagnosticCollectionName: "bufc",
       outputChannel: serverOutputChannel,
       revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
+      workspaceFolder: workspaceFolder,
       middleware: {
         // Always configure a hover provider on the client.
         provideHover: async (document, position, token, next) => {
