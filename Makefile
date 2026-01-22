@@ -2,7 +2,7 @@
 
 .PHONY: package
 package:
-	npm run package
+	npx vsce package
 
 .PHONY: install
 install:
