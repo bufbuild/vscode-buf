@@ -63,51 +63,68 @@ async function performSetup(): Promise<void> {
   protoDoc = await vscode.workspace.openTextDocument(protoUri);
   await vscode.window.showTextDocument(protoDoc);
 
-  // Wait for LSP to actually index the file and be ready for queries
-  // We poll for hover information to confirm LSP is ready
-  // CI environments may be slower, so we use a longer timeout
-  const maxAttempts = 90; // 90 seconds max (increased from 40 for CI)
-  let attempts = 0;
-  let lspReady = false;
+  // Give the LSP some time to index the workspace
+  // We use 15 seconds to accommodate slower CI environments
+  console.log(
+    "[INTEGRATION SETUP] Giving LSP time to index workspace (15 seconds)..."
+  );
+  await new Promise((resolve) => setTimeout(resolve, 15000));
 
-  console.log("[INTEGRATION SETUP] Waiting for LSP to index proto files...");
-  while (attempts < maxAttempts && !lspReady) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    attempts++;
-
-    try {
-      // Try to get hover information as a health check
-      const testPosition = new vscode.Position(5, 10); // Position of "User" in "message User"
-      const hovers = (await vscode.commands.executeCommand(
-        "vscode.executeHoverProvider",
-        protoDoc.uri,
-        testPosition
-      )) as vscode.Hover[];
-
-      if (hovers && hovers.length > 0) {
-        lspReady = true;
-        console.log(
-          `[INTEGRATION SETUP] LSP ready after ${attempts} second(s). Tests can now run.`
-        );
-      } else if (attempts % 10 === 0) {
-        // Log every 10 seconds
-        console.log(
-          `[INTEGRATION SETUP] Still waiting for LSP... (${attempts}/${maxAttempts} seconds)`
-        );
-      }
-    } catch (_e) {
-      if (attempts % 10 === 0) {
-        console.log(
-          `[INTEGRATION SETUP] Still waiting for LSP... (${attempts}/${maxAttempts} seconds)`
-        );
-      }
+  // Verify the LSP is actually working
+  console.log("[INTEGRATION SETUP] Verifying LSP is responding...");
+  try {
+    // Check diagnostics first
+    const diagnostics = vscode.languages.getDiagnostics(protoDoc.uri);
+    console.log(
+      `[INTEGRATION SETUP] Diagnostics for ${protoDoc.uri.fsPath}: ${diagnostics.length} issue(s)`
+    );
+    if (diagnostics.length > 0) {
+      console.log(
+        "[INTEGRATION SETUP] Diagnostics:",
+        diagnostics.map((d) => `${d.severity}: ${d.message}`).join(", ")
+      );
     }
-  }
 
-  if (!lspReady) {
+    // Try to get document symbols as a basic health check
+    const symbols = (await vscode.commands.executeCommand(
+      "vscode.executeDocumentSymbolProvider",
+      protoDoc.uri
+    )) as vscode.DocumentSymbol[];
+    console.log(
+      `[INTEGRATION SETUP] Document symbols count: ${symbols?.length ?? 0}`
+    );
+    if (!symbols || symbols.length === 0) {
+      console.warn(
+        "[INTEGRATION SETUP] Warning: LSP returned no document symbols"
+      );
+    }
+
+    // Try hover as a final check
+    const testPosition = new vscode.Position(5, 10); // Position of "User" in "message User"
+    const hovers = (await vscode.commands.executeCommand(
+      "vscode.executeHoverProvider",
+      protoDoc.uri,
+      testPosition
+    )) as vscode.Hover[];
+
+    if (hovers && hovers.length > 0) {
+      console.log(
+        "[INTEGRATION SETUP] LSP is ready and responding to hover queries."
+      );
+    } else {
+      console.warn(
+        "[INTEGRATION SETUP] Warning: LSP is running but not returning hover information."
+      );
+      console.warn(
+        "[INTEGRATION SETUP] This may indicate the LSP is not indexing proto files correctly."
+      );
+      console.warn("[INTEGRATION SETUP] Tests may fail or be flaky.");
+    }
+  } catch (e) {
+    console.error(`[INTEGRATION SETUP] Error verifying LSP: ${e}`);
     const lspStatus = bufState.getLanguageServerStatus();
     throw new Error(
-      `[INTEGRATION SETUP] LSP did not become ready after ${maxAttempts} seconds. LSP status: ${lspStatus}. The language server may not be indexing proto files correctly.`
+      `[INTEGRATION SETUP] LSP verification failed. LSP status: ${lspStatus}. Error: ${e}`
     );
   }
 
