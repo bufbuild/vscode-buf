@@ -364,7 +364,7 @@ export const bufState = new BufState();
 function getBinaryPathForRelConfigPath(configPath: string): string {
   if (vscode.workspace.workspaceFolders) {
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      const joinedPath = path.join(workspaceFolder.uri.path, configPath);
+      const joinedPath = path.join(workspaceFolder.uri.fsPath, configPath);
       if (fs.existsSync(joinedPath)) {
         return joinedPath;
       }
