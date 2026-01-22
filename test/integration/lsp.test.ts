@@ -4,8 +4,8 @@ import { protoDoc, setupIntegrationTests } from "./setup";
 
 suite("LSP functionality", () => {
   suiteSetup(async function () {
-    this.timeout(10000);
-    // Use shared setup to ensure extension is activated and LSP is ready
+    // Increased timeout to accommodate binary download in CI
+    this.timeout(120000); // 2 minutes
     await setupIntegrationTests();
   });
 

@@ -11,14 +11,32 @@ export let isExtensionReady = false;
 export let protoDoc: vscode.TextDocument | undefined;
 
 /**
+ * Promise to track ongoing setup to prevent concurrent initialization
+ */
+let setupPromise: Promise<void> | undefined;
+
+/**
  * Root-level setup that runs once before all integration tests.
  * This activates the extension, waits for the LSP to start, and ensures it's ready to handle queries.
  */
 export async function setupIntegrationTests(): Promise<void> {
-  // Skip if already set up
+  // If already set up, return immediately
   if (isExtensionReady) {
     return;
   }
+
+  // If setup is already in progress, wait for it to complete
+  if (setupPromise) {
+    console.log("[INTEGRATION SETUP] Setup already in progress, waiting...");
+    return setupPromise;
+  }
+
+  // Start the setup and store the promise
+  setupPromise = performSetup();
+  return setupPromise;
+}
+
+async function performSetup(): Promise<void> {
 
   console.log("[INTEGRATION SETUP] Starting integration test setup...");
 
