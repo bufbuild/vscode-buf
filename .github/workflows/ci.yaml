@@ -2,7 +2,7 @@ name: ci
 on: push
 
 jobs:
-  build:
+  ci:
     strategy:
       matrix:
         os:
