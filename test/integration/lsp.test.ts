@@ -1,84 +1,17 @@
 import assert from "node:assert";
-import { effect } from "@preact/signals-core";
 import * as vscode from "vscode";
-import { bufState } from "../../src/state";
-import type { LanguageServerStatus } from "../../src/status";
+import { protoDoc, setupIntegrationTests } from "./setup";
 
 suite("LSP functionality", () => {
-  let protoDoc: vscode.TextDocument;
-
   suiteSetup(async function () {
-    // Increase timeout for initial setup (needs to be longer than polling time)
-    this.timeout(60000);
-
-    // Wait for language server to be running
-    const languageServerRunning = setupLanguageServerListener(
-      "LANGUAGE_SERVER_RUNNING"
-    );
-
-    // Activate the extension
-    await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
-
-    // Wait for LSP to be ready
-    await languageServerRunning;
-
-    // Open the user.proto file
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    assert.ok(workspaceFolder, "Expected a workspace folder");
-
-    const protoUri = vscode.Uri.joinPath(workspaceFolder.uri, "user.proto");
-    protoDoc = await vscode.workspace.openTextDocument(protoUri);
-    await vscode.window.showTextDocument(protoDoc);
-
-    // Wait for LSP to actually index the file and be ready for queries
-    // We poll for hover information to confirm LSP is ready
-    const maxAttempts = 40; // 40 seconds max
-    let attempts = 0;
-    let lspReady = false;
-
-    console.log("[LSP TEST] Waiting for LSP to index the proto file...");
-    while (attempts < maxAttempts && !lspReady) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      attempts++;
-
-      try {
-        // Try to get hover information as a health check
-        const testPosition = new vscode.Position(5, 10); // Position of "User" in "message User"
-        const hovers = (await vscode.commands.executeCommand(
-          "vscode.executeHoverProvider",
-          protoDoc.uri,
-          testPosition
-        )) as vscode.Hover[];
-
-        if (hovers && hovers.length > 0) {
-          lspReady = true;
-          console.log(
-            `[LSP TEST] LSP ready after ${attempts} second(s). Hover returned ${hovers.length} result(s).`
-          );
-        } else if (attempts % 5 === 0) {
-          // Log every 5 seconds
-          console.log(
-            `[LSP TEST] Still waiting for LSP... (${attempts}/${maxAttempts} seconds)`
-          );
-        }
-      } catch (e) {
-        if (attempts % 5 === 0) {
-          console.log(
-            `[LSP TEST] Still waiting for LSP... (${attempts}/${maxAttempts} seconds, error: ${e})`
-          );
-        }
-      }
-    }
-
-    if (!lspReady) {
-      const lspStatus = bufState.getLanguageServerStatus();
-      throw new Error(
-        `LSP did not become ready after ${maxAttempts} seconds. LSP status: ${lspStatus}. The language server may not be indexing proto files correctly.`
-      );
-    }
+    this.timeout(10000);
+    // Use shared setup to ensure extension is activated and LSP is ready
+    await setupIntegrationTests();
   });
 
   test("hover shows documentation", async () => {
+    assert.ok(protoDoc, "Expected protoDoc to be loaded");
+
     // Find the position of "User" in the User message definition (line 5)
     const position = new vscode.Position(5, 10); // Position of "User" in "message User"
 
@@ -107,6 +40,8 @@ suite("LSP functionality", () => {
   });
 
   test("go to definition", async () => {
+    assert.ok(protoDoc, "Expected protoDoc to be loaded");
+
     // Find the position of "User" in GetUserResponse (line 27)
     // Line: "  User user = 1;"
     // The "User" type starts at column 2 (0-indexed)
@@ -221,29 +156,3 @@ message TestFormat {
     await vscode.workspace.fs.delete(unformattedUri);
   });
 });
-
-/**
- * A helper function that returns a Promise listening for the language server status. Once
- * the language server is the status we want to listen for, the promise resolves. If the
- * language server is in an uninstalled or errored state, the Promise rejects.
- */
-function setupLanguageServerListener(
-  listenFor: LanguageServerStatus
-): Promise<void> {
-  const { promise, resolve, reject } = Promise.withResolvers<void>();
-  let dispose: (() => void) | undefined;
-  dispose = effect(() => {
-    const languageServerStatus = bufState.getLanguageServerStatus();
-    if (languageServerStatus === listenFor) {
-      resolve();
-      dispose?.();
-    }
-    if (languageServerStatus === "LANGUAGE_SERVER_ERRORED") {
-      reject(
-        new Error(`language server in failed state: ${languageServerStatus}`)
-      );
-      dispose?.();
-    }
-  });
-  return promise;
-}

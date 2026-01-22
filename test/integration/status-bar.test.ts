@@ -1,11 +1,16 @@
 import assert from "node:assert";
 import * as vscode from "vscode";
 import { getStatusBarItem, isStatusBarItemVisible } from "../../src/status-bar";
+import { setupIntegrationTests } from "./setup";
 
 suite("status bar visibility", () => {
+  suiteSetup(async function () {
+    this.timeout(10000);
+    // Use shared setup to ensure extension is activated and LSP is ready
+    await setupIntegrationTests();
+  });
+
   test("status bar item exists after activation", async () => {
-    // Ensure extension is activated
-    await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
 
     const statusBarItem = getStatusBarItem();
     assert.ok(
@@ -15,9 +20,6 @@ suite("status bar visibility", () => {
   });
 
   test("status bar visible on proto file", async () => {
-    // Ensure extension is activated
-    await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
-
     // Get the workspace folder
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     assert.ok(workspaceFolder, "Expected a workspace folder");
@@ -48,9 +50,6 @@ suite("status bar visibility", () => {
   });
 
   test("status bar hidden on markdown file", async () => {
-    // Ensure extension is activated
-    await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
-
     // Get the workspace folder
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     assert.ok(workspaceFolder, "Expected a workspace folder");
@@ -81,9 +80,6 @@ suite("status bar visibility", () => {
   });
 
   test("status bar visible on buf.yaml file", async () => {
-    // Ensure extension is activated
-    await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
-
     // Get the workspace folder
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     assert.ok(workspaceFolder, "Expected a workspace folder");
@@ -116,9 +112,6 @@ suite("status bar visibility", () => {
   });
 
   test("status bar toggles when switching between proto and markdown", async () => {
-    // Ensure extension is activated
-    await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
-
     // Get the workspace folder
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     assert.ok(workspaceFolder, "Expected a workspace folder");

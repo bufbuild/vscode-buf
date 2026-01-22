@@ -26,11 +26,17 @@ export default defineConfig([
     files: "out/test/integration/*.test.js",
     workspaceFolder: "test/workspaces/empty-single",
     launchArgs: ["--disable-extensions"],
+    mocha: {
+      require: [path.resolve("out/test/integration/hooks.js")],
+    },
   },
   {
     labels: "integrationMixedMultiRootWorkspace",
     files: "out/test/integration/*.test.js",
     workspaceFolder: "test/workspaces/multi/multi.code-workspace",
     launchArgs: ["--disable-extensions"],
+    mocha: {
+      require: [path.resolve("out/test/integration/hooks.js")],
+    },
   },
 ]);
