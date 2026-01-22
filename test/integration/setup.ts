@@ -60,8 +60,15 @@ async function performSetup(): Promise<void> {
   }
 
   const protoUri = vscode.Uri.joinPath(workspaceFolder.uri, "user.proto");
+  console.log(`[INTEGRATION SETUP] Opening document: ${protoUri.toString()}`);
+  console.log(`[INTEGRATION SETUP] fsPath: ${protoUri.fsPath}`);
   protoDoc = await vscode.workspace.openTextDocument(protoUri);
   await vscode.window.showTextDocument(protoDoc);
+
+  // Give the LSP a moment to register the open document before we start polling
+  // This is especially important on Windows
+  console.log("[INTEGRATION SETUP] Waiting 2 seconds for LSP to register document...");
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   // Poll for LSP readiness by checking if it can provide symbols
   // This is more reliable than waiting for a fixed duration, especially on slower CI/Windows environments
@@ -78,6 +85,13 @@ async function performSetup(): Promise<void> {
         protoDoc.uri
       )) as vscode.DocumentSymbol[];
 
+      // Log detailed info on first attempt and periodically
+      if (attempt === 1 || attempt % 10 === 0) {
+        console.log(
+          `[INTEGRATION SETUP] Attempt ${attempt}: symbols type: ${typeof symbols}, is array: ${Array.isArray(symbols)}, length: ${symbols?.length ?? "undefined"}`
+        );
+      }
+
       if (symbols && symbols.length > 0) {
         console.log(
           `[INTEGRATION SETUP] LSP is ready! Document symbols count: ${symbols.length} (attempt ${attempt}/${maxRetries})`
@@ -87,14 +101,14 @@ async function performSetup(): Promise<void> {
       } else if (attempt % 5 === 0) {
         // Log every 5th attempt to avoid spam
         console.log(
-          `[INTEGRATION SETUP] LSP not ready yet, waiting... (attempt ${attempt}/${maxRetries})`
+          `[INTEGRATION SETUP] LSP not ready yet, symbols returned but empty (attempt ${attempt}/${maxRetries})`
         );
       }
-    } catch (_e) {
+    } catch (e) {
       // LSP might throw errors while initializing, keep retrying
       if (attempt % 10 === 0) {
         console.log(
-          `[INTEGRATION SETUP] LSP query failed, retrying... (attempt ${attempt}/${maxRetries})`
+          `[INTEGRATION SETUP] LSP query failed with error: ${e}, retrying... (attempt ${attempt}/${maxRetries})`
         );
       }
     }
