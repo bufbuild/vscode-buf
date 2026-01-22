@@ -67,7 +67,9 @@ async function performSetup(): Promise<void> {
 
   // Give the LSP a moment to register the open document before we start polling
   // This is especially important on Windows
-  console.log("[INTEGRATION SETUP] Waiting 2 seconds for LSP to register document...");
+  console.log(
+    "[INTEGRATION SETUP] Waiting 2 seconds for LSP to register document..."
+  );
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
   // Poll for LSP readiness by checking if it can provide symbols
