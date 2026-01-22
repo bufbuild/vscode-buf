@@ -29,7 +29,7 @@ export const bufBuild = new Command(
       args.push("-o", outPath);
     }
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      bufState.execBufCommand(args, workspaceFolder.uri.path);
+      bufState.execBufCommand(args, workspaceFolder.uri.fsPath);
     }
   }
 );
