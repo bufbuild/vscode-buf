@@ -37,7 +37,6 @@ export async function setupIntegrationTests(): Promise<void> {
 }
 
 async function performSetup(): Promise<void> {
-
   console.log("[INTEGRATION SETUP] Starting integration test setup...");
 
   // Wait for language server to be running
