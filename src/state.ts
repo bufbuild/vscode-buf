@@ -91,6 +91,9 @@ class BufState {
           }
           log.info(`Starting Buf Language Server (${this.bufBinary.version})`);
           const listener = this.lspClient.onDidChangeState((event) => {
+            log.info(
+              `LSP state change: ${lsp.State[event.oldState]} -> ${lsp.State[event.newState]}`
+            );
             if (
               event.oldState === lsp.State.Starting &&
               event.newState === lsp.State.Running
@@ -99,9 +102,18 @@ class BufState {
               log.info("Buf Language Server started successfully.");
               // Log initialization details for debugging
               if (this.lspClient?.initializeResult) {
+                const caps = this.lspClient.initializeResult.capabilities;
                 log.info(
-                  `LSP initialized with capabilities: ${JSON.stringify(this.lspClient.initializeResult.capabilities, null, 2)}`
+                  `LSP capabilities - documentSymbolProvider: ${JSON.stringify(caps.documentSymbolProvider)}`
                 );
+                log.info(
+                  `LSP capabilities - hoverProvider: ${JSON.stringify(caps.hoverProvider)}`
+                );
+                log.info(
+                  `LSP capabilities - definitionProvider: ${JSON.stringify(caps.definitionProvider)}`
+                );
+              } else {
+                log.warn("LSP initializeResult is not available");
               }
               listener.dispose();
             }
@@ -300,6 +312,7 @@ class BufState {
       );
       return;
     }
+    log.info(`LSP command: ${this.bufBinary.path} ${args.join(" ")}`);
     const serverOptions: lsp.Executable = {
       command: this.bufBinary.path,
       args: args,

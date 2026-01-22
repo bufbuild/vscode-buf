@@ -52,6 +52,13 @@ async function performSetup(): Promise<void> {
   console.log("[INTEGRATION SETUP] Waiting for LSP to start...");
   await languageServerRunning;
   console.log("[INTEGRATION SETUP] LSP is running.");
+  console.log(
+    `[INTEGRATION SETUP] LSP status: ${bufState.getLanguageServerStatus()}`
+  );
+  console.log(
+    `[INTEGRATION SETUP] Buf version: ${bufState.getBufBinaryVersion()}`
+  );
+  console.log(`[INTEGRATION SETUP] Buf path: ${bufState.getBufBinaryPath()}`);
 
   // Open a proto file to trigger LSP indexing
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
