@@ -15,7 +15,7 @@ export const bufConfigInit = new Command(
       return;
     }
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      bufState.execBufCommand(["config", "init"], workspaceFolder.uri.path);
+      bufState.execBufCommand(["config", "init"], workspaceFolder.uri.fsPath);
     }
   }
 );
