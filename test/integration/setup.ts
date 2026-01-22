@@ -63,43 +63,60 @@ async function performSetup(): Promise<void> {
   protoDoc = await vscode.workspace.openTextDocument(protoUri);
   await vscode.window.showTextDocument(protoDoc);
 
-  // Give the LSP some time to index the workspace
-  // We use 15 seconds to accommodate slower CI environments
-  console.log(
-    "[INTEGRATION SETUP] Giving LSP time to index workspace (15 seconds)..."
-  );
-  await new Promise((resolve) => setTimeout(resolve, 15000));
+  // Poll for LSP readiness by checking if it can provide symbols
+  // This is more reliable than waiting for a fixed duration, especially on slower CI/Windows environments
+  console.log("[INTEGRATION SETUP] Waiting for LSP to index workspace...");
+  const maxRetries = 60; // 60 attempts
+  const retryDelay = 1000; // 1 second between attempts
+  let isReady = false;
 
-  // Verify the LSP is actually working
-  console.log("[INTEGRATION SETUP] Verifying LSP is responding...");
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      // Try to get document symbols as a health check
+      const symbols = (await vscode.commands.executeCommand(
+        "vscode.executeDocumentSymbolProvider",
+        protoDoc.uri
+      )) as vscode.DocumentSymbol[];
+
+      if (symbols && symbols.length > 0) {
+        console.log(
+          `[INTEGRATION SETUP] LSP is ready! Document symbols count: ${symbols.length} (attempt ${attempt}/${maxRetries})`
+        );
+        isReady = true;
+        break;
+      } else if (attempt % 5 === 0) {
+        // Log every 5th attempt to avoid spam
+        console.log(
+          `[INTEGRATION SETUP] LSP not ready yet, waiting... (attempt ${attempt}/${maxRetries})`
+        );
+      }
+    } catch (_e) {
+      // LSP might throw errors while initializing, keep retrying
+      if (attempt % 10 === 0) {
+        console.log(
+          `[INTEGRATION SETUP] LSP query failed, retrying... (attempt ${attempt}/${maxRetries})`
+        );
+      }
+    }
+
+    if (attempt < maxRetries) {
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
+    }
+  }
+
+  if (!isReady) {
+    const lspStatus = bufState.getLanguageServerStatus();
+    console.error(
+      `[INTEGRATION SETUP] LSP did not become ready after ${maxRetries} attempts. Status: ${lspStatus}`
+    );
+    throw new Error(
+      `[INTEGRATION SETUP] LSP failed to index workspace within timeout. LSP status: ${lspStatus}`
+    );
+  }
+
+  // Verify the LSP is actually working with hover
+  console.log("[INTEGRATION SETUP] Verifying hover functionality...");
   try {
-    // Check diagnostics first
-    const diagnostics = vscode.languages.getDiagnostics(protoDoc.uri);
-    console.log(
-      `[INTEGRATION SETUP] Diagnostics for ${protoDoc.uri.fsPath}: ${diagnostics.length} issue(s)`
-    );
-    if (diagnostics.length > 0) {
-      console.log(
-        "[INTEGRATION SETUP] Diagnostics:",
-        diagnostics.map((d) => `${d.severity}: ${d.message}`).join(", ")
-      );
-    }
-
-    // Try to get document symbols as a basic health check
-    const symbols = (await vscode.commands.executeCommand(
-      "vscode.executeDocumentSymbolProvider",
-      protoDoc.uri
-    )) as vscode.DocumentSymbol[];
-    console.log(
-      `[INTEGRATION SETUP] Document symbols count: ${symbols?.length ?? 0}`
-    );
-    if (!symbols || symbols.length === 0) {
-      console.warn(
-        "[INTEGRATION SETUP] Warning: LSP returned no document symbols"
-      );
-    }
-
-    // Try hover as a final check
     const testPosition = new vscode.Position(5, 10); // Position of "User" in "message User"
     const hovers = (await vscode.commands.executeCommand(
       "vscode.executeHoverProvider",
@@ -116,10 +133,16 @@ async function performSetup(): Promise<void> {
         "[INTEGRATION SETUP] Warning: LSP is running but not returning hover information."
       );
       console.warn(
-        "[INTEGRATION SETUP] This may indicate the LSP is not indexing proto files correctly."
+        "[INTEGRATION SETUP] This may indicate the LSP is not fully initialized."
       );
       console.warn("[INTEGRATION SETUP] Tests may fail or be flaky.");
     }
+
+    // Check diagnostics as well
+    const diagnostics = vscode.languages.getDiagnostics(protoDoc.uri);
+    console.log(
+      `[INTEGRATION SETUP] Diagnostics for ${protoDoc.uri.fsPath}: ${diagnostics.length} issue(s)`
+    );
   } catch (e) {
     console.error(`[INTEGRATION SETUP] Error verifying LSP: ${e}`);
     const lspStatus = bufState.getLanguageServerStatus();

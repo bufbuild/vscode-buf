@@ -12,9 +12,12 @@ import { setupIntegrationTests } from "./setup";
  */
 const exec = promisify(cp.exec);
 
-suite("manage buf binary and LSP", () => {
+suite("manage buf binary and LSP", function () {
+  // Set suite-level timeout for all tests (especially important on Windows CI)
+  this.timeout(300000); // 5 minutes
+
   suiteSetup(async function () {
-    // Increased timeout to accommodate binary download in CI
+    // Increased timeout to accommodate binary download and LSP initialization in CI
     this.timeout(120000); // 2 minutes
     await setupIntegrationTests();
   });

@@ -3,9 +3,12 @@ import * as vscode from "vscode";
 import { getStatusBarItem, isStatusBarItemVisible } from "../../src/status-bar";
 import { setupIntegrationTests } from "./setup";
 
-suite("status bar visibility", () => {
+suite("status bar visibility", function () {
+  // Set suite-level timeout for all tests (especially important on Windows CI)
+  this.timeout(300000); // 5 minutes
+
   suiteSetup(async function () {
-    // Increased timeout to accommodate binary download in CI
+    // Increased timeout to accommodate binary download and LSP initialization in CI
     this.timeout(120000); // 2 minutes
     await setupIntegrationTests();
   });
