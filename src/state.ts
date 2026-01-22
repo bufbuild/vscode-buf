@@ -312,11 +312,6 @@ class BufState {
       );
       return;
     }
-    log.info(`LSP command: ${this.bufBinary.path} ${args.join(" ")}`);
-    const serverOptions: lsp.Executable = {
-      command: this.bufBinary.path,
-      args: args,
-    };
     // Set the workspace folder explicitly - this is important for the LSP to know
     // where to look for buf.yaml and proto files, especially on Windows
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -327,6 +322,16 @@ class BufState {
     } else {
       log.warn("No workspace folder found when starting LSP");
     }
+
+    log.info(`LSP command: ${this.bufBinary.path} ${args.join(" ")}`);
+    const serverOptions: lsp.Executable = {
+      command: this.bufBinary.path,
+      args: args,
+      // Set the working directory to the workspace folder so buf can find buf.yaml
+      options: workspaceFolder
+        ? { cwd: workspaceFolder.uri.fsPath }
+        : undefined,
+    };
 
     const clientOptions: lsp.LanguageClientOptions = {
       documentSelector: protoDocumentSelector,
