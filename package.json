@@ -162,22 +162,6 @@
     ],
     "languages": [
       {
-        "id": "buf",
-        "filenames": [
-          "buf.yaml",
-          "buf.gen.yaml",
-          "buf.lock",
-          "buf.mod",
-          "buf.work",
-          "buf.work.yaml",
-          "buf.plugin.yaml"
-        ],
-        "icon": {
-          "light": "./icons/_buf_file.svg",
-          "dark": "./icons/_buf_file.svg"
-        }
-      },
-      {
         "id": "proto",
         "extensions": [
           ".proto"
