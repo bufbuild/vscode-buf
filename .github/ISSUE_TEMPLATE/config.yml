@@ -1,0 +1,9 @@
+# Disable blank issues; must go through the templates.
+blank_issues_enabled: false
+contact_links:
+  - name: Buf Slack
+    url: https://buf.build/links/slack
+    about: Join our public Slack and ask us questions!
+  - name: Buf Contact
+    url: https://buf.build/contact
+    about: General contact form

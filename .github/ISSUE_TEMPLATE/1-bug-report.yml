@@ -1,0 +1,73 @@
+name: Bug Report
+description: File a bug report.
+labels: Bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping us improve VS Code Buf by filing bugs, we really appreciate it!
+        For us to investigate your issue efficiently, we need a minimal reproducible example.
+        We get lots of support requests, so please help us help you.
+        We find that the easiest way to do this is by linking to a GitHub repository with the setup of the example,
+        as well as a set of steps for us to run on this GitHub repository to reproduce the issue.
+        You can use an existing GitHub repository, or a temporary GitHub repository you create.
+
+        **If you do not provide a minimal reproducible example in a GitHub repository,
+        we will likely close your issue until a reproducible example is provided.
+        We apologize, but we have to be efficient with our support requests, and we appreciate your help.**
+
+        [This article](https://stackoverflow.com/help/minimal-reproducible-example) on minimal reproducible examples may be of use!
+
+        Please also ensure that you're running the latest version of [`buf`](https://github.com/bufbuild/buf/releases),
+        which backs many of the features provided by VS Code Buf.
+        If you're not using the latest version of `buf`,
+        most likely our first question will be "Does this reproduce if you install the latest `buf` version?"
+  - type: checkboxes
+    id: buf-version
+    attributes:
+      label: Buf Latest Version
+      description: I've reproduced this issue using the latest version of [`buf`](https://github.com/bufbuild/buf/releases).
+      options:
+        - label: I'm using the latest version of `buf`.
+          required: true
+  - type: input
+    id: github-repository
+    attributes:
+      label: GitHub repository with your minimal reproducible example (do not leave this field blank or fill out this field with "github.com/bufbuild/vscode-buf" or we will automatically close your issue, see the instructions above!)
+      description: Provide us with a link to the GitHub repository that contains the setup needed to reproduce the issue. This is a repository you create, and is required for us to investigate your issue.
+      placeholder: https://github.com/you/temp-repo-with-repro
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: steps
+      description: Please provide the steps to run from the root of this repository to reproduce the issue.
+      placeholder: |
+        code .
+        # Do <xyz> in VS Code with the Buf extension enabled.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: actual-output
+    attributes:
+      label: Output
+      description: What is the output of performing these steps?
+      placeholder: |
+        VS Code Buf showed the following text in the output: <copied text>
+    validations:
+      required: true
+  - type: textarea
+    id: expected-output
+    attributes:
+      label: Expected Output
+      description: What did you expect instead?
+      placeholder: I expected VS Code Buf to ...
+    validations:
+      required: true
+  - type: textarea
+    id: other
+    attributes:
+      label: Anything else?
+      description: Is there any other context you'd like us to have?
