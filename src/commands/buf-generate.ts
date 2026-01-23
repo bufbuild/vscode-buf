@@ -16,7 +16,7 @@ export const bufGenerate = new Command(
       return;
     }
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      bufState.execBufCommand(["generate"], workspaceFolder.uri.path);
+      bufState.execBufCommand(["generate"], workspaceFolder.uri.fsPath);
     }
   }
 );

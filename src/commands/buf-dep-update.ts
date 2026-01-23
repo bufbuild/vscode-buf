@@ -16,7 +16,7 @@ export const bufDepUpdate = new Command(
       return;
     }
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      bufState.execBufCommand(["dep", "update"], workspaceFolder.uri.path);
+      bufState.execBufCommand(["dep", "update"], workspaceFolder.uri.fsPath);
     }
   }
 );

@@ -17,7 +17,7 @@ export const bufDepPrune = new Command(
       return;
     }
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      bufState.execBufCommand(["dep", "prune"], workspaceFolder.uri.path);
+      bufState.execBufCommand(["dep", "prune"], workspaceFolder.uri.fsPath);
     }
   }
 );
