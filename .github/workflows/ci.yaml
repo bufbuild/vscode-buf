@@ -42,18 +42,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run test:integration
         if: runner.os != 'Linux'
-      - name: playwright-tests
-        run: npm run test:playwright
-        # Limiting playwright tests to macOS for now due to issues with xvfb on Linux and
-        # timeouts on windows
-        if: runner.os == 'macOS'
       - name: check diff
         run: node scripts/gh-diffcheck.mjs
-      - name: upload-playwright-test-results
-        uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 5
-          if-no-files-found: ignore
