@@ -13,7 +13,7 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 - **Syntax highlighting**: Code styling that provides clarity on Protobuf keywords and identifiers.
 - **Diagnostics**: Get highlights and feedback on build and lint errors as you code.
 
-![Preview features](https://raw.githubusercontent.com/bufbuild/vscode-buf/main/preview.gif)
+![Preview features](./preview.gif)
 
 This extension doesn't stop at editing: open the [Command Palette][command-palette] (`Ctrl/Cmd+Shift+P`)
 to quickly run common `buf` tasks such as `buf generate`. See the [full list of commands](#commands) for more.
