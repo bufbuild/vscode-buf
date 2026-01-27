@@ -6,9 +6,7 @@
 .envrc
 .env
 .nvmrc
-out/
-dist/**/*.map
-preview.gif
+out/test/**
 src/**
 test/**
 test-results/**
@@ -20,5 +18,3 @@ scripts/**
 .vscode-test.mjs
 DEVELOPMENT.md
 Makefile
-node_modules
-esbuild.js

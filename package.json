@@ -196,15 +196,12 @@
       }
     ]
   },
-  "main": "./dist/extension.js",
+  "main": "./out/src/extension.js",
   "scripts": {
-    "vscode:prepublish": "npm run package",
+    "vscode:prepublish": "npm run compile",
     "clean": "rm -rf ./dist/* && rm -rf ./out/* && rm -rf ./bin/* && rm -rf ./test-results/* && rm -rf .vscode-test/* rm *.vsix",
-    "compile": "npm run check-types && node esbuild.js",
-    "check-types": "tsc --noEmit",
-    "watch": "npm-run-all -p watch:*",
-    "watch:esbuild": "node esbuild.js --watch",
-    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run prepworkspaces",
     "prepworkspaces": "npm ci --prefix test/workspaces/empty-single",
     "lint": "biome lint --fix .",
@@ -213,7 +210,8 @@
     "pretest:playwright": "node ./test/playwright/setup-script.mts",
     "test:playwright": "playwright test",
     "test:playwright:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
-    "package": "npm run check-types && node esbuild.js --production",
+    "package": "vsce package",
+    "package:prerelease": "vsce package --pre-release",
     "format": "biome format --write ."
   },
   "devDependencies": {
@@ -227,9 +225,7 @@
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.7.1",
-    "esbuild": "^0.27.2",
     "mocha": "^11.7.5",
-    "npm-run-all": "^4.1.5",
     "ovsx": "^0.10.8",
     "typescript": "^5.9.3"
   },
