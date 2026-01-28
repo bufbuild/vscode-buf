@@ -42,6 +42,9 @@ jobs:
           git config --global user.email "256439237+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
           git config --global url."https://x-access-token:${{ steps.generate_gh_token.outputs.token }}@github.com/bufbuild/vscode-buf".insteadOf "https://github.com/bufbuild/vscode-buf"
+          make updatechangelog VERSION=${{ github.event.release.tag_name }}
+          git add CHANGELOG.md
+          git commit -m "Update CHANGELOG.md to version ${{ github.event.release.tag_name }}"
           npm run package ${{ github.event.release.tag_name }}
           git push https://x-access-token:${{ steps.generate_gh_token.outputs.token }}@github.com/${{ github.repository }}.git HEAD:${{ github.event.repository.default_branch }}
 
@@ -51,6 +54,9 @@ jobs:
           git config --global user.email "256439237+app-token-vscode-buf-release[bot]@users.noreply.github.com"
           git config --global user.name "app-token-vscode-buf-release[bot]"
           git config --global url."https://x-access-token:${{ steps.generate_gh_token.outputs.token }}@github.com/bufbuild/vscode-buf".insteadOf "https://github.com/bufbuild/vscode-buf"
+          make updatechangelog VERSION=${{ github.event.release.tag_name }}
+          git add CHANGELOG.md
+          git commit -m "Update CHANGELOG.md to version ${{ github.event.release.tag_name }}"
           npm run package:prerelease ${{ github.event.release.tag_name }}
           git push https://x-access-token:${{ steps.generate_gh_token.outputs.token }}@github.com/${{ github.repository }}.git HEAD:${{ github.event.repository.default_branch }}
 
