@@ -2,7 +2,27 @@
 
 ## Unreleased
 
+## 0.8.13
+
+- Revert extension bundling due to issues when running in WSL.
+- Bump LICENSE year to 2026.
+
+## 0.8.12
+
+- Bundle extension for faster loading.
+- Fix running commands on Windows.
+- Add "Programming Languages" to VS Code categories.
+- Drop separate `buf` language.
+
+## 0.8.11
+
+This is the next release published to the VS Code Marketplace and OpenVSX after 0.8.1.
+Versions 0.8.2–0.8.10 were tagged releases in the repository but were not published
+to the VS Code Marketplace or OpenVSX as we were testing our new release pipeline.
+
 - Add file icons for Protobuf and Buf configuration files.
+- Deprecate breaking change detection.
+- Remove configs from extension (minus `commandLine.path`).
 
 ## 0.8.1
 
