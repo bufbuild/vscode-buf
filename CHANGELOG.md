@@ -13,8 +13,6 @@
 - Fix running commands on Windows.
 - Add "Programming Languages" to VS Code categories.
 - Drop separate `buf` language.
-- Drop `msw` dependency and integration test for binary management.
-- Add issue templates.
 
 ## 0.8.11
 
