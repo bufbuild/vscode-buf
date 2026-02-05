@@ -21,16 +21,13 @@ jobs:
       - uses: bufbuild/buf-action@v1
         with:
           setup_only: true
-      - name: install-deps
-        run: npm ci
-      - name: build
-        run: npm run compile
-      - name: prepworkspaces
-        run: npm run prepworkspaces
-      - name: lint
-        run: npm run lint
-      - name: format
-        run: npm run format
+      - run: npm ci
+      - run: npm run compile
+      - run: npm run prepworkspaces
+      - run: npm run lint
+      - run: npm run format
+      - name: check diff
+        run: node scripts/gh-diffcheck.mjs
       - name: integration-tests-with-xvfb
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -47,8 +44,6 @@ jobs:
         # Limiting playwright tests to macOS for now due to issues with xvfb on Linux and
         # timeouts on windows
         if: runner.os == 'macOS'
-      - name: check diff
-        run: node scripts/gh-diffcheck.mjs
       - name: upload-playwright-test-results
         uses: actions/upload-artifact@v6
         if: always()
