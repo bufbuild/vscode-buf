@@ -1,7 +1,6 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { effect, signal } from "@preact/signals-core";
 import * as semver from "semver";
 import * as vscode from "vscode";
 import * as lsp from "vscode-languageclient/node";
@@ -64,51 +63,77 @@ const minBufVersion = "v1.59.0";
  * the exported global instance, bufState.
  */
 class BufState {
-  private _extensionStatus = signal<ExtensionStatus>("EXTENSION_IDLE");
-  private _languageServerStatus = signal<LanguageServerStatus>(
-    "LANGUAGE_SERVER_STOPPED"
-  );
+  private _extensionStatus: ExtensionStatus = "EXTENSION_IDLE";
+  private _languageServerStatus: LanguageServerStatus =
+    "LANGUAGE_SERVER_STOPPED";
 
   private lspClient?: lsp.LanguageClient;
   private bufBinary?: BufBinary;
+  private statusChangeCallbacks: Array<() => void> = [];
 
-  public constructor() {
-    effect(() => {
-      switch (this._languageServerStatus.value) {
-        case "LANGUAGE_SERVER_DISABLED":
-          this.lspClient = undefined;
-          break;
-        case "LANGUAGE_SERVER_STARTING": {
-          if (!this.bufBinary) {
-            throw new Error(
-              `Attempted to start language server with no Buf binary set`
-            );
-          }
-          if (!this.lspClient) {
-            throw new Error(
-              `Attempted to start language server with no client set`
-            );
-          }
-          log.info(`Starting Buf Language Server (${this.bufBinary.version})`);
-          const listener = this.lspClient.onDidChangeState((event) => {
-            if (
-              event.oldState === lsp.State.Starting &&
-              event.newState === lsp.State.Running
-            ) {
-              this._languageServerStatus.value = "LANGUAGE_SERVER_RUNNING";
-              log.info("Buf Language Server started.");
-              listener.dispose();
-            }
-          });
-          this.lspClient.start().catch((reason) => {
-            // Start failed, we log the error and allow the caller to retry
-            log.error(`Error starting the Buf Language Server: ${reason}`);
-          });
-          break;
+  /**
+   * Register a callback to be notified when extension or language server status changes.
+   */
+  public registerStatusChangeCallback(callback: () => void) {
+    this.statusChangeCallbacks.push(callback);
+  }
+
+  /**
+   * Notify all registered callbacks that status has changed.
+   */
+  private notifyStatusChange() {
+    for (const callback of this.statusChangeCallbacks) {
+      callback();
+    }
+  }
+
+  /**
+   * Set the language server status and trigger appropriate side effects.
+   */
+  private setLanguageServerStatus(status: LanguageServerStatus) {
+    this._languageServerStatus = status;
+    this.notifyStatusChange();
+    this.handleLanguageServerStatusChange();
+  }
+
+  /**
+   * Handle language server status changes and trigger appropriate actions.
+   */
+  private handleLanguageServerStatusChange() {
+    switch (this._languageServerStatus) {
+      case "LANGUAGE_SERVER_DISABLED":
+        this.lspClient = undefined;
+        break;
+      case "LANGUAGE_SERVER_STARTING": {
+        if (!this.bufBinary) {
+          throw new Error(
+            `Attempted to start language server with no Buf binary set`
+          );
         }
-        case "LANGUAGE_SERVER_ERRORED":
+        if (!this.lspClient) {
+          throw new Error(
+            `Attempted to start language server with no client set`
+          );
+        }
+        log.info(`Starting Buf Language Server (${this.bufBinary.version})`);
+        const listener = this.lspClient.onDidChangeState((event) => {
+          if (
+            event.oldState === lsp.State.Starting &&
+            event.newState === lsp.State.Running
+          ) {
+            this.setLanguageServerStatus("LANGUAGE_SERVER_RUNNING");
+            log.info("Buf Language Server started.");
+            listener.dispose();
+          }
+        });
+        this.lspClient.start().catch((reason) => {
+          // Start failed, we log the error and allow the caller to retry
+          log.error(`Error starting the Buf Language Server: ${reason}`);
+        });
+        break;
       }
-    });
+      case "LANGUAGE_SERVER_ERRORED":
+    }
   }
 
   /**
@@ -116,10 +141,12 @@ class BufState {
    * and once the work is complete, sets the extension status back to idle.
    */
   public handleExtensionStatus(status: ExtensionStatus) {
-    this._extensionStatus.value = status;
+    this._extensionStatus = status;
+    this.notifyStatusChange();
     return {
       [Symbol.dispose]: () => {
-        this._extensionStatus.value = "EXTENSION_IDLE";
+        this._extensionStatus = "EXTENSION_IDLE";
+        this.notifyStatusChange();
       },
     };
   }
@@ -128,14 +155,14 @@ class BufState {
    * getExtensionStatus gets the current extension status.
    */
   public getExtensionStatus() {
-    return this._extensionStatus.value;
+    return this._extensionStatus;
   }
 
   /**
    * getLanguageServerStatus gets the current language server status.
    */
   public getLanguageServerStatus() {
-    return this._languageServerStatus.value;
+    return this._languageServerStatus;
   }
 
   /**
@@ -232,7 +259,7 @@ class BufState {
       } catch (e) {
         if (!abort.signal.aborted) {
           log.info(`Failed to install buf: ${e}`);
-          this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
+          this.setLanguageServerStatus("LANGUAGE_SERVER_DISABLED");
           showPopup(
             `Failed to install Buf CLI. You may want to install it manually.`,
             "https://buf.build/docs/cli/installation/"
@@ -264,18 +291,18 @@ class BufState {
     }
     if (this.lspClient) {
       if (
-        this._languageServerStatus.value === "LANGUAGE_SERVER_STARTING" ||
-        this._languageServerStatus.value === "LANGUAGE_SERVER_RUNNING"
+        this._languageServerStatus === "LANGUAGE_SERVER_STARTING" ||
+        this._languageServerStatus === "LANGUAGE_SERVER_RUNNING"
       ) {
         log.warn("Buf Language Server already starting, no new actions taken.");
         return;
       }
       if (
-        this._languageServerStatus.value === "LANGUAGE_SERVER_STOPPED" ||
-        this._languageServerStatus.value === "LANGUAGE_SERVER_ERRORED"
+        this._languageServerStatus === "LANGUAGE_SERVER_STOPPED" ||
+        this._languageServerStatus === "LANGUAGE_SERVER_ERRORED"
       ) {
         log.warn("Buf Language Server currently stopped, starting...");
-        this._languageServerStatus.value = "LANGUAGE_SERVER_STARTING";
+        this.setLanguageServerStatus("LANGUAGE_SERVER_STARTING");
         return;
       }
     }
@@ -283,12 +310,12 @@ class BufState {
       log.error(
         "No installed version of Buf found, cannot start Buf Language Server."
       );
-      this._languageServerStatus.value = "LANGUAGE_SERVER_STOPPED";
+      this.setLanguageServerStatus("LANGUAGE_SERVER_STOPPED");
       return;
     }
     const args = getBufArgs();
     if (args instanceof Error) {
-      this._languageServerStatus.value = "LANGUAGE_SERVER_DISABLED";
+      this.setLanguageServerStatus("LANGUAGE_SERVER_DISABLED");
       log.warn(
         `Buf version ${this.bufBinary?.version} does not meet minimum required version ${minBufBetaVersion} for Language Server features, disabling.`
       );
@@ -324,7 +351,7 @@ class BufState {
       closed: async () => {
         const result = await errorHandler.closed();
         if (result.action === lsp.CloseAction.DoNotRestart) {
-          this._languageServerStatus.value = "LANGUAGE_SERVER_ERRORED";
+          this.setLanguageServerStatus("LANGUAGE_SERVER_ERRORED");
           log.error(`Language Server closed unexpectedly. Not restarting.`);
         } else {
           log.error(`Language Server closed unexpectedly. Restarting...`);
@@ -332,7 +359,7 @@ class BufState {
         return result;
       },
     };
-    this._languageServerStatus.value = "LANGUAGE_SERVER_STARTING";
+    this.setLanguageServerStatus("LANGUAGE_SERVER_STARTING");
   }
 
   /**
@@ -346,7 +373,7 @@ class BufState {
       } catch (e) {
         log.error(`Error stopping language server: ${e}`);
       }
-      this._languageServerStatus.value = "LANGUAGE_SERVER_STOPPED";
+      this.setLanguageServerStatus("LANGUAGE_SERVER_STOPPED");
     }
   }
 }

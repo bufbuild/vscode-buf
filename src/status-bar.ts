@@ -1,4 +1,3 @@
-import { effect } from "@preact/signals-core";
 import * as vscode from "vscode";
 import { showCommands } from "./commands/show-commands";
 import { showOutput } from "./commands/show-output";
@@ -133,9 +132,12 @@ export function activateStatusBar(ctx: vscode.ExtensionContext) {
     );
     ctx.subscriptions.push(statusBarActiveEditorListener);
 
-    effect(() => {
+    // Register callback to update status bar when state changes
+    bufState.registerStatusChangeCallback(() => {
       updateStatusBar();
     });
+    // Initial update
+    updateStatusBar();
   }
 }
 

@@ -230,7 +230,6 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@preact/signals-core": "^1.13.0",
     "semver": "^7.7.3",
     "vscode-languageclient": "^9.0.1",
     "which": "^6.0.0"
