@@ -204,7 +204,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run prepworkspaces",
     "prepworkspaces": "npm ci --prefix test/workspaces/empty-single",
-    "lint": "biome lint --fix .",
+    "lint": "biome lint",
     "test": "npm run test:integration && npm run test:playwright",
     "test:integration": "vscode-test",
     "pretest:playwright": "node ./test/playwright/setup-script.mts",
