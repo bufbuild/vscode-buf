@@ -204,7 +204,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run prepworkspaces",
     "prepworkspaces": "npm ci --prefix test/workspaces/empty-single",
-    "lint": "biome lint --fix .",
+    "lint": "biome lint",
     "test": "npm run test:integration && npm run test:playwright",
     "test:integration": "vscode-test",
     "pretest:playwright": "node ./test/playwright/setup-script.mts",
@@ -212,7 +212,7 @@
     "test:playwright:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
     "package": "vsce package",
     "package:prerelease": "vsce package --pre-release",
-    "format": "biome format --write ."
+    "format": "biome check --write"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.14",
