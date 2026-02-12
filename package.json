@@ -231,7 +231,7 @@
   },
   "dependencies": {
     "@preact/signals-core": "^1.13.0",
-    "semver": "^7.7.3",
+    "semver": "^7.7.4",
     "vscode-languageclient": "^9.0.1",
     "which": "^6.0.1"
   }
