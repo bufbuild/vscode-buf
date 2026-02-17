@@ -169,7 +169,10 @@ lint:
     await vscode.window.showTextDocument(unformattedDoc);
 
     // Wait for document to be active
-    await waitFor(() => vscode.window.activeTextEditor?.document === unformattedDoc, 1000);
+    await waitFor(
+      () => vscode.window.activeTextEditor?.document === unformattedDoc,
+      1000
+    );
 
     // Execute format document command
     // Note: Formatting might not apply if LSP is not fully ready or lint rules prevent it

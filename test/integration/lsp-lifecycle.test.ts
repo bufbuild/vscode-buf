@@ -51,6 +51,8 @@ suite("LSP lifecycle", () => {
     await vscode.commands.executeCommand("buf.stopLanguageServer");
 
     const statusBarItem = getStatusBarItem();
+    assert.ok(statusBarItem, "Expected status bar item to exist");
+
     await waitFor(() => {
       const text = statusBarItem.text;
       return text.includes("$(x)") || text.toLowerCase().includes("x");
@@ -58,9 +60,6 @@ suite("LSP lifecycle", () => {
 
     // Execute start command
     await vscode.commands.executeCommand("buf.startLanguageServer");
-
-    // Verify status bar item exists
-    assert.ok(statusBarItem, "Expected status bar item to exist");
 
     // Wait for status bar to show running or starting state
     const started = await waitFor(() => {
