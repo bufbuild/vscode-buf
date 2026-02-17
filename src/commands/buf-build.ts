@@ -14,22 +14,28 @@ import { Command } from "./command";
 export const bufBuild = new Command(
   "buf.build",
   "COMMAND_TYPE_BUF",
-  async () => {
+  async (_ctx: vscode.ExtensionContext, ...args: unknown[]) => {
     if (!vscode.workspace.workspaceFolders) {
       log.warn(`No workspace found, unable to run "buf build".`);
       return;
     }
-    const recommendedOutPath = "out.binpb";
-    const outPath = await vscode.window.showInputBox({
-      placeHolder: recommendedOutPath,
-      prompt: `Provide an output path for "buf build", e.g. ${recommendedOutPath}. If none is provided, then "buf build" will output to /dev/null.`,
-    });
-    const args = ["build"];
+    // Extract optional outPath parameter (for testing)
+    let outPath = args[0] as string | undefined;
+
+    // If no outPath provided as parameter, prompt the user
+    if (!outPath) {
+      const recommendedOutPath = "out.binpb";
+      outPath = await vscode.window.showInputBox({
+        placeHolder: recommendedOutPath,
+        prompt: `Provide an output path for "buf build", e.g. ${recommendedOutPath}. If none is provided, then "buf build" will output to /dev/null.`,
+      });
+    }
+    const buildArgs = ["build"];
     if (outPath) {
-      args.push("-o", outPath);
+      buildArgs.push("-o", outPath);
     }
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      bufState.execBufCommand(args, workspaceFolder.uri.fsPath);
+      bufState.execBufCommand(buildArgs, workspaceFolder.uri.fsPath);
     }
   }
 );
