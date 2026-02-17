@@ -1,6 +1,7 @@
 import assert from "node:assert";
 import * as vscode from "vscode";
 import { getStatusBarItem, isStatusBarItemVisible } from "../../src/status-bar";
+import { waitFor } from "./helpers";
 
 suite("status bar visibility", () => {
   test("status bar item exists after activation", async () => {
@@ -27,9 +28,6 @@ suite("status bar visibility", () => {
     const protoDoc = await vscode.workspace.openTextDocument(protoUri);
     await vscode.window.showTextDocument(protoDoc);
 
-    // Wait for the status bar to update
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
     // Verify the active editor is showing the proto file
     const activeEditor = vscode.window.activeTextEditor;
     assert.ok(activeEditor, "Expected an active editor");
@@ -38,6 +36,9 @@ suite("status bar visibility", () => {
       "proto",
       "Expected proto language"
     );
+
+    // Wait for status bar to become visible
+    await waitFor(() => isStatusBarItemVisible(), 500);
 
     // Verify status bar is visible
     assert.strictEqual(
@@ -60,9 +61,6 @@ suite("status bar visibility", () => {
     const markdownDoc = await vscode.workspace.openTextDocument(markdownUri);
     await vscode.window.showTextDocument(markdownDoc);
 
-    // Wait for the status bar to update
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
     // Verify the active editor is showing the markdown file
     const activeEditor = vscode.window.activeTextEditor;
     assert.ok(activeEditor, "Expected an active editor");
@@ -71,6 +69,9 @@ suite("status bar visibility", () => {
       "markdown",
       "Expected markdown language"
     );
+
+    // Wait for status bar to become hidden
+    await waitFor(() => !isStatusBarItemVisible(), 500);
 
     // Verify status bar is hidden
     assert.strictEqual(
@@ -101,11 +102,11 @@ suite("status bar visibility", () => {
     const bufYamlDoc = await vscode.workspace.openTextDocument(bufYamlUri);
     await vscode.window.showTextDocument(bufYamlDoc);
 
-    // Wait for the status bar to update
-    await new Promise((resolve) => setTimeout(resolve, 200));
-
     const activeEditor = vscode.window.activeTextEditor;
     assert.ok(activeEditor, "Expected an active editor");
+
+    // Wait for status bar to become visible
+    await waitFor(() => isStatusBarItemVisible(), 500);
 
     // Verify status bar is visible
     assert.strictEqual(
@@ -127,7 +128,7 @@ suite("status bar visibility", () => {
     const protoUri = vscode.Uri.joinPath(workspaceFolder.uri, "test.proto");
     const protoDoc = await vscode.workspace.openTextDocument(protoUri);
     await vscode.window.showTextDocument(protoDoc);
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await waitFor(() => isStatusBarItemVisible(), 500);
 
     assert.strictEqual(
       isStatusBarItemVisible(),
@@ -139,7 +140,7 @@ suite("status bar visibility", () => {
     const markdownUri = vscode.Uri.joinPath(workspaceFolder.uri, "README.md");
     const markdownDoc = await vscode.workspace.openTextDocument(markdownUri);
     await vscode.window.showTextDocument(markdownDoc);
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await waitFor(() => !isStatusBarItemVisible(), 500);
 
     assert.strictEqual(
       isStatusBarItemVisible(),
@@ -149,7 +150,7 @@ suite("status bar visibility", () => {
 
     // Switch back to proto file
     await vscode.window.showTextDocument(protoDoc);
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await waitFor(() => isStatusBarItemVisible(), 500);
 
     assert.strictEqual(
       isStatusBarItemVisible(),

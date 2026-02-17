@@ -205,8 +205,17 @@ deps:
     // Execute the dep prune command
     await vscode.commands.executeCommand("buf.depprune");
 
-    // Wait a bit for the prune to complete
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Wait for the prune to complete by checking file content
+    await waitFor(async () => {
+      try {
+        const content = await vscode.workspace.fs.readFile(bufLockUri);
+        const decoder = new TextDecoder();
+        const text = decoder.decode(content);
+        return !text.includes("googleapis") || text.length < 50;
+      } catch {
+        return false;
+      }
+    }, 5000);
 
     // Verify the buf.lock no longer contains the dependency
     const content = await vscode.workspace.fs.readFile(bufLockUri);

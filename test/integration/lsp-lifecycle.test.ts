@@ -21,19 +21,22 @@ suite("LSP lifecycle", () => {
     await vscode.window.showTextDocument(protoDoc);
 
     // Wait for extension to be ready
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await waitFor(() => vscode.window.activeTextEditor !== undefined, 1000);
   });
 
   test("stop language server updates status bar", async () => {
     // Execute stop command
     await vscode.commands.executeCommand("buf.stopLanguageServer");
 
-    // Wait for status bar to update
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
     // Get the status bar item
     const statusBarItem = getStatusBarItem();
     assert.ok(statusBarItem, "Expected status bar item to exist");
+
+    // Wait for status bar to show stopped state
+    await waitFor(() => {
+      const text = statusBarItem.text;
+      return text.includes("$(x)") || text.toLowerCase().includes("x");
+    }, 1000);
 
     // Verify the status bar shows stopped state
     const statusText = statusBarItem.text;
@@ -46,13 +49,17 @@ suite("LSP lifecycle", () => {
   test("start language server updates status bar", async () => {
     // First ensure it's stopped
     await vscode.commands.executeCommand("buf.stopLanguageServer");
-    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const statusBarItem = getStatusBarItem();
+    await waitFor(() => {
+      const text = statusBarItem.text;
+      return text.includes("$(x)") || text.toLowerCase().includes("x");
+    }, 1000);
 
     // Execute start command
     await vscode.commands.executeCommand("buf.startLanguageServer");
 
-    // Wait for LSP to start and status to update
-    const statusBarItem = getStatusBarItem();
+    // Verify status bar item exists
     assert.ok(statusBarItem, "Expected status bar item to exist");
 
     // Wait for status bar to show running or starting state
@@ -84,7 +91,12 @@ suite("LSP lifecycle", () => {
 
     // Stop the server
     await vscode.commands.executeCommand("buf.stopLanguageServer");
-    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Wait for stopped state
+    await waitFor(() => {
+      const text = statusBarItem.text;
+      return text.includes("$(x)") || text.toLowerCase().includes("x");
+    }, 1000);
 
     // Verify it shows stopped
     const statusText = statusBarItem.text;
@@ -126,7 +138,12 @@ suite("LSP lifecycle", () => {
 
     // Now stop the server
     await vscode.commands.executeCommand("buf.stopLanguageServer");
-    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Wait for stopped state
+    await waitFor(() => {
+      const text = statusBarItem.text;
+      return text.includes("$(x)") || text.toLowerCase().includes("x");
+    }, 1000);
 
     // Tooltip should still exist and be different
     assert.ok(

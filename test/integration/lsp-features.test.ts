@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import * as vscode from "vscode";
-import { findPositionOfText } from "./helpers";
+import { findPositionOfText, waitFor } from "./helpers";
 
 suite("LSP features", () => {
   let workspaceFolder: vscode.WorkspaceFolder;
@@ -55,8 +55,8 @@ service UserService {
     protoDoc = await vscode.workspace.openTextDocument(protoUri);
     await vscode.window.showTextDocument(protoDoc);
 
-    // Wait for LSP to be ready
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Wait for extension to initialize
+    await waitFor(() => vscode.window.activeTextEditor !== undefined, 2000);
   });
 
   suiteTeardown(async () => {
@@ -168,16 +168,16 @@ lint:
       await vscode.workspace.openTextDocument(unformattedUri);
     await vscode.window.showTextDocument(unformattedDoc);
 
-    // Wait for LSP to be ready
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Wait for document to be active
+    await waitFor(() => vscode.window.activeTextEditor?.document === unformattedDoc, 1000);
 
     // Execute format document command
     // Note: Formatting might not apply if LSP is not fully ready or lint rules prevent it
     try {
       await vscode.commands.executeCommand("editor.action.formatDocument");
 
-      // Wait for formatting to complete
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Wait briefly for formatting to complete
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       // Verify the command executed without error
       assert.ok(true, "Format document command executed successfully");
