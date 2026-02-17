@@ -3,6 +3,5 @@
 dist
 node_modules
 out
-playwright-report
 test-results
 *.vsix
