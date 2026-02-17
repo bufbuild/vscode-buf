@@ -10,8 +10,9 @@ suite("command execution", () => {
     await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
 
     // Get the workspace folder
-    workspaceFolder = vscode.workspace.workspaceFolders?.[0]!;
-    assert.ok(workspaceFolder, "Expected a workspace folder");
+    const folders = vscode.workspace.workspaceFolders;
+    assert.ok(folders && folders.length > 0, "Expected a workspace folder");
+    workspaceFolder = folders[0];
   });
 
   teardown(async () => {
@@ -34,7 +35,10 @@ suite("command execution", () => {
     }
   });
 
-  test("generate creates gen-es directory", async () => {
+  test("generate creates gen-es directory", async function () {
+    // Increase timeout as generation can take time (downloads plugins)
+    this.timeout(15000);
+
     // First create a buf.gen.yaml file for generation
     const bufGenYamlUri = vscode.Uri.joinPath(
       workspaceFolder.uri,

@@ -11,8 +11,9 @@ suite("LSP lifecycle", () => {
     await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
 
     // Get the workspace folder
-    workspaceFolder = vscode.workspace.workspaceFolders?.[0]!;
-    assert.ok(workspaceFolder, "Expected a workspace folder");
+    const folders = vscode.workspace.workspaceFolders;
+    assert.ok(folders && folders.length > 0, "Expected a workspace folder");
+    workspaceFolder = folders[0];
 
     // Open a proto file to make status bar visible
     const protoUri = vscode.Uri.joinPath(workspaceFolder.uri, "test.proto");
@@ -86,7 +87,7 @@ suite("LSP lifecycle", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Verify it shows stopped
-    let statusText = statusBarItem.text;
+    const statusText = statusBarItem.text;
     assert.ok(
       statusText.includes("$(x)") || statusText.toLowerCase().includes("x"),
       "Expected stopped state"
@@ -121,10 +122,7 @@ suite("LSP lifecycle", () => {
     }, 5000);
 
     // Check tooltip exists
-    assert.ok(
-      statusBarItem.tooltip,
-      "Expected status bar to have a tooltip"
-    );
+    assert.ok(statusBarItem.tooltip, "Expected status bar to have a tooltip");
 
     // Now stop the server
     await vscode.commands.executeCommand("buf.stopLanguageServer");

@@ -52,7 +52,7 @@ suite("command registration", () => {
       await commandPromise;
 
       assert.ok(true, "Command executed successfully");
-    } catch (error) {
+    } catch {
       // If it fails because of the UI, that's actually okay
       // We just want to verify the command is registered and can be called
       assert.ok(true, "Command is registered and callable");
@@ -105,7 +105,8 @@ suite("command registration", () => {
 
   test("commands have expected titles", async () => {
     const extension = vscode.extensions.getExtension("bufbuild.vscode-buf");
-    const packageJson = extension!.packageJSON;
+    assert.ok(extension, "Expected extension to be found");
+    const packageJson = extension.packageJSON;
     const commands = packageJson.contributes.commands as Array<{
       command: string;
       title: string;

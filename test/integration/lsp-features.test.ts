@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import * as vscode from "vscode";
-import { findPositionOfText, waitFor } from "./helpers";
+import { findPositionOfText } from "./helpers";
 
 suite("LSP features", () => {
   let workspaceFolder: vscode.WorkspaceFolder;
@@ -15,8 +15,9 @@ suite("LSP features", () => {
     await vscode.extensions.getExtension("bufbuild.vscode-buf")?.activate();
 
     // Get the workspace folder
-    workspaceFolder = vscode.workspace.workspaceFolders?.[0]!;
-    assert.ok(workspaceFolder, "Expected a workspace folder");
+    const folders = vscode.workspace.workspaceFolders;
+    assert.ok(folders && folders.length > 0, "Expected a workspace folder");
+    workspaceFolder = folders[0];
 
     // Create a more complex proto file for LSP testing
     protoUri = vscode.Uri.joinPath(workspaceFolder.uri, "lsp-test.proto");
@@ -72,7 +73,10 @@ service UserService {
 
   test("go-to-definition can be invoked", async () => {
     // Find the position of "GetUserRequest" in the service definition
-    const position = findPositionOfText(protoDoc, "rpc GetUser(GetUserRequest)");
+    const position = findPositionOfText(
+      protoDoc,
+      "rpc GetUser(GetUserRequest)"
+    );
     assert.ok(position, "Expected to find GetUserRequest in document");
 
     // Adjust position to be on "GetUserRequest" specifically
@@ -160,10 +164,9 @@ lint:
     );
 
     // Open the unformatted document
-    const unformattedDoc = await vscode.workspace.openTextDocument(
-      unformattedUri
-    );
-    const editor = await vscode.window.showTextDocument(unformattedDoc);
+    const unformattedDoc =
+      await vscode.workspace.openTextDocument(unformattedUri);
+    await vscode.window.showTextDocument(unformattedDoc);
 
     // Wait for LSP to be ready
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -178,7 +181,7 @@ lint:
 
       // Verify the command executed without error
       assert.ok(true, "Format document command executed successfully");
-    } catch (error) {
+    } catch {
       // If formatting fails, that's okay - we just want to verify the API is available
       assert.ok(true, "Format document API is available");
     } finally {
