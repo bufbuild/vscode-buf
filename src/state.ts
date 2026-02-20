@@ -309,6 +309,17 @@ class BufState {
           return next(document, position, token);
         },
       },
+      uriConverters: {
+        code2Protocol: (uri) => {
+          // On Windows, VS Code percent-encodes the colon in drive letter paths (e.g.,
+          // file:///d%3A/path), but the buf LSP server requires URIs with a literal
+          // colon (e.g., file:///d:/path).
+          return uri.toString(true);
+        },
+        protocol2Code: (value) => {
+          return vscode.Uri.parse(value);
+        },
+      },
     };
     this.lspClient = new lsp.LanguageClient(
       "Buf Language Server",
