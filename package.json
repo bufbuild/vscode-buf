@@ -204,7 +204,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run prepworkspaces",
     "prepworkspaces": "npm ci --prefix test/workspaces/empty-single",
-    "lint": "biome lint --fix .",
+    "lint": "biome lint",
     "test": "npm run test:integration && npm run test:playwright",
     "test:integration": "vscode-test",
     "pretest:playwright": "node ./test/playwright/setup-script.mts",
@@ -212,13 +212,13 @@
     "test:playwright:debug": "playwright test --debug --workers=1 --retries=0 --reporter=list",
     "package": "vsce package",
     "package:prerelease": "vsce package --pre-release",
-    "format": "biome format --write ."
+    "format": "biome check --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.14",
-    "@playwright/test": "^1.58.1",
+    "@biomejs/biome": "^2.4.2",
+    "@playwright/test": "^1.58.2",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^25.2.0",
+    "@types/node": "^25.3.0",
     "@types/semver": "^7.7.1",
     "@types/vscode": "^1.95.0",
     "@types/which": "^3.0.4",
@@ -226,13 +226,13 @@
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.7.1",
     "mocha": "^11.7.5",
-    "ovsx": "^0.10.8",
+    "ovsx": "^0.10.9",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@preact/signals-core": "^1.13.0",
-    "semver": "^7.7.3",
+    "semver": "^7.7.4",
     "vscode-languageclient": "^9.0.1",
-    "which": "^6.0.0"
+    "which": "^6.0.1"
   }
 }
