@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.8.14
+
 ## 0.8.13
 
 - Revert extension bundling due to issues when running in WSL.
