@@ -2,7 +2,11 @@
 
 ## Unreleased
 
+- Expand ${workspaceRoot} variable in buf binary path.
+
 ## 0.8.14
+
+- Fix icon alignment in file tree.
 
 ## 0.8.13
 
