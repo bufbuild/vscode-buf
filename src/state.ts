@@ -10,7 +10,7 @@ import * as config from "./config";
 import * as github from "./github";
 import { log } from "./log";
 import type { ExtensionStatus, LanguageServerStatus } from "./status";
-import { execFile } from "./util";
+import { execFile, expandPathVariables } from "./util";
 
 /**
  * @file Provides the global state for the extension.
@@ -364,7 +364,16 @@ export const bufState = new BufState();
 function getBinaryPathForRelConfigPath(configPath: string): string {
   if (vscode.workspace.workspaceFolders) {
     for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-      const joinedPath = path.join(workspaceFolder.uri.fsPath, configPath);
+      const folderPath = workspaceFolder.uri.fsPath;
+      const expandedPath = expandPathVariables(configPath, folderPath);
+      // If expansion produced an absolute path, check it directly.
+      if (path.isAbsolute(expandedPath)) {
+        if (fs.existsSync(expandedPath)) {
+          return expandedPath;
+        }
+        continue;
+      }
+      const joinedPath = path.join(folderPath, expandedPath);
       if (fs.existsSync(joinedPath)) {
         return joinedPath;
       }
