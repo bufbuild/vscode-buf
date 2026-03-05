@@ -215,7 +215,7 @@
     "format": "biome check --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.4",
+    "@biomejs/biome": "^2.4.5",
     "@playwright/test": "^1.58.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "^25.3.3",
