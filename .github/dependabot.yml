@@ -4,10 +4,14 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "10:00" # UTC
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "10:00" # UTC
     ignore:
       # This dependency is kept in sync with our configured vs code engine and does not need
       # to be updated.
