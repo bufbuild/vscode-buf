@@ -227,7 +227,7 @@
     "@vscode/vsce": "^3.7.1",
     "mocha": "^11.7.5",
     "ovsx": "^0.10.10",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "dependencies": {
     "semver": "^7.7.4",
