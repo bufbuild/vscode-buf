@@ -162,6 +162,10 @@
     ],
     "languages": [
       {
+        "id": "yaml",
+        "filenames": ["buf.lock"]
+      },
+      {
         "id": "proto",
         "extensions": [
           ".proto"
@@ -178,6 +182,10 @@
       }
     ],
     "yamlValidation": [
+      {
+        "fileMatch": "buf.lock",
+        "url": "https://www.schemastore.org/buf.lock.json"
+      },
       {
         "fileMatch": "buf.yaml",
         "url": "https://www.schemastore.org/buf.json"
