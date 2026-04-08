@@ -163,7 +163,9 @@
     "languages": [
       {
         "id": "yaml",
-        "filenames": ["buf.lock"]
+        "filenames": [
+          "buf.lock"
+        ]
       },
       {
         "id": "proto",
