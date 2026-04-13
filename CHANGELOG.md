@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add LSP support for buf config files.
+
 ## 0.8.15
 
 - Expand ${workspaceRoot} variable in buf binary path.
