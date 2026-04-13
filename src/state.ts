@@ -28,9 +28,15 @@ const bufFilename = os.platform() === "win32" ? "buf.exe" : "buf";
 let serverOutputChannel: vscode.OutputChannel | undefined;
 
 /**
- * A {@link vscode.DocumentSelector} for proto files.
+ * A {@link vscode.DocumentSelector} for proto and buf config files.
  */
-const protoDocumentSelector = [{ scheme: "file", language: "proto" }];
+const protoDocumentSelector = [
+  { scheme: "file", language: "proto" },
+  { scheme: "file", pattern: "**/buf.yaml" },
+  { scheme: "file", pattern: "**/buf.gen.yaml" },
+  { scheme: "file", pattern: "**/buf.policy.yaml" },
+  { scheme: "file", pattern: "**/buf.lock" },
+];
 
 /**
  * Minimum Buf version required to use LSP via `buf beta lsp`.
