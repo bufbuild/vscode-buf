@@ -6,7 +6,7 @@ import { getBufBinaryFromPath } from "../../src/state";
 
 // These tests use shell scripts and only apply on Unix platforms where asdf runs.
 suite("getBufBinaryFromPath", () => {
-  before(function () {
+  suiteSetup(function () {
     if (os.platform() === "win32") {
       this.skip();
     }
