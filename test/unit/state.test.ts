@@ -4,7 +4,14 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { getBufBinaryFromPath } from "../../src/state";
 
+// These tests use shell scripts and only apply on Unix platforms where asdf runs.
 suite("getBufBinaryFromPath", () => {
+  before(function () {
+    if (os.platform() === "win32") {
+      this.skip();
+    }
+  });
+
   let tmpDir: string;
 
   setup(() => {
