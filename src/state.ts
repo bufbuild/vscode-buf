@@ -225,6 +225,10 @@ class BufState {
    *
    */
   public async init(ctx: vscode.ExtensionContext) {
+    // Use the first workspace folder as the cwd for binary discovery. Version managers
+    // like asdf use the cwd to resolve the correct tool version from `.tool-versions`.
+    const workspaceCwd = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+
     let configPath = config.get<string>("commandLine.path");
     if (configPath) {
       try {
@@ -232,7 +236,7 @@ class BufState {
           configPath = getBinaryPathForRelConfigPath(configPath);
         }
         log.info(`Attempting to use configured Buf CLI path '${configPath}...`);
-        this.bufBinary = await getBufBinaryFromPath(configPath);
+        this.bufBinary = await getBufBinaryFromPath(configPath, workspaceCwd);
         log.info(
           `Using '${this.bufBinary.path}', version: ${this.bufBinary.version}.`
         );
@@ -247,7 +251,7 @@ class BufState {
 
     log.info("Looking for Buf on the system $PATH...");
     try {
-      this.bufBinary = await findBufInSystemPath();
+      this.bufBinary = await findBufInSystemPath(workspaceCwd);
     } catch (e) {
       log.info(
         `Buf not found on the OS path: ${e}, installing from releases...`
@@ -428,9 +432,18 @@ type BufBinary = {
 
 /**
  * A helper function for getting the Buf binary at the given filesystem path.
+ *
+ * @param cwd is an optional working directory for the execution. This is important for
+ * version managers like asdf that use the current working directory to resolve the
+ * correct tool version from a `.tool-versions` file.
+ *
+ * @internal
  */
-async function getBufBinaryFromPath(path: string): Promise<BufBinary> {
-  const { stdout, stderr } = await execFile(path, ["--version"]);
+export async function getBufBinaryFromPath(
+  path: string,
+  cwd?: string
+): Promise<BufBinary> {
+  const { stdout, stderr } = await execFile(path, ["--version"], { cwd });
   if (stderr) {
     throw new Error(`Error getting version of buf binary '${path}': ${stderr}`);
   }
@@ -448,11 +461,13 @@ async function getBufBinaryFromPath(path: string): Promise<BufBinary> {
 
 /**
  * A helper function for finding the Buf CLI on the system $PATH.
+ *
+ * @param cwd is an optional working directory, passed through to {@link getBufBinaryFromPath}.
  */
-async function findBufInSystemPath(): Promise<BufBinary> {
+async function findBufInSystemPath(cwd?: string): Promise<BufBinary> {
   const bufPath = await which(bufFilename, { nothrow: true });
   if (bufPath) {
-    return getBufBinaryFromPath(bufPath);
+    return getBufBinaryFromPath(bufPath, cwd);
   }
   throw new Error(`Unable to find buf binary on system $PATH`);
 }
@@ -470,14 +485,11 @@ async function installReleaseAsset(
   await fs.promises.mkdir(downloadDir, { recursive: true });
   const downloadBin = path.join(downloadDir, bufFilename);
   try {
-    // Check to see if the downloadBin already exists and if we have access to the binary.
-    await fs.promises.access(downloadBin);
-    // We await for the bufBinary to be set before returning so we can catch any errors.
     const bufBinary = await getBufBinaryFromPath(downloadBin);
     log.info(`Using buf version v${bufBinary.version} from extension cache.`);
     return bufBinary;
   } catch (e) {
-    // In the case of an error, we log, and then move on to attempt a download.
+    // Binary not in cache or not executable; proceed to download.
     log.info(`No buf binary available locally, downloading... ${e}`);
   }
   log.info(`Downloading ${asset.name} to ${downloadBin}...`);
