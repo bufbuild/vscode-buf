@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.8.17
+
 ## 0.8.16
 
 - Add LSP support for buf config files.
