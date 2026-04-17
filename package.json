@@ -140,17 +140,14 @@
         "language": "proto",
         "scopeName": "source.proto",
         "path": "./syntaxes/proto.json"
+      },
+      {
+        "language": "buf-config",
+        "scopeName": "source.buf-config",
+        "path": "./syntaxes/buf-config.json"
       }
     ],
     "jsonValidation": [
-      {
-        "fileMatch": "buf.yaml",
-        "url": "https://www.schemastore.org/buf.json"
-      },
-      {
-        "fileMatch": "buf.gen.yaml",
-        "url": "https://www.schemastore.org/buf.gen.json"
-      },
       {
         "fileMatch": "buf.work.yaml",
         "url": "https://www.schemastore.org/buf.work.json"
@@ -162,10 +159,17 @@
     ],
     "languages": [
       {
-        "id": "yaml",
+        "id": "buf-config",
         "filenames": [
+          "buf.yaml",
+          "buf.gen.yaml",
+          "buf.policy.yaml",
           "buf.lock"
-        ]
+        ],
+        "aliases": [
+          "Buf Config"
+        ],
+        "configuration": "./buf-config-language-configuration.json"
       },
       {
         "id": "proto",
@@ -184,18 +188,6 @@
       }
     ],
     "yamlValidation": [
-      {
-        "fileMatch": "buf.lock",
-        "url": "https://www.schemastore.org/buf.lock.json"
-      },
-      {
-        "fileMatch": "buf.yaml",
-        "url": "https://www.schemastore.org/buf.json"
-      },
-      {
-        "fileMatch": "buf.gen.yaml",
-        "url": "https://www.schemastore.org/buf.gen.json"
-      },
       {
         "fileMatch": "buf.work.yaml",
         "url": "https://www.schemastore.org/buf.work.json"

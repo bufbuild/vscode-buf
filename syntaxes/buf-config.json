@@ -1,0 +1,9 @@
+{
+  "scopeName": "source.buf-config",
+  "fileTypes": [],
+  "patterns": [
+    {
+      "include": "source.yaml"
+    }
+  ]
+}
