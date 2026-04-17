@@ -30,7 +30,7 @@ let serverOutputChannel: vscode.OutputChannel | undefined;
 /**
  * A {@link vscode.DocumentSelector} for proto and buf config files.
  */
-const protoDocumentSelector = [
+const bufDocumentSelector = [
   { scheme: "file", language: "proto" },
   { scheme: "file", language: "buf-config" },
 ];
@@ -333,7 +333,7 @@ class BufState {
       args: args,
     };
     const clientOptions: lsp.LanguageClientOptions = {
-      documentSelector: protoDocumentSelector,
+      documentSelector: bufDocumentSelector,
       diagnosticCollectionName: "bufc",
       outputChannel: serverOutputChannel,
       revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
