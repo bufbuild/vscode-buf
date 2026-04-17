@@ -32,10 +32,7 @@ let serverOutputChannel: vscode.OutputChannel | undefined;
  */
 const protoDocumentSelector = [
   { scheme: "file", language: "proto" },
-  { scheme: "file", pattern: "**/buf.yaml" },
-  { scheme: "file", pattern: "**/buf.gen.yaml" },
-  { scheme: "file", pattern: "**/buf.policy.yaml" },
-  { scheme: "file", pattern: "**/buf.lock" },
+  { scheme: "file", language: "buf-config" },
 ];
 
 /**
