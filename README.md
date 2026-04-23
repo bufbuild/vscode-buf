@@ -29,7 +29,7 @@ This extension requires Visual Studio Code 1.95 or newer (or editors compatible 
 This extension does not require you to have the Buf CLI already installed. 
 By default, the extension uses the Buf CLI from your system `$PATH`. 
 If `buf` isn't found on your `$PATH`, the extension automatically downloads and installs the latest version to its own storage directory.
-Use the `commandLine.path` config option to specify a `buf` binary that isn't on your `$PATH`.
+Use the `buf.commandLine.path` setting to specify a `buf` binary that isn't on your `$PATH`.
 
 ## Commands
 
@@ -64,6 +64,44 @@ A full list of [Command Palette][command-palette] commands provided by this exte
   on the `buf.gen.yaml` file(s).
 
 - Show Buf Output: shows the extension output channel.
+
+## Configuration
+
+### `buf.commandLine.path`
+
+Path to a specific `buf` binary to use.
+Relative paths are resolved from the workspace root.
+
+```json
+{
+  "buf.commandLine.path": "/path/to/buf"
+}
+```
+
+### `buf.debugLogs`
+
+Enable debug logging for the Buf language server.
+Logs appear in the Buf output channel (`Buf: Show Buf Output`).
+Defaults to `false`.
+
+```json
+{
+  "buf.debugLogs": true
+}
+```
+
+### Format on save
+
+The extension enables `editor.formatOnSave` for `.proto` files by default.
+To disable it, override this in your `settings.json`:
+
+```json
+{
+  "[proto]": {
+    "editor.formatOnSave": false
+  }
+}
+```
 
 ## Community and Support
 
