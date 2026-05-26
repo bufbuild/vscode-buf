@@ -232,7 +232,7 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "semver": "^7.7.4",
+    "semver": "^7.8.1",
     "vscode-languageclient": "^9.0.1",
     "which": "^7.0.0"
   }
