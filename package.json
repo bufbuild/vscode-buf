@@ -1,7 +1,7 @@
 {
   "name": "vscode-buf",
-  "displayName": "Buf",
-  "description": "Visual Studio Code support for Buf",
+  "displayName": "Buf - Protobuf (.proto) & Protovalidate",
+  "description": "Protocol Buffers (proto) language support powered by the Buf language server: lint and build diagnostics, format on save, go-to-definition, hover docs, IntelliSense, and Protovalidate (CEL) editing support.",
   "version": "0.8.19",
   "icon": "logo.png",
   "publisher": "bufbuild",
@@ -28,14 +28,27 @@
     "Linters"
   ],
   "keywords": [
+    ".proto",
+    "autocomplete",
     "buf",
+    "buf schema registry",
+    "buf.yaml",
+    "buf.gen.yaml",
     "bufbuild",
+    "cel",
+    "diagnostics",
     "format",
+    "formatter",
+    "intellisense",
+    "language server",
     "lint",
+    "linter",
+    "lsp",
     "proto",
     "proto3",
     "protobuf",
-    "protocol buffers"
+    "protocol buffers",
+    "protovalidate"
   ],
   "activationEvents": [
     "workspaceContains:**/*.proto",

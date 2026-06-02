@@ -1,8 +1,17 @@
 # Buf for Visual Studio Code
 
-The [VS Code Buf extension][vs-code-marketplace] helps you work with [Protocol Buffers][protobuf]
-files in a much more intuitive way, adding semantic syntax highlighting, navigation, formatting,
-documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
+[Buf][buf] is a [Protocol Buffers][protobuf] (Protobuf) extension for Visual Studio Code. More
+than simple syntax highlighting, it's powered by a real language server that brings IDE-grade
+editing to `.proto` files: go-to-definition, hover documentation, autocompletion, symbol rename,
+organize imports, format-on-save, and real-time lint and build diagnostics. It also understands
+[Protovalidate][protovalidate], with hovers, completions, and go-to-definition for the
+[CEL][cel] expressions in your validation rules.
+
+Buf is built by the team behind the [Buf CLI][buf], the [Buf Schema Registry][bsr],
+[Protobuf-ES][protobuf-es], and [Protovalidate][protovalidate], and core maintainers of
+[ConnectRPC][connect] - the tooling many teams rely on to build and scale their Protobuf APIs.
+
+Install it from the [VS Code Marketplace][vs-code-marketplace] or [Open VSX][open-vsx].
 
 ## Features
 
@@ -12,6 +21,8 @@ documentation and diagnostic hovers, and integrations with [Buf][buf] commands.
 - **Formatting**: Formats `.proto` files on-save.
 - **Syntax highlighting**: Code styling that provides clarity on Protobuf keywords and identifiers.
 - **Diagnostics**: Get highlights and feedback on build and lint errors as you code.
+- **Protovalidate support**: Hovers, completions, and go-to-definition for the [CEL][cel]
+  expressions in your [Protovalidate][protovalidate] validation rules.
 
 ![Preview features](./preview.gif)
 
@@ -115,13 +126,19 @@ on [Slack][slack].
 
 Offered under the [Apache 2 license][license].
 
-[buf]: https://buf.build/
 [breaking-rules]: https://buf.build/docs/breaking/rules
+[bsr]: https://buf.build/product/bsr
+[buf]: https://buf.build/home
+[cel]: https://cel.dev/
 [command-palette]: https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette
-[issue]: https://github.com/bufbuild/vscode-buf/issues/new/choose
+[connect]: https://connectrpc.com/
 [intellisense]: https://code.visualstudio.com/docs/editing/intellisense
+[issue]: https://github.com/bufbuild/vscode-buf/issues/new/choose
 [license]: https://github.com/bufbuild/vscode-buf/blob/main/LICENSE
 [lint-rules]: https://buf.build/docs/lint/rules
+[open-vsx]: https://open-vsx.org/extension/bufbuild/vscode-buf
 [protobuf]: https://protobuf.dev/
+[protobuf-es]: https://github.com/bufbuild/protobuf-es
+[protovalidate]: https://protovalidate.com/
 [slack]: https://buf.build/links/slack
 [vs-code-marketplace]: https://marketplace.visualstudio.com/items?itemName=bufbuild.vscode-buf
