@@ -224,9 +224,9 @@
     "@types/semver": "^7.7.1",
     "@types/vscode": "^1.95.0",
     "@types/which": "^3.0.4",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.9.1",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "@vscode/vsce": "^3.9.2",
     "mocha": "^11.7.6",
     "ovsx": "^1.0.2",
     "typescript": "^6.0.3"
