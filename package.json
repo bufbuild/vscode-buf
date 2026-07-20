@@ -220,7 +220,7 @@
     "@biomejs/biome": "^2.5.4",
     "@playwright/test": "^1.60.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^25.9.1",
+    "@types/node": "^26.1.1",
     "@types/semver": "^7.7.1",
     "@types/vscode": "^1.95.0",
     "@types/which": "^3.0.4",
