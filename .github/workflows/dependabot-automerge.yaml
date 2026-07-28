@@ -1,0 +1,24 @@
+# Automatically merge Dependabot PRs that pass CI and aren't major version bumps.
+name: dependabot-automerge
+on:
+  pull_request:
+  workflow_run:
+    # Name of workflows whose jobs run on Dependabot PRs.
+    # Each successful completion on a dependabot/** branch wakes the sweep.
+    # The cron below is the backstop.
+    workflows:
+      - "ci"
+    types: [completed]
+    branches: ["dependabot/**"]
+  schedule:
+    - cron: "0 13 * * *" # 13:00 UTC (8am EST / 9am EDT)
+  workflow_dispatch:
+permissions: {}
+jobs:
+  automerge:
+    uses: bufbuild/base-workflows/.github/workflows/dependabot-automerge.yaml@7c0b54b718244c78f00037343ff7cb33ef7caca9 # main
+    secrets:
+      DEPENDENCY_AUTOMERGE_APP_ID: ${{ secrets.DEPENDENCY_AUTOMERGE_APP_ID }}
+      DEPENDENCY_AUTOMERGE_APP_PRIVATE_KEY: ${{ secrets.DEPENDENCY_AUTOMERGE_APP_PRIVATE_KEY }}
+    with:
+      github-auto-merge: false
